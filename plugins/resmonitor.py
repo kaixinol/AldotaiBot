@@ -1,5 +1,8 @@
-from ..util.parseTool import *
-from ..util.initializer import *
+import sys
+import os
+sys.path.append('../')
+from util.parseTool import *
+from util.initializer import *
 from graia.ariadne.message.element import (
     Image,
     Plain,
@@ -26,8 +29,7 @@ from pyspectator.convert import UnitByte
 from collections.abc import MutableMapping
 from graia.saya import Saya, Channel
 from graia.saya.event import SayaModuleInstalled
-import sys
-sys.path.append("..")
+
 
 saya = Saya.current()
 

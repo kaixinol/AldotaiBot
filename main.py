@@ -1,4 +1,5 @@
 import sys
+import os
 from creart import create
 from graia.ariadne.app import Ariadne
 from graia.ariadne.connection.config import (
@@ -13,8 +14,9 @@ from graia.saya import Saya
 import util.jsonTool as js
 from loguru import logger as l
 
-l.add("{time: YYYY-MM-DD}.log", rotation="00:00", encoding="utf-8",
-      filter=lambda rec: "graia" not in rec["name"])
+
+l.add(os.getcwd()+"/log/{time: YYYY-MM-DD}.log", rotation="00:00",level="INFO", encoding="utf-8",
+      filter=lambda rec: "graia" not in rec["name"] and "launart" not in rec["name"])
 
 saya = create(Saya)
 configJson = js.ReadJson('config.json')

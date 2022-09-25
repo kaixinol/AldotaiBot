@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append('../')
 from graia.ariadne.message.element import (
     Image,
     Plain,
@@ -21,8 +24,8 @@ from graia.ariadne.event.message import GroupMessage, FriendMessage, MessageEven
 from graia.ariadne.app import Ariadne
 from graia.saya import Saya, Channel
 from graia.saya.event import SayaModuleInstalled
-from ..util.parseTool import *
-from ..util.initializer import *
+from util.parseTool import *
+from util.initializer import *
 from loguru import logger as l
 import pydoodle
 import datetime
@@ -47,7 +50,7 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     try:
         buffer = message[Plain][0].text.find('\n')
         text = message[Plain][0].text
-        info(text)
+        l.info(text)
         raw_info = Compile(text[buffer:], dic['lang'],
                            ReadConfig('OnlineCompile'))
 
