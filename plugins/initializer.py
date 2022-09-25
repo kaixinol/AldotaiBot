@@ -1,12 +1,7 @@
 from jsonTool import *
-from contextvars import *
-did = False
-global obj
-obj = None
-if not did:
-    data = ReadJson("./config.json")
-    did = True
-    print('json read')
+from logTool import *
+data = ReadJson("./config.json")
+info('config.json read')
 def ReadConfig(name: str = "_") -> dict:
-    print('read from memory')
+    info(f'config.json read for {name}')
     return data['plugin'][name]

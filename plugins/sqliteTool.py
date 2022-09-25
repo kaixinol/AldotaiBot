@@ -1,9 +1,21 @@
 import sqlite3
+import base64
+import emoji
+from logTool import *
 global dbLink
 dbLink = {}
 
 
+def Decode(s: str):
+    return base64.standard_b64decode(s.encode()).decode()
+
+
+def Encode(s: str):
+    return base64.standard_b64encode(s.encode()).decode()
+
+
 def Execute(name: str, s: str) -> dict | str:
+    info(s, 'SQL')
     return dbLink[name].cursor().execute(s)
 
 
@@ -28,7 +40,6 @@ def InsertTable(db: str, name: str, cmd: dict) -> bool:
     sentence = f'INSERT INTO  {name} (' + ','.join([i[0] for i in ls]) +\
         ') VALUES (' + ','.join(repr(i[1]) for i in ls) + ');'
     try:
-        print(sentence)
         Execute(db, sentence)
         return True
     except:
@@ -37,7 +48,6 @@ def InsertTable(db: str, name: str, cmd: dict) -> bool:
 
 def UpdateTable(db: str, name: str, struct: dict) -> bool:
     cmd = f"DELETE FROM {name} WHERE {struct['select'][0]} = {struct['select'][1]};"
-    print(cmd)
     Execute(db, cmd)
     InsertTable(db, name, struct['data'])
 
@@ -47,17 +57,18 @@ def CreateTable(db: str, name: str, struct: dict) -> bool:
                             'int': ' INT NOT NULL'}[n]
     cmd = f"CREATE TABLE IF NOT EXISTS {name}("+','.join([i+qParser(struct[i])
                                                           for i in struct.keys()])+');'
-    print(cmd)
     Execute(db, cmd)
 
 
-def SearchData(db: str, table: str, column: list | str = '*') -> list | dict:
+def SearchData(db: str, table: str, column: list | dict | str = '*') -> list | dict:
 
     if type(column) == list:
         cmd = f"SELECT {', '.join(column)} FROM {table};"
     elif type(column) == str:
         cmd = f"SELECT {column} FROM {table};"
-    print(cmd)
+    elif type(column) == dict:
+        cmd = f"SELECT {'*' if 'select' not in column else column['select']} FROM {table} WHERE {list(column['data'].keys())[0]} LIKE '{list(column['data'].values())[0]}';"
+        return TupleToList(Execute(db, cmd))
     return parseDataToDict(Execute(db, cmd), column)
 
 
@@ -67,17 +78,31 @@ def parseDataToDict(data: list, key: list | str) -> dict:
         for i in data:
             for num in range(len(key)):
                 ret[key[num]] = [] if key[num] not in ret else ret[key[num]]
-                ret[key[num]].append(i[num])
+                ret[key[num]].append(emoji.emojize(
+                    Decode(i[num])) if type(i[num]) == str else i[num])
+        return ret
     else:
-        return [i for i in list(data)]
-    return ret
+        return TupleToList(data)
+
+
+def TupleToList(s: list):
+    ret2 = []
+    for i in s:
+        if type(i) == tuple:
+            for ii in i:
+                ret2.append(emoji.emojize(
+                    Decode(ii)) if type(ii) == str else ii)
+    return ret2
 
 
 if __name__ == "__main__":
     Connect('1.db')
     CreateTable('1.db', 'furry', {'QQ': 'int', '圈名': 'str'})
-    InsertTable('1.db', 'furry', {'QQ': 114514, '圈名': 'dfghcfh'})
-    InsertTable('1.db', 'furry', {'QQ': 114, '圈名': 'dcfh'})
+    InsertTable('1.db', 'furry', {'QQ': 114514,
+                '圈名': Encode(emoji.demojize('我测你们🐴'))})
+    InsertTable('1.db', 'furry', {'QQ': 114, '圈名': Encode('dcfh')})
     UpdateTable('1.db', 'furry', struct={'select': [
-        'QQ', 114514], 'data': {'QQ': 114514, '圈名': 'ffg'}})
-    print(SearchData('1.db', "furry", ["qq", "圈名"]))
+        'QQ', 114514], 'data': {'QQ': 114514, '圈名': Encode('阿斯奇琳')}})
+    debug(SearchData('1.db', "furry", ['qq', '圈名']))
+    debug(SearchData('1.db', "furry", {
+          'select': 'qq', 'data': {'qq': 114514}}))

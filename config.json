@@ -1,0 +1,45 @@
+{
+    "name": "xxBot",
+    "Master": 3607922630,
+    "plugin": {
+        "OnlineCompile": {
+            "disabled": false,
+            "process": [
+                "Group","Friend"
+            ],
+            "id": "9919ec260bc24c2c4eab4534d7df9225",
+            "secret": "50419d8f128885d6ba5dc01f32f85aa9fc350e0187ffe21bb8281c5d4c40fae"
+        },
+        "E621": {
+            "disabled": true,
+            "process": [
+                "Group"
+            ],
+            "username": "*",
+            "secret": "*",
+            "limit": 200
+        },
+        "randomvideo": {
+            "disabled": true,
+            "process": [
+                "Group"
+            ],
+            "fav_id": "1280741082",
+            "prefix": [
+                "gfhfgh"
+            ]
+        },
+        "resmonitor": {
+            "disabled": false,
+            "process": [
+                "Group",
+                "Friend"
+            ]
+        },
+        "_": [
+            "xx",
+            "xxx"
+        ]
+    },
+    "abuser": []
+}

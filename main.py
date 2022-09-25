@@ -1,4 +1,4 @@
-import pkgutil
+import sys
 from creart import create
 from graia.ariadne.app import Ariadne
 from graia.ariadne.connection.config import (
@@ -11,24 +11,27 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.model import Group
 from graia.saya import Saya
 from plugins import jsonTool
+from plugins.logTool import *
+
 
 saya = create(Saya)
 configJson = jsonTool.ReadJson('config.json')
-print([ii for ii in list(configJson['plugin'].keys())[:-1]
-       if not configJson['plugin'][ii]['disabled']])
-import sys
+
+
+debug([ii for ii in list(configJson['plugin'].keys())[:-1]
+               if not configJson['plugin'][ii]['disabled']])
+
 sys.path.append('plugins')
 
 with saya.module_context():
-    saya.require(f"plugins.resmonitor")
-    saya.require(f"plugins.resmonitor")
-    saya.require(f"plugins.OnlineCompile")
+    for i in [ii for ii in list(configJson['plugin'].keys())[:-1]
+              if not configJson['plugin'][ii]['disabled']]:
+        saya.require(f"plugins.{i}")
 
-print()
 app = Ariadne(
     config(
         verify_key="ServiceVerifyKey",  # 填入 VerifyKey
-        account=2192808879,  # 你的机器人的 qq 号
+        account=192627435,  # 你的机器人的 qq 号
     ),
 )
 
