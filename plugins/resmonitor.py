@@ -1,3 +1,5 @@
+from ..util.parseTool import *
+from ..util.initializer import *
 from graia.ariadne.message.element import (
     Image,
     Plain,
@@ -24,8 +26,9 @@ from pyspectator.convert import UnitByte
 from collections.abc import MutableMapping
 from graia.saya import Saya, Channel
 from graia.saya.event import SayaModuleInstalled
-import parseTool
-from initializer import *
+import sys
+sys.path.append("..")
+
 saya = Saya.current()
 
 
@@ -106,11 +109,11 @@ async def module_listener(event: SayaModuleInstalled):
     print(f"{event.module}::模块加载成功!!!")
 
 
-@channel.use(ListenerSchema(listening_events=parseTool.parseMsgType(ReadConfig('resmonitor'))))
+@channel.use(ListenerSchema(listening_events=parseMsgType(ReadConfig('resmonitor'))))
 async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     message = event.message_chain
     from arclet.alconna import Alconna
-    if Alconna("获取配置", headers=parseTool.parsePrefix('resmonitor')).parse(message[Plain]).matched:
+    if Alconna("获取配置", headers=parsePrefix('resmonitor')).parse(message[Plain]).matched:
         data = await main(Computer())
         await app.send_message(
             friend,

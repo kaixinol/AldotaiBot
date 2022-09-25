@@ -10,16 +10,18 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.model import Group
 from graia.saya import Saya
-from plugins import jsonTool
-from plugins.logTool import *
+import util.jsonTool as js
+from loguru import logger as l
 
+l.add("{time: YYYY-MM-DD}.log", rotation="00:00", encoding="utf-8",
+      filter=lambda rec: "graia" not in rec["name"])
 
 saya = create(Saya)
-configJson = jsonTool.ReadJson('config.json')
+configJson = js.ReadJson('config.json')
 
 
-debug([ii for ii in list(configJson['plugin'].keys())[:-1]
-               if not configJson['plugin'][ii]['disabled']])
+l.debug(str([ii for ii in list(configJson['plugin'].keys())
+        [:-1] if not configJson['plugin'][ii]['disabled']]))
 
 sys.path.append('plugins')
 
