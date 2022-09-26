@@ -61,7 +61,6 @@ def CreateTable(db: str, name: str, struct: dict) -> bool:
 
 
 def SearchData(db: str, table: str, column: list | dict | str = '*') -> list | dict:
-
     if type(column) == list:
         cmd = f"SELECT {', '.join(column)} FROM {table};"
     elif type(column) == str:
@@ -105,4 +104,4 @@ if __name__ == "__main__":
         'QQ', 114514], 'data': {'QQ': 114514, '圈名': Encode('阿斯奇琳')}})
     l.debug(SearchData('1.db', "furry", ['qq', '圈名']))
     l.debug(SearchData('1.db', "furry", {
-          'select': 'qq', 'data': {'qq': 114514}}))
+          'select': '圈名', 'data': {'qq': 114514}}))

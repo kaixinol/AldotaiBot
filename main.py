@@ -15,21 +15,20 @@ import util.jsonTool as js
 from loguru import logger as l
 
 
-l.add(os.getcwd()+"/log/{time: YYYY-MM-DD}.log", rotation="00:00",level="INFO", encoding="utf-8",
+l.add(os.getcwd()+"/log/{time: YYYY-MM-DD}.log", rotation="00:00", level="INFO", encoding="utf-8",
       filter=lambda rec: "graia" not in rec["name"] and "launart" not in rec["name"])
 
 saya = create(Saya)
 configJson = js.ReadJson('config.json')
 
-
-l.debug(str([ii for ii in list(configJson['plugin'].keys())
-        [:-1] if not configJson['plugin'][ii]['disabled']]))
+l.debug(str([ii for ii in list(configJson['plugin'].keys())[:-1]
+              if  'disabled' not in configJson['plugin'][ii] or not configJson['plugin'][ii]['disabled']]))
 
 sys.path.append('plugins')
 
 with saya.module_context():
     for i in [ii for ii in list(configJson['plugin'].keys())[:-1]
-              if not configJson['plugin'][ii]['disabled']]:
+              if  'disabled' not in configJson['plugin'][ii] or not configJson['plugin'][ii]['disabled']]:
         saya.require(f"plugins.{i}")
 
 app = Ariadne(

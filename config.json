@@ -3,7 +3,6 @@
     "Master": 3607922630,
     "plugin": {
         "OnlineCompile": {
-            "disabled": false,
             "process": [
                 "Group","Friend"
             ],
@@ -30,11 +29,16 @@
             ]
         },
         "resmonitor": {
-            "disabled": false,
             "process": [
                 "Group",
                 "Friend"
             ]
+        },
+        "FurName":{
+            "process": [
+                "Group"
+            ],
+            "prefix": ["!","\uff01"]
         },
         "_": [
             "xx",

@@ -114,6 +114,8 @@ async def module_listener(event: SayaModuleInstalled):
 @channel.use(ListenerSchema(listening_events=parseMsgType(ReadConfig('resmonitor'))))
 async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     message = event.message_chain
+    if len(message[Plain])==0:
+        return
     from arclet.alconna import Alconna
     if Alconna("获取配置", headers=parsePrefix('resmonitor')).parse(message[Plain]).matched:
         data = await main(Computer())

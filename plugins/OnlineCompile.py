@@ -1,6 +1,16 @@
-import sys
-import os
-sys.path.append('../')
+import datetime
+import pydoodle
+from loguru import logger as l
+from util.initializer import *
+from util.parseTool import *
+from graia.saya.event import SayaModuleInstalled
+from graia.saya import Saya, Channel
+from graia.ariadne.app import Ariadne
+from graia.ariadne.event.message import GroupMessage, FriendMessage, MessageEvent
+from graia.ariadne.message.chain import MessageChain
+from graia.ariadne.model import Group, Friend
+from graia.saya import Channel
+from graia.saya.builtins.broadcast.schema import ListenerSchema
 from graia.ariadne.message.element import (
     Image,
     Plain,
@@ -16,19 +26,9 @@ from graia.ariadne.message.element import (
     MarketFace,
     ForwardNode
 )
-from graia.saya.builtins.broadcast.schema import ListenerSchema
-from graia.saya import Channel
-from graia.ariadne.model import Group, Friend
-from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.event.message import GroupMessage, FriendMessage, MessageEvent
-from graia.ariadne.app import Ariadne
-from graia.saya import Saya, Channel
-from graia.saya.event import SayaModuleInstalled
-from util.parseTool import *
-from util.initializer import *
-from loguru import logger as l
-import pydoodle
-import datetime
+import sys
+import os
+sys.path.append('../')
 saya = Saya.current()
 
 channel = Channel.current()
@@ -42,6 +42,8 @@ async def module_listener(event: SayaModuleInstalled):
 async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     message = event.message_chain
     from arclet.alconna import Alconna
+    if len(message[Plain]) == 0:
+        return
     dic = Alconna("在线编译{lang}", headers=parsePrefix(
         'OnlineCompile')).parse(message[Plain][0].text.splitlines()[0]).header
     if not dic:
