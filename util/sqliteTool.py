@@ -2,6 +2,7 @@ import sqlite3
 import base64
 import emoji
 from  loguru import logger as l
+import os
 global dbLink
 dbLink = {}
 
@@ -20,8 +21,10 @@ def Execute(name: str, s: str) -> dict | str:
 
 
 def Connect(s: str):
+    if not os.path.exists(s.split('/')[0]):
+        os.makedirs(s.split('/')[0])
     if s not in dbLink:
-        dbLink[s] = sqlite3.connect(s)
+        dbLink[s] = sqlite3.connect(os.getcwd()+'/'+s)
 
 
 def Commit(s: str):

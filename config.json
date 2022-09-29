@@ -40,6 +40,12 @@
             ],
             "prefix": ["!","\uff01"]
         },
+        "33":{
+            "process": [
+                "Group"
+            ],
+            "prefix": ["!","\uff01"]
+        },
         "_": [
             "xx",
             "xxx"

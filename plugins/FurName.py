@@ -25,10 +25,6 @@ from graia.ariadne.model import Group, Friend
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.event.message import GroupMessage, FriendMessage, MessageEvent
 from graia.ariadne.app import Ariadne
-from pyspectator.computer import Computer
-from time import sleep
-from pyspectator.convert import UnitByte
-from collections.abc import MutableMapping
 from graia.saya import Saya, Channel
 from graia.saya.event import SayaModuleInstalled
 
@@ -42,6 +38,8 @@ async def module_listener(event: SayaModuleInstalled):
 async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     from arclet.alconna import Alconna
     message = event.message_chain
+    if len(message[Plain])==0:
+        return
     ret=Alconna("设置圈名{name}", headers=parsePrefix(ReadConfig('FurName'))).parse(message[Plain])
     if ret.matched:
         await app.send_message(
@@ -56,6 +54,22 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
             MessageChain(Plain(f"你好!!我也是傻逼！！")),
         ) 
         return
+    ret=Alconna("我是谁").parse(message[Plain])
+    if ret.matched:
+        name=getName(event.sender.id)
+        if name=="[未设置圈名]":
+            await app.send_message(
+            friend,
+            MessageChain(Plain(f"你是……咦，我不知道你是谁")),
+        ) 
+            return
+        else:
+            await app.send_message(
+            friend,
+            MessageChain(Plain(f"你是{name}!")),
+        ) 
+            return
+
     ret=Alconna("我是{name}").parse(message[Plain])
     if ret.matched:
         await app.send_message(
@@ -86,9 +100,9 @@ import re
 
 @l.catch
 def addName(n: str, qq: int) -> str:
-    Connect('furryData.db')
-    CreateTable('furryData.db', 'name', {'qq': 'int', 'name': 'str'})
-    ret = SearchData('furryData.db', 'name', ['qq', 'name'])
+    Connect('db/furryData.db')
+    CreateTable('db/furryData.db', 'name', {'qq': 'int', 'name': 'str'})
+    ret = SearchData('db/furryData.db', 'name', ['qq', 'name'])
     a, b = SafeIndex(ret, 'name', n), SafeIndex(ret, 'qq', qq)
     l.debug(SafeIndex(ret, 'name', n) == SafeIndex(ret, 'qq', qq) != -1)
     l.debug(f'{a},{b}')
@@ -98,11 +112,11 @@ def addName(n: str, qq: int) -> str:
         sm = ret['qq'][ret['name'].index(n)]
         return f'警告！您的圈名与{n}({sm})重名'
     if 'qq' in ret and qq not in ret['qq']:
-        InsertTable('furryData.db', 'name', {'qq': qq, 'name': Encode(n)})
+        InsertTable('db/furryData.db', 'name', {'qq': qq, 'name': Encode(n)})
     else:
-        UpdateTable('furryData.db', 'name', struct={'select': [
+        UpdateTable('db/furryData.db', 'name', struct={'select': [
             'qq', qq], 'data': {'qq': qq, 'name': Encode(n)}})
-    Commit('furryData.db')
+    Commit('db/furryData.db')
     return f'你的圈名现在是{n}了'
 
 
@@ -116,9 +130,9 @@ def SafeIndex(l: dict, key: str, wt: Any) -> int:
 
 @l.catch
 def getName(qq: int) -> str:
-    Connect('furryData.db')
-    CreateTable('furryData.db', 'name', {'qq': 'int', 'name': 'str'})
-    ret = SearchData('furryData.db', 'name', {
+    Connect('db/furryData.db')
+    CreateTable('db/furryData.db', 'name', {'qq': 'int', 'name': 'str'})
+    ret = SearchData('db/furryData.db', 'name', {
                      'select': 'name', 'data': {'qq': qq}})
     return ret[0] if len(ret) == 1 else '[未设置圈名]'
 
@@ -130,13 +144,13 @@ def HowTo(s: str):
 
 if __name__ == '__main__':
     l.debug(addName('阿尔多泰', 114514))
-    l.debug(SearchData('furryData.db', 'name', ['qq', 'name']))
+    l.debug(SearchData('db/furryData.db', 'name', ['qq', 'name']))
     l.debug(addName('阿尔多泰', 114))
-    l.debug(SearchData('furryData.db', 'name', ['qq', 'name']))
+    l.debug(SearchData('db/furryData.db', 'name', ['qq', 'name']))
     l.debug(addName('阿斯奇琳', 114))
-    l.debug(SearchData('furryData.db', 'name', ['qq', 'name']))
+    l.debug(SearchData('db/furryData.db', 'name', ['qq', 'name']))
     l.debug(addName('测你的码', 114))
-    l.debug(SearchData('furryData.db', 'name', ['qq', 'name']))
+    l.debug(SearchData('db/furryData.db', 'name', ['qq', 'name']))
     l.debug(getName(114))
     l.debug(getName(115))
     l.debug(HowTo('圈名是什么'))
