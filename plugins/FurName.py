@@ -47,13 +47,6 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
             MessageChain(Plain(addName(ret.header['name'],event.sender.id))),
         ) 
         return
-    ret=Alconna("我是傻逼").parse(message[Plain])
-    if ret.matched:
-        await app.send_message(
-            friend,
-            MessageChain(Plain(f"你好!!我也是傻逼！！")),
-        ) 
-        return
     ret=Alconna("我是谁").parse(message[Plain])
     if ret.matched:
         name=getName(event.sender.id)
@@ -69,14 +62,6 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
             MessageChain(Plain(f"你是{name}!")),
         ) 
             return
-
-    ret=Alconna("我是{name}").parse(message[Plain])
-    if ret.matched:
-        await app.send_message(
-            friend,
-            MessageChain(Plain(f"你好!!{ret.header['name']}")),
-        ) 
-        return
     ret=Alconna("教我画画").parse(message[Plain])
     if ret.matched:
         await app.send_message(
@@ -84,18 +69,10 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
             MessageChain(Plain(f"{getName(event.sender.id)}教我画画！！")),
         ) 
         return
-    if HowTo(message.display)!=0:
-        await app.send_message(
-            friend,
-            MessageChain(Plain('发送\n！设置圈名{你的圈名}\n不需要带空格')),
-        )
-
-
 
 
 from typing import Any
 from loguru import logger as l
-import re
 
 
 @l.catch
@@ -137,9 +114,7 @@ def getName(qq: int) -> str:
     return ret[0] if len(ret) == 1 else '[未设置圈名]'
 
 
-def HowTo(s: str):
-    ret = re.search(r"(设置|圈名)(.{0,3})(设置|圈名)", s)
-    return ret.span()[0]+ret.span()[1] if ret != None else 0
+
 
 
 if __name__ == '__main__':

@@ -4,7 +4,8 @@
     "plugin": {
         "OnlineCompile": {
             "process": [
-                "Group","Friend"
+                "Group",
+                "Friend"
             ],
             "id": "9919ec260bc24c2c4eab4534d7df9225",
             "secret": "50419d8f128885d6ba5dc01f32f85aa9fc350e0187ffe21bb8281c5d4c40fae"
@@ -34,17 +35,43 @@
                 "Friend"
             ]
         },
-        "FurName":{
+        "FurName": {
             "process": [
                 "Group"
             ],
-            "prefix": ["!","\uff01"]
+            "prefix": [
+                "!",
+                "！"
+            ]
         },
-        "33":{
+        "33": {
             "process": [
                 "Group"
             ],
-            "prefix": ["!","\uff01"]
+            "prefix": [
+                "!",
+                "\uff01"
+            ]
+        },
+        "keywordAnswer": {
+            "process": [
+                "Group",
+                "Friend"
+            ],
+            "react": [
+                {
+                    "keyword": "我是傻逼",
+                    "respond": "你好!!我也是傻逼！！"
+                },
+                {
+                    "keyword": "我是{name}",
+                    "respond": "你好{name}"
+                },
+                {
+                    "regex": "^((?!\\!|！).)*(设置|圈名)(.{0,3})(设置|圈名)$",
+                    "respond": "发送\n！设置圈名[你的圈名]\n不需要带空格"
+                }
+            ]
         },
         "_": [
             "xx",
