@@ -40,7 +40,7 @@ async def module_listener(event: SayaModuleInstalled):
 async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     from arclet.alconna import Alconna
     message = event.message_chain
-    if len(message[Plain]) == 0 or message.display=="我是谁":
+    if len(message[Plain]) == 0 or ignore(message.display,ReadConfig('keywordAnswer')['ignore']):
         return
     data = ReadConfig('keywordAnswer')
     for i in data['react']:
@@ -73,9 +73,17 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
             continue
 
 
+def ignore(s: str, db: list):
+    for i in db:
+        if 'Regex:' in i and re.search(i.replace('Regex:', ''), s).span() != (0, 0) or s.find(i) == 0:
+            return True
+    return False
+    
+
+
 def replaceMsg(s: str, d: dict):
     for i in d.keys():
-        s=s.replace('{'+i+'}', d[i])
+        s = s.replace('{'+i+'}', d[i])
     return s
 
 
