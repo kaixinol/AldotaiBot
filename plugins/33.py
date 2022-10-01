@@ -12,4 +12,4 @@ channel = Channel.current()
 
 @channel.use(SchedulerSchema(timers.every_minute()))
 async def every_minute_speaking(app: Ariadne):
-    print("114514")
+    pass

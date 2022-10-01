@@ -8,7 +8,8 @@
                 "Friend"
             ],
             "id": "9919ec260bc24c2c4eab4534d7df9225",
-            "secret": "50419d8f128885d6ba5dc01f32f85aa9fc350e0187ffe21bb8281c5d4c40fae"
+            "secret": "50419d8f128885d6ba5dc01f32f85aa9fc350e0187ffe21bb8281c5d4c40fae",
+            "prefix": ["?","？"]
         },
         "E621": {
             "disabled": true,
@@ -50,11 +51,14 @@
             ],
             "prefix": [
                 "!",
-                "\uff01"
+                "！"
             ]
         },
         "keywordAnswer": {
-            "ignore": ["Reg:^((?=\\!|！).)*","我是谁"],
+            "ignore": [
+                "Reg:^((?=\\!|！).)*",
+                "我是谁"
+            ],
             "process": [
                 "Group",
                 "Friend"
@@ -69,10 +73,25 @@
                     "respond": "你好{name}"
                 },
                 {
-                    "regex": "(设置|圈名)(.{0,3})(设置|圈名)$",
+                    "regex": "(设置|圈名)(.{0,3})(设置|圈名)",
                     "respond": "发送\n！设置圈名[你的圈名]\n不需要带空格"
+                },
+                {
+                    "keyword": "不会画画",
+                    "respond": "你好，我也不会！！"
                 }
             ]
+        },
+        "Fursona": {
+            "process": [
+                "Group",
+                "Friend"
+            ],
+            "prefix": [
+                "!",
+                "！"
+            ]
+        
         },
         "_": [
             "xx",

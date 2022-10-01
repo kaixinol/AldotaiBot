@@ -57,7 +57,6 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
                 )
                 return
             if ret.matched == ret.header == True:
-                l.error(ret)
                 await app.send_message(
                     friend,
                     MessageChain(Plain(i['respond'])),
@@ -75,7 +74,8 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
 
 def ignore(s: str, db: list):
     for i in db:
-        if 'Regex:' in i and re.search(i.replace('Regex:', ''), s).span() != (0, 0) or s.find(i) == 0:
+        if 'Reg:' in i and re.search(i.replace('Reg:', ''), s).span() != (0, 0) or s.find(i) == 0:
+            l.debug('Reg:{}\t{},Find:{}'.format('Reg:' in i and re.search(i.replace('Reg:', ''), s).span() != (0, 0),i.replace('Reg:', ''),s.find(i)))
             return True
     return False
     

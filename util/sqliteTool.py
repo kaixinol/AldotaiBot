@@ -1,14 +1,16 @@
 import sqlite3
 import base64
 import emoji
-from  loguru import logger as l
-import os
+from loguru import logger as l
 global dbLink
 dbLink = {}
 
 
 def Decode(s: str):
-    return base64.standard_b64decode(s.encode()).decode()
+    if '.' not in s:
+        return base64.standard_b64decode(s.encode()).decode()
+    else:
+        return s
 
 
 def Encode(s: str):
@@ -21,10 +23,8 @@ def Execute(name: str, s: str) -> dict | str:
 
 
 def Connect(s: str):
-    if not os.path.exists(s.split('/')[0]):
-        os.makedirs(s.split('/')[0])
     if s not in dbLink:
-        dbLink[s] = sqlite3.connect(os.getcwd()+'/'+s)
+        dbLink[s] = sqlite3.connect(s)
 
 
 def Commit(s: str):
@@ -107,4 +107,4 @@ if __name__ == "__main__":
         'QQ', 114514], 'data': {'QQ': 114514, '圈名': Encode('阿斯奇琳')}})
     l.debug(SearchData('1.db', "furry", ['qq', '圈名']))
     l.debug(SearchData('1.db', "furry", {
-          'select': '圈名', 'data': {'qq': 114514}}))
+        'select': '圈名', 'data': {'qq': 114514}}))
