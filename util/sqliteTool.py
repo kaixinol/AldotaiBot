@@ -56,7 +56,7 @@ def UpdateTable(db: str, name: str, struct: dict) -> bool:
 
 
 def CreateTable(db: str, name: str, struct: dict) -> bool:
-    def qParser(n): return {'str': ' TEXT NOT NULL',
+    def qParser(n): return {'str': ' TEXT',
                             'int': ' INT NOT NULL'}[n]
     cmd = f"CREATE TABLE IF NOT EXISTS {name}("+','.join([i+qParser(struct[i])
                                                           for i in struct.keys()])+');'
@@ -99,13 +99,17 @@ def TupleToList(s: list):
 
 if __name__ == "__main__":
     Connect('1.db')
-    CreateTable('1.db', 'furry', {'QQ': 'int', '圈名': 'str'})
+    CreateTable('1.db', 'furry', {'QQ': 'int', '圈名': 'str', '其他': 'str'})
     InsertTable('1.db', 'furry', {'QQ': 114514,
                 '圈名': Encode(emoji.demojize('我测你们🐴'))})
     InsertTable('1.db', 'furry', {'QQ': 114, '圈名': Encode('dcfh')})
     UpdateTable('1.db', 'furry', struct={'select': [
         'QQ', 114514], 'data': {'QQ': 114514, '圈名': Encode('阿斯奇琳')}})
     InsertTable('1.db', 'furry', {'QQ': 114514, '圈名': Encode('我草.jpg')})
+    InsertTable('1.db', 'furry', {'QQ': 666, '圈名': Encode('634')})
     l.debug(SearchData('1.db', "furry", ['qq', '圈名']))
     l.debug(SearchData('1.db', "furry", {
         'select': '圈名', 'data': {'qq': 114514}}))
+    l.debug(SearchData('1.db', "furry", {
+        'select': '其他', 'data': {'qq': 666}}))
+    Commit('1.db')
