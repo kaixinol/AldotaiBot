@@ -1,6 +1,8 @@
 {
     "name": "xxBot",
-    "Master": 3607922630,
+    "master": 3607922630,
+    "ignored group": [],
+    "abuser": [],
     "plugin": {
         "OnlineCompile": {
             "process": [
@@ -97,6 +99,5 @@
             "xx",
             "xxx"
         ]
-    },
-    "abuser": []
+    }
 }

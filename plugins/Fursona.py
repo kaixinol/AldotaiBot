@@ -30,6 +30,7 @@ from plugins.FurName import getName
 import os
 import json
 import wget
+from arclet.alconna import Alconna
 
 sys.path.append('../')
 
@@ -43,12 +44,11 @@ async def module_listener(event: SayaModuleInstalled):
 
 @channel.use(ListenerSchema(listening_events=parseMsgType(ReadConfig('Fursona'))))
 async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
-    from arclet.alconna import Alconna
     message = event.message_chain
     ret = Alconna("上传设定", headers=parsePrefix(
         ReadConfig('Fursona'))).parse(message[Plain])
-    imgList = []
     if ret.matched:
+        imgList = []
         if getName(event.sender.id) != "[未设置圈名]":
             for img in message.get(Image):
                 if img.width > 2048 or img.height > 1080 or img.size/(1024*1024) > 3:
@@ -58,20 +58,52 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
                     )
                     return
                 else:
-                    wget.download(img.url, './db/{}'.format(img.id),bar=None)
+                    if not os.path.exists('./db/{}'.format(img.id)):
+                        wget.download(
+                            img.url, './db/{}'.format(img.id), bar=None)
                     imgList.append(img.id)
                     l.debug('./db/{}'.format(img.id))
             Connect('./db/furryData.db')
             CreateTable('./db/furryData.db', 'fursona',
                         {'qq': 'int', 'imgJson': 'str'})
-            # TODO :img id去重
             UpdateTable('./db/furryData.db', 'fursona', struct={'select': [
                 'qq', event.sender.id], 'data': {'qq': event.sender.id, 'imgJson': json.dumps(imgList)}})
+            l.debug('done')
             l.debug(SearchData('./db/furryData.db', "fursona", {
                 'select': 'imgJson', 'data': {'qq':  event.sender.id}}))
+            Commit('./db/furryData.db')
         else:
             await app.send_message(
                 friend,
                 MessageChain(Plain("请先设置圈名！")),
             )
             return
+
+
+@channel.use(ListenerSchema(listening_events=parseMsgType(ReadConfig('Fursona'))))
+async def fursona(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
+    message = event.message_chain
+    ret = Alconna("设定", headers=parsePrefix(
+        ReadConfig('Fursona'))).parse(message[Plain])
+    if ret.matched and  getName(event.sender.id) != "[未设置圈名]":
+        Connect('./db/furryData.db')
+        data=SearchData('./db/furryData.db', "fursona", {
+            'select': 'imgJson', 'data': {'qq':  event.sender.id}})
+        if data==[]:
+            await app.send_message(
+            friend,
+            MessageChain(Plain("你还没有上传设定")),
+        )
+            return
+        rzt=json.loads(data[0]) 
+        await app.send_message(
+            friend,
+            MessageChain([Image(path='./db/'+i) for i in rzt]),
+        )
+
+    elif ret.matched:
+        await app.send_message(
+            friend,
+            MessageChain(Plain("请先设置圈名！")),
+        )
+        return

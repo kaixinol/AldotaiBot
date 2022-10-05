@@ -105,6 +105,7 @@ if __name__ == "__main__":
     InsertTable('1.db', 'furry', {'QQ': 114, '圈名': Encode('dcfh')})
     UpdateTable('1.db', 'furry', struct={'select': [
         'QQ', 114514], 'data': {'QQ': 114514, '圈名': Encode('阿斯奇琳')}})
+    InsertTable('1.db', 'furry', {'QQ': 114514, '圈名': Encode('我草.jpg')})
     l.debug(SearchData('1.db', "furry", ['qq', '圈名']))
     l.debug(SearchData('1.db', "furry", {
         'select': '圈名', 'data': {'qq': 114514}}))
