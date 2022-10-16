@@ -1,115 +1,132 @@
 import sqlite3
 import base64
-import emoji
 from loguru import logger as l
-global dbLink
-dbLink = {}
 
+pool={}
+class sqlLink:
+    def __init__(self, path: str, b64: bool = False):
+        self.b64 = b64
+        if path not in pool:
+         self.link = sqlite3.connect(path)
+         pool[path]=self.link 
+        else:
+         self.link=pool[path]
 
-def Decode(s: str):
-    if '.' not in s:
-        return base64.standard_b64decode(s.encode()).decode()
-    else:
-        return s
+    @l.catch
+    def Execute(self, s: str) -> sqlite3.Cursor:
+        l.info(f"[SQL]\t{s}")
+        return self.link.cursor().execute(s)
+    
+    def CommitAll():
+        for i in pool:
+            pool[i].commit()
 
+    def Fetchone(s: sqlite3.Cursor) -> tuple:
+        return s.fetchone()
 
-def Encode(s: str):
-    return base64.standard_b64encode(s.encode()).decode()
+    def Fetchall(s: sqlite3.Cursor) -> dict | list:
+        return s.fetchall()
 
+    def SearchData(self, table: str, column: list | dict | str = '*', require: type = list):
+        if type(column) == list:
+            cmd = f"SELECT {', '.join(column)} FROM {table};"
+        elif type(column) == str:
+            cmd = f"SELECT {column} FROM {table};"
+        elif type(column) == dict:
+            cmd = f"SELECT {'*' if 'select' not in column else column['select']} FROM {table} WHERE {list(column['data'].keys())[0]} LIKE '{list(column['data'].values())[0]}';"
+        if require == list:
+            return self.Execute(cmd) if not self.b64 else self.__decodeb64(self.Execute(cmd))
+        else:
+            return self.parseDataToDict((self.Execute(cmd) if not self.b64 else self.__decodeb64(self.Execute(cmd))), column)
 
-def Execute(name: str, s: str) -> dict | str:
-    l.info(f"[SQL]\t{s}")
-    return dbLink[name].cursor().execute(s)
+    def InsertTable(self, name: str, cmd: dict) -> bool:
+        ls = [(k, v) for k, v in cmd.items() if v is not None]
+        if not self.b64:
+            sentence = f'INSERT INTO  {name} (' + ','.join([i[0] for i in ls]) +\
+                ') VALUES (' + ','.join(repr(i[1]) for i in ls) + ');'
+        else:
+            sentence = f'INSERT INTO  {name} (' + ','.join([i[0] for i in ls]) +\
+                ') VALUES (' + ','.join((repr(i[1]) if type(i[1]) != str else "'" +
+                                         self.__encode(i[1])+"'") for i in ls) + ');'
 
+        self.Execute(sentence)
 
-def Connect(s: str):
-    if s not in dbLink:
-        dbLink[s] = sqlite3.connect(s)
+    def CreateTable(self, name: str, struct: dict) -> bool:
+        def qParser(n): return {str: ' TEXT',
+                                int: ' INT NOT NULL'}[n]
+        cmd = f"CREATE TABLE IF NOT EXISTS {name}("+','.join([i+qParser(struct[i])
+                                                              for i in struct.keys()])+');'
+        self.Execute(cmd)
+    @staticmethod
+    def __decode(s: str):
+        return base64.standard_b64decode(
+            s.encode()).decode()
+    @staticmethod
+    def __encode(s: str):
+        return base64.standard_b64encode(
+            s.encode()).decode()
 
-
-def Commit(s: str):
-    dbLink[s].commit()
-
-
-def CloseAll():
-    for i in dbLink.keys():
-        dbLink[i].commit()
-        dbLink[i].close()
-    dbLink = {}
-
-
-def InsertTable(db: str, name: str, cmd: dict) -> bool:
-    ls = [(k, v) for k, v in cmd.items() if v is not None]
-    sentence = f'INSERT INTO  {name} (' + ','.join([i[0] for i in ls]) +\
-        ') VALUES (' + ','.join(repr(i[1]) for i in ls) + ');'
-    try:
-        Execute(db, sentence)
-        return True
-    except:
-        return False
-
-
-def UpdateTable(db: str, name: str, struct: dict) -> bool:
-    cmd = f"DELETE FROM {name} WHERE {struct['select'][0]} = {struct['select'][1]};"
-    Execute(db, cmd)
-    InsertTable(db, name, struct['data'])
-
-
-def CreateTable(db: str, name: str, struct: dict) -> bool:
-    def qParser(n): return {'str': ' TEXT',
-                            'int': ' INT NOT NULL'}[n]
-    cmd = f"CREATE TABLE IF NOT EXISTS {name}("+','.join([i+qParser(struct[i])
-                                                          for i in struct.keys()])+');'
-    Execute(db, cmd)
-
-
-def SearchData(db: str, table: str, column: list | dict | str = '*') -> list | dict:
-    if type(column) == list:
-        cmd = f"SELECT {', '.join(column)} FROM {table};"
-    elif type(column) == str:
-        cmd = f"SELECT {column} FROM {table};"
-    elif type(column) == dict:
-        cmd = f"SELECT {'*' if 'select' not in column else column['select']} FROM {table} WHERE {list(column['data'].keys())[0]} LIKE '{list(column['data'].values())[0]}';"
-        return TupleToList(Execute(db, cmd))
-    return parseDataToDict(Execute(db, cmd), column)
-
-
-def parseDataToDict(data: list, key: list | str) -> dict:
-    ret = {}
-    if not type(key) == str:
+    def __decodeb64(self, data: list):
+        rzt = []
         for i in data:
-            for num in range(len(key)):
-                ret[key[num]] = [] if key[num] not in ret else ret[key[num]]
-                ret[key[num]].append(emoji.emojize(
-                    Decode(i[num])) if type(i[num]) == str else i[num])
-        return ret
-    else:
-        return TupleToList(data)
-
-
-def TupleToList(s: list):
-    ret2 = []
-    for i in s:
-        if type(i) == tuple:
+            rztB = []
             for ii in i:
-                ret2.append(emoji.emojize(
-                    Decode(ii)) if type(ii) == str else ii)
-    return ret2
+                rztB.append(self.__decode(ii) if type(ii) == str else ii)
+            rzt.append(rztB)
+        return rzt
+    @staticmethod
+    def ToPureList(l:list):
+        ret=[]
+        for ii in l:
+            for iii in ii:
+                ret.append(iii)
+        return ret
+    @staticmethod
+    def parseDataToDict(data: list, key: list | str) -> dict:
+        ret = {}
+        if not type(key) == str:
+            for i in data:
+                for num in range(len(key)):
+                    ret[key[num]] = [] if key[num] not in ret else ret[key[num]]
+                    ret[key[num]].append(i[num])
+            return ret
+        else:
+            return data
+
+    def UpdateTable(self, name: str, struct: dict) -> bool:
+        cmd = f"DELETE FROM {name} WHERE {struct['select'][0]} = {struct['select'][1]};"
+        self.Execute(cmd)
+        self.InsertTable(name, struct['data'])
 
 
 if __name__ == "__main__":
-    Connect('1.db')
-    CreateTable('1.db', 'furry', {'QQ': 'int', '圈名': 'str', '其他': 'str'})
-    InsertTable('1.db', 'furry', {'QQ': 114514,
-                '圈名': Encode(emoji.demojize('我测你们🐴'))})
-    InsertTable('1.db', 'furry', {'QQ': 114, '圈名': Encode('dcfh')})
-    UpdateTable('1.db', 'furry', struct={'select': [
-        'QQ', 114514], 'data': {'QQ': 114514, '圈名': Encode('阿斯奇琳')}})
-    InsertTable('1.db', 'furry', {'QQ': 114514, '圈名': Encode('我草.jpg')})
-    InsertTable('1.db', 'furry', {'QQ': 666, '圈名': Encode('634')})
-    l.debug(SearchData('1.db', "furry", ['qq', '圈名']))
-    l.debug(SearchData('1.db', "furry", {
-        'select': '圈名', 'data': {'qq': 114514}}))
-    l.debug(SearchData('1.db', "furry", {
-        'select': '其他', 'data': {'qq': 666}}))
-    Commit('1.db')
+    l.warning('Created a database whose strings are all base64 encoded')
+    x = sqlLink('test1.db', b64=True)
+    x.CreateTable('furry', {'QQ': int, '圈名': str, '其他': str})
+    x.InsertTable('furry', {'QQ': 114514,
+                            '圈名': '测试圈名'})
+    x.InsertTable('furry', {'QQ': 114, '圈名': 'dcfh'})
+    l.debug(x.SearchData("furry", ['QQ', '圈名', '其他'], require=dict))
+    l.debug(x.ToPureList(x.SearchData("furry", {
+        'select': '圈名', 'data': {'qq': 114514}})))
+    x.link.commit()
+    x.link.close()
+    l.warning('Created a database whose strings are all plaintext')
+    x = sqlLink('test2.db')
+    x.CreateTable('furry', {'QQ': int, '圈名': str, '其他': str})
+    x.InsertTable('furry', {'QQ': 114514,
+                            '圈名': '测试圈名'})
+    x.UpdateTable('furry', {'select': [
+        'QQ', 114514], 'data': {'QQ': 114514, '圈名': '阿斯奇琳'}})
+    x.InsertTable('furry', {'QQ': 114514,
+                            '圈名': '测试圈名'})
+    l.debug(x.SearchData("furry", ['QQ', '圈名'], require=dict))
+    l.debug(x.ToPureList(
+        x.SearchData(
+            "furry", {
+        'select': '圈名', 'data': {'qq': 114514}}
+        )
+        )
+        )
+    x.link.commit()
+    x.link.close()

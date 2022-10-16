@@ -22,7 +22,7 @@ from graia.ariadne.message.element import (
 )
 from util.initializer import *
 from util.parseTool import *
-from util.sqliteTool import *
+from util.sqliteTool import sqlLink
 import re
 import sys
 from loguru import logger as l
@@ -63,15 +63,15 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
                             img.url, './db/{}'.format(img.id), bar=None)
                     imgList.append(img.id)
                     l.debug('./db/{}'.format(img.id))
-            Connect('./db/furryData.db')
-            CreateTable('./db/furryData.db', 'fursona',
-                        {'qq': 'int', 'imgJson': 'str'})
-            UpdateTable('./db/furryData.db', 'fursona', struct={'select': [
+            x = sqlLink('./db/furryData.db')
+            x.CreateTable('fursona',
+                          {'qq': int, 'imgJson': str})
+            x.UpdateTable('fursona', struct={'select': [
                 'qq', event.sender.id], 'data': {'qq': event.sender.id, 'imgJson': json.dumps(imgList)}})
             l.debug('done')
-            l.debug(SearchData('./db/furryData.db', "fursona", {
+            l.debug(x.SearchData("fursona", {
                 'select': 'imgJson', 'data': {'qq':  event.sender.id}}))
-            Commit('./db/furryData.db')
+            x.path.commit()
         else:
             await app.send_message(
                 friend,
@@ -85,17 +85,17 @@ async def fursona(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     message = event.message_chain
     ret = Alconna("设定", headers=parsePrefix(
         ReadConfig('Fursona'))).parse(message[Plain])
-    if ret.matched and  getName(event.sender.id) != "[未设置圈名]":
-        Connect('./db/furryData.db')
-        data=SearchData('./db/furryData.db', "fursona", {
+    if ret.matched and getName(event.sender.id) != "[未设置圈名]":
+        x=sqlLink('./db/furryData.db')
+        data = x.SearchData('./db/furryData.db', "fursona", {
             'select': 'imgJson', 'data': {'qq':  event.sender.id}})
-        if data==[]:
+        if data == []:
             await app.send_message(
-            friend,
-            MessageChain(Plain("你还没有上传设定")),
-        )
+                friend,
+                MessageChain(Plain("你还没有上传设定")),
+            )
             return
-        rzt=json.loads(data[0]) 
+        rzt = json.loads(data[0])
         await app.send_message(
             friend,
             MessageChain([Image(path='./db/'+i) for i in rzt]),

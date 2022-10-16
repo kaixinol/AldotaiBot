@@ -22,20 +22,21 @@ saya = create(Saya)
 configJson = js.ReadJson('config.json')
 
 l.debug(str([ii for ii in list(configJson['plugin'].keys())[:-1]
-              if  'disabled' not in configJson['plugin'][ii] or not configJson['plugin'][ii]['disabled']]))
+             if 'disabled' not in configJson['plugin'][ii] or not configJson['plugin'][ii]['disabled']]))
 
 sys.path.append('plugins')
 
 with saya.module_context():
     for i in [ii for ii in list(configJson['plugin'].keys())[:-1]
-              if  'disabled' not in configJson['plugin'][ii] or not configJson['plugin'][ii]['disabled']]:
+              if 'disabled' not in configJson['plugin'][ii] or not configJson['plugin'][ii]['disabled']]:
         saya.require(f"plugins.{i}")
 
 app = Ariadne(
-    config(
-        verify_key="ServiceVerifyKey",  # 填入 VerifyKey
-        account=192627435,  # 你的机器人的 qq 号
-    ),
+    config(192627435,  # 你的机器人的 qq 号
+           "ServiceVerifyKey",  # 填入 VerifyKey
+           HttpClientConfig('http://127.0.0.1:8083/'),
+           WebsocketClientConfig('http://127.0.0.1:8081'),
+           ),
 )
 
 
