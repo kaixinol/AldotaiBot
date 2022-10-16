@@ -130,3 +130,6 @@ dmypy.json
 
 util/*.db
 *.db
+db/*.mirai
+db/*.db-journal
+db/*.db

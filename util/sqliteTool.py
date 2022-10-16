@@ -3,6 +3,7 @@ import base64
 from loguru import logger as l
 
 pool={}
+@l.catch
 class sqlLink:
     def __init__(self, path: str, b64: bool = False):
         self.b64 = b64
@@ -12,7 +13,6 @@ class sqlLink:
         else:
          self.link=pool[path]
 
-    @l.catch
     def Execute(self, s: str) -> sqlite3.Cursor:
         l.info(f"[SQL]\t{s}")
         return self.link.cursor().execute(s)

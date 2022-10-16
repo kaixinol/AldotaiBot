@@ -30,8 +30,8 @@ from plugins.FurName import getName
 import os
 import json
 import wget
-from arclet.alconna import Alconna
-
+from arclet.alconna import Alconna, Option, Subcommand, Args
+import base64
 sys.path.append('../')
 
 
@@ -65,13 +65,11 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
                     l.debug('./db/{}'.format(img.id))
             x = sqlLink('./db/furryData.db')
             x.CreateTable('fursona',
-                          {'qq': int, 'imgJson': str})
+                          {'qq': int, 'imgJson': str, 'desc': str})
             x.UpdateTable('fursona', struct={'select': [
                 'qq', event.sender.id], 'data': {'qq': event.sender.id, 'imgJson': json.dumps(imgList)}})
-            l.debug('done')
             l.debug(x.SearchData("fursona", {
                 'select': 'imgJson', 'data': {'qq':  event.sender.id}}))
-            x.path.commit()
         else:
             await app.send_message(
                 friend,
@@ -86,9 +84,11 @@ async def fursona(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     ret = Alconna("设定", headers=parsePrefix(
         ReadConfig('Fursona'))).parse(message[Plain])
     if ret.matched and getName(event.sender.id) != "[未设置圈名]":
-        x=sqlLink('./db/furryData.db')
-        data = x.SearchData('./db/furryData.db', "fursona", {
-            'select': 'imgJson', 'data': {'qq':  event.sender.id}})
+        x = sqlLink('./db/furryData.db')
+        data = x.ToPureList(x.SearchData("fursona", {
+            'select': 'imgJson', 'data': {'qq':  event.sender.id}}))
+        desc = x.ToPureList(x.SearchData("fursona", {
+            'select': 'desc', 'data': {'qq':  event.sender.id}}))[0]
         if data == []:
             await app.send_message(
                 friend,
@@ -98,7 +98,8 @@ async def fursona(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
         rzt = json.loads(data[0])
         await app.send_message(
             friend,
-            MessageChain([Image(path='./db/'+i) for i in rzt]),
+            MessageChain([Image(path='./db/'+i) for i in rzt] +
+                         [Plain('') if desc==None else Plain(decode(desc)+'\n')]+[Plain(f'主人：🐾{getName(event.sender.id)}({event.sender.id})🐾')]),
         )
 
     elif ret.matched:
@@ -107,3 +108,26 @@ async def fursona(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
             MessageChain(Plain("请先设置圈名！")),
         )
         return
+
+
+@channel.use(ListenerSchema(listening_events=parseMsgType(ReadConfig('FurName'))))
+async def addDesc(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
+    message = event.message_chain
+    ret = Alconna("添加介绍{desc}", headers=parsePrefix(
+        ReadConfig('Fursona'))).parse(message[Plain])
+    if ret.matched and getName(event.sender.id) != "[未设置圈名]":
+        x = sqlLink('./db/furryData.db')
+        x.Execute(f'UPDATE fursona SET desc = \'{encode(ret.header["desc"])}\' WHERE qq={event.sender.id};')
+  
+    elif ret.matched:
+        await app.send_message(
+            friend,
+            MessageChain(Plain("请先设置圈名！")),
+        )
+        return
+def decode(s: str):
+        return base64.standard_b64decode(
+            s.encode()).decode()
+def encode(s: str):
+        return base64.standard_b64encode(
+            s.encode()).decode()

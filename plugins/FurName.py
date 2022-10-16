@@ -112,7 +112,6 @@ def getName(qq: int) -> str:
     x.CreateTable('name', {'qq': int, 'name': str})
     ret = x.SearchData('name', {
         'select': 'name', 'data': {'qq': qq}})
-    l.warning(ret)
     return x.ToPureList(ret)[0] if len(ret) == 1 else '[未设置圈名]'
 
 
