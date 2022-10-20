@@ -60,7 +60,7 @@ CPU 当前频率：{psutil.cpu_freq().current}MHz\n
 '''
     return m
 
-@channel.use(ListenerSchema(listening_events=parseMsgType(ReadConfig('resmonitor'))))
+@channel.use(ListenerSchema(listening_events=parseMsgType('resmonitor')))
 async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     message = event.message_chain
     if len(message[Plain])==0:

@@ -42,11 +42,11 @@ async def module_listener(event: SayaModuleInstalled):
     print(f"{event.module}::模块加载成功!!!")
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType(ReadConfig('Fursona'))))
+@channel.use(ListenerSchema(listening_events=parseMsgType('Fursona')))
 async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     message = event.message_chain
     ret = Alconna("上传设定", headers=parsePrefix(
-        ReadConfig('Fursona'))).parse(message[Plain])
+        'Fursona')).parse(message[Plain])
     if ret.matched:
         imgList = []
         if getName(event.sender.id) != "[未设置圈名]":
@@ -78,11 +78,11 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
             return
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType(ReadConfig('Fursona'))))
+@channel.use(ListenerSchema(listening_events=parseMsgType('Fursona')))
 async def fursona(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     message = event.message_chain
     ret = Alconna("设定", headers=parsePrefix(
-        ReadConfig('Fursona'))).parse(message[Plain])
+        'Fursona')).parse(message[Plain])
     if ret.matched and getName(event.sender.id) != "[未设置圈名]":
         x = sqlLink('./db/furryData.db')
         data = x.ToPureList(x.SearchData("fursona", {
@@ -110,11 +110,11 @@ async def fursona(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
         return
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType(ReadConfig('FurName'))))
+@channel.use(ListenerSchema(listening_events=parseMsgType('FurName')))
 async def addDesc(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     message = event.message_chain
     ret = Alconna("添加介绍{desc}", headers=parsePrefix(
-        ReadConfig('Fursona'))).parse(message[Plain])
+        'Fursona')).parse(message[Plain])
     if ret.matched and getName(event.sender.id) != "[未设置圈名]":
         x = sqlLink('./db/furryData.db')
         x.Execute(f'UPDATE fursona SET desc = \'{encode(ret.header["desc"])}\' WHERE qq={event.sender.id};')

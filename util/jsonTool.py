@@ -1,6 +1,6 @@
 import json
 from loguru import logger as l
-def ReadJson(n: str)->dict | str:
+def ReadJson(n: str)->dict:
     try:
         with open(n, "r",encoding='utf-8') as load_f:
             load_dict = json.load(load_f)

@@ -36,7 +36,7 @@ async def module_listener(event: SayaModuleInstalled):
     print(f"{event.module}::模块加载成功!!!")
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType(ReadConfig('keywordAnswer'))))
+@channel.use(ListenerSchema(listening_events=parseMsgType('keywordAnswer')))
 async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     from arclet.alconna import Alconna
     message = event.message_chain
@@ -47,7 +47,7 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
         OK = False
         if 'regex' not in i:
             ret = Alconna(i['keyword'], headers=parsePrefix(
-                ReadConfig('keywordAnswer'))).parse(message[Plain])
+                'keywordAnswer')).parse(message[Plain])
             if not ret.matched:
                 continue
             if ret.matched and ret.header != True:

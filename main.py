@@ -32,7 +32,7 @@ with saya.module_context():
         saya.require(f"plugins.{i}")
 
 app = Ariadne(
-    config(192627435,  # 你的机器人的 qq 号
+    config(3056337852,  # 你的机器人的 qq 号
            "ServiceVerifyKey",  # 填入 VerifyKey
            HttpClientConfig('http://127.0.0.1:8083/'),
            WebsocketClientConfig('http://127.0.0.1:8081'),

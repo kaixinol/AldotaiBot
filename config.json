@@ -95,6 +95,17 @@
             ]
         
         },
+        "YunHei": {
+            "process": [
+                "Group",
+                "Friend"
+            ],
+            "prefix": [
+                "!",
+                "！"
+            ]
+        
+        },
         "_": [
             "xx",
             "xxx"

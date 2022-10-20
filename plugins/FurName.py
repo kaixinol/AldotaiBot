@@ -37,14 +37,14 @@ async def module_listener(event: SayaModuleInstalled):
     print(f"{event.module}::模块加载成功!!!")
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType(ReadConfig('FurName'))))
+@channel.use(ListenerSchema(listening_events=parseMsgType('FurName')))
 async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     from arclet.alconna import Alconna
     message = event.message_chain
     if len(message[Plain]) == 0:
         return
     ret = Alconna("设置圈名{name}", headers=parsePrefix(
-        ReadConfig('FurName'))).parse(message[Plain])
+        'FurName')).parse(message[Plain])
     if ret.matched:
         await app.send_message(
             friend,

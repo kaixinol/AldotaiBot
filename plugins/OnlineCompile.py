@@ -38,7 +38,7 @@ async def module_listener(event: SayaModuleInstalled):
     print(f"{event.module}::模块加载成功!!!")
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType(ReadConfig('resmonitor'))))
+@channel.use(ListenerSchema(listening_events=parseMsgType('resmonitor')))
 async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     message = event.message_chain
     from arclet.alconna import Alconna
