@@ -34,7 +34,7 @@
 <details>
 <summary>无头插件</summary>
 
-- [ ] 关键词屏蔽 <a href="#fn:注" id="fnref:注" title="See footnote" class="footnote">1</a>
+- [ ] 关键词屏蔽 <sup>1</sup>
 - jsonTool
 - qliteTool
 - initializer
