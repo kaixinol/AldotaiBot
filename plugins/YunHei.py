@@ -101,7 +101,6 @@ async def IsMemberBlacklisted(qq: list):
         for i in qqList:
             keywords = {"qq": '\n'.join([str(j) for j in i])}
             url = "https://yunhei.qimeng.fun/Piliang.php"
-            await asyncio.sleep(len(i)/200)
             async with aiohttp.ClientSession() as session:
                 async with session.post(url,
                                     data=keywords) as resp:
@@ -109,7 +108,7 @@ async def IsMemberBlacklisted(qq: list):
             txt = html2text.html2text(r)
             data+=re.sub(r'√\d{3,15}(未记录)?', '', txt[txt.find("---------查询结果---------")+22: txt.find("------------------------------")-2]).strip().replace('×', '⚠️ ')
             data+='\n'
-        return data
+        return data.replace('\n\n','\n')
 
 
 def chunk(lst, n):
@@ -117,7 +116,10 @@ def chunk(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
-@channel.use(ListenerSchema(listening_events=parseMsgType('YunHei')))
+@channel.use(ListenerSchema(
+    listening_events=parseMsgType('YunHei'),
+    inline_dispatchers=[CoolDown(60*60)],
+))
 async def GroupFind(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     message = event.message_chain
     qq = Alconna("查群云黑", headers=parsePrefix(
@@ -128,7 +130,7 @@ async def GroupFind(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     if len(qqMember) > 200:
         await app.send_message(
             friend,
-            MessageChain(f'数据较多……需要等待{len(qqMember)/200}秒'),
+            MessageChain(f'数据较多……需要等待{2*len(qqMember)/200}秒'),
         )
     data = await IsMemberBlacklisted([i.id for i in qqMember])
     if len(data) == 0:
@@ -143,5 +145,14 @@ async def GroupFind(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
             MessageChain(data),
         )
 
+async def apiIsBlackListed():
+        pass
+        keywords = {"qq": 1}
+        url = "https://yunhei.qimeng.fun/Piliang.php"
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url,
+                                    data=keywords) as resp:
+                r = await resp.json()
+        txt = html2text.html2text(r)
 
 # print(IsMemberBlacklisted([35464, 634132164, 643161, 16541365, 2352449583]))
