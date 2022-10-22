@@ -15,12 +15,10 @@
 - [x] *在线编译* 
 - [x] 云黑
 - [x] 设定分享
-- [ ] 群员警告
 - [ ] Furry图片(E621)
 - [ ] Furry图片(兽云祭)
 - [ ] 绒狸
 - [ ] 每日一兽
-- [ ] 随机meme动画 
 - [x] 圈名
 - [x] 接话
 - [ ] 自动广播
@@ -34,7 +32,7 @@
 <details>
 <summary>无头插件</summary>
 
-- [ ] 关键词屏蔽 <sup>1</sup>
+- [ ] 关键词屏蔽 <sup>[1](#fn:注)</sup>
 - jsonTool
 - qliteTool
 - initializer
