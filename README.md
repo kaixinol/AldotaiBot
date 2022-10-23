@@ -50,4 +50,6 @@
 
 >...以及更多?（可以联系作者进行定制，本机器人大部分功能只是按照凯叽bot功能的高级复刻）
 
-<div class="footnotes"><hr><ol><li id="fn:注"> 目前仅有<code>在线编译</code>和<code>设定分享</code>可选使用 <a href="#fnref:注" title="Return to article" class="reversefootnote">↩</a></li></ol></div></div>
+----
+
+<li id="fn:注"> 目前仅有<code>在线编译</code>和<code>设定分享</code>可选使用</il>
