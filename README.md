@@ -16,7 +16,7 @@
 <li>[x] <em>在线编译</em></li>
 <li>[x] 云黑</li>
 <li>[x] 设定分享</li>
-<li>[ ] Furry图片(E621)</li>
+<li>[x] Furry图片(E621)</li>
 <li>[ ] Furry图片(兽云祭)</li>
 <li>[ ] 绒狸</li>
 <li>[ ] 每日一兽</li>
