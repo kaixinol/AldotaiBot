@@ -19,7 +19,7 @@ l.add(os.getcwd()+"/log/{time: YYYY-MM-DD}.log", rotation="00:00", level="INFO",
       filter=lambda rec: "graia" not in rec["name"] and "launart" not in rec["name"])
 
 saya = create(Saya)
-configJson = js.ReadJson('config.json')
+configJson = js.ReadJson('config.json5')
 
 l.debug(str([ii for ii in list(configJson['plugin'].keys())[:-1]
              if 'disabled' not in configJson['plugin'][ii] or not configJson['plugin'][ii]['disabled']]))

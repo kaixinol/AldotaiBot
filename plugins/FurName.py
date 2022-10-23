@@ -66,14 +66,6 @@ async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
                 MessageChain(Plain(f"你是{name}!")),
             )
             return
-    ret = Alconna("教我画画").parse(message[Plain])
-    if ret.matched:
-        await app.send_message(
-            friend,
-            MessageChain(Plain(f"{getName(event.sender.id)}教我画画！！")),
-        )
-        return
-
 
 @l.catch
 def addName(n: str, qq: int) -> str:

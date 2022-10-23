@@ -21,11 +21,14 @@ from graia.ariadne.message.element import (
     MarketFace,
 )
 from util.initializer import *
-from util.parseTool import *
+from util.parseTool import parsePrefix
+from util.parseTool import parseMsgType
 import re
 import sys
 from loguru import logger as l
 import os
+from plugins.FurName import getName
+
 sys.path.append('../')
 
 
@@ -40,53 +43,38 @@ async def module_listener(event: SayaModuleInstalled):
 async def setu(app: Ariadne, friend: Friend | Group,  event: MessageEvent):
     from arclet.alconna import Alconna
     message = event.message_chain
-    if len(message[Plain]) == 0 or ignore(message.display,ReadConfig('keywordAnswer')['ignore']):
+    if len(message[Plain]) == 0 or ignore(message.display, ReadConfig('keywordAnswer')['ignore']):
         return
     data = ReadConfig('keywordAnswer')
+    ret = ''
+
     for i in data['react']:
-        OK = False
-        if 'regex' not in i:
-            ret = Alconna(i['keyword'], headers=parsePrefix(
-                'keywordAnswer')).parse(message[Plain])
-            if not ret.matched:
-                continue
-            if ret.matched and ret.header != True:
+        if i[0].startswith('Alconna:') and not ignore(message.display, ReadConfig('keywordAnswer')['alconna']):
+            t = i[0].replace('Alconna:', '')
+            Ret = Alconna(t).parse(message.display)
+            if Ret.matched:
                 await app.send_message(
                     friend,
-                    MessageChain(Plain(replaceMsg(i['respond'], ret.header))),
+                    MessageChain(Plain(replaceMsg(i[1], Ret.header))),
                 )
-                return
-            if ret.matched == ret.header == True:
-                await app.send_message(
-                    friend,
-                    MessageChain(Plain(i['respond'])),
-                )
-                return
-        else:
-            if reg(message.display, i['regex']):
-                await app.send_message(
-                    friend,
-                    MessageChain(Plain(i['respond'])),
-                )
-                return
-            continue
+        if not i[0].startswith('Alconna:') and eval(i[0], globals(), locals()):
+            msg = eval(i[1], globals(), locals())
+            await app.send_message(
+                friend,
+                MessageChain(Plain(msg)),
+            )
 
 
 def ignore(s: str, db: list):
     for i in db:
         if 'Reg:' in i and re.search(i.replace('Reg:', ''), s).span() != (0, 0) or s.find(i) == 0:
-            l.debug('Reg:{}\t{},Find:{}'.format('Reg:' in i and re.search(i.replace('Reg:', ''), s).span() != (0, 0),i.replace('Reg:', ''),s.find(i)))
+            l.debug('Reg:{}\t{},Find:{}'.format('Reg:' in i and re.search(
+                i.replace('Reg:', ''), s).span() != (0, 0), i.replace('Reg:', ''), s.find(i)))
             return True
     return False
-    
 
 
 def replaceMsg(s: str, d: dict):
     for i in d.keys():
         s = s.replace('{'+i+'}', d[i])
     return s
-
-
-def reg(s: str, reg: str):
-    ret = re.search(reg, s)
-    return True if ret != None else False

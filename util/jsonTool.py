@@ -1,4 +1,4 @@
-import json
+import pyjson5 as json 
 from loguru import logger as l
 def ReadJson(n: str)->dict:
     try:
