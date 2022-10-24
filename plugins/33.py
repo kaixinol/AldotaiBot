@@ -8,7 +8,9 @@ from graia.ariadne.event.message import GroupMessage, FriendMessage, MessageEven
 from graia.ariadne.app import Ariadne
 from graia.saya import Saya, Channel
 from graia.saya.event import SayaModuleInstalled
+
 channel = Channel.current()
+
 
 @channel.use(SchedulerSchema(timers.every_minute()))
 async def every_minute_speaking(app: Ariadne):
