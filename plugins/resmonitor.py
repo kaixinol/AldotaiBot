@@ -57,14 +57,13 @@ async def module_listener(event: SayaModuleInstalled):
 
 async def msg() -> str:
     GB = 1024 * 1024 * 1024
-    m = f"""
+    return f"""
 CPU名称：{await get_processor_name()}\n
 CPU利用率：{psutil.cpu_percent(interval=1)}%\n
 CPU 当前频率：{psutil.cpu_freq().current}MHz\n
-可用内存：{round(psutil.virtual_memory().available/GB,1)}GB\n
-可用磁盘容量：{round(psutil.disk_usage("/").free/GB,1)}GB
+可用内存：{round(psutil.virtual_memory().available / GB, 1)}GB\n
+可用磁盘容量：{round(psutil.disk_usage("/").free / GB, 1)}GB
 """
-    return m
 
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("resmonitor")))

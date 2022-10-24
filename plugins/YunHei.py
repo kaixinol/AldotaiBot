@@ -180,7 +180,6 @@ async def GroupFind(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
 
 async def apiIsBlackListed():
-    pass
     keywords = {"qq": 1}
     url = "https://yunhei.qimeng.fun/Piliang.php"
     async with aiohttp.ClientSession() as session:
