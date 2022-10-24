@@ -40,12 +40,12 @@ class sqlLink:
         elif type(column) == dict:
             cmd = f"SELECT {'*' if 'select' not in column else column['select']} FROM {table} WHERE {list(column['data'].keys())[0]} LIKE '{list(column['data'].values())[0]}';"
         if require == list:
-            return self.__decodeb64(self.Execute(cmd)) if self.b64 else self.Execute(cmd)
+            return (
+                self.__decodeb64(self.Execute(cmd)) if self.b64 else self.Execute(cmd)
+            )
         else:
             return self.parseDataToDict(
-                self.__decodeb64(self.Execute(cmd))
-                if self.b64
-                else self.Execute(cmd),
+                self.__decodeb64(self.Execute(cmd)) if self.b64 else self.Execute(cmd),
                 column,
             )
 

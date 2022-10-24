@@ -114,6 +114,12 @@
             ],
         },
         welcome: {},
+        EverydayFurry: {
+            process: [
+                'Group',
+                'Friend',
+            ]
+        },
         e621: {
             username: 'krawini',
             secret: 'jtEwW9fouujoaTAE8dnQm2NQ',

@@ -102,7 +102,9 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                 )
             )
             desc = x.ToPureList(
-                x.SearchData("fursona", {"select": "desc", "data": {"qq": event.sender.id}})
+                x.SearchData(
+                    "fursona", {"select": "desc", "data": {"qq": event.sender.id}}
+                )
             )[0]
             if data == []:
                 await app.send_message(
@@ -123,15 +125,10 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                                 else Plain(decode(desc) + "\n")
                             ]
                         )
-                        + [
-                            Plain(
-                                f"主人：🐾{getName(event.sender.id)}({event.sender.id})🐾"
-                            )
-                        ]
+                        + [Plain(f"主人：🐾{getName(event.sender.id)}({event.sender.id})🐾")]
                     )
                 ),
             )
-
 
         else:
             await app.send_message(

@@ -50,33 +50,28 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if len(message[Plain]) == 0:
         return
-    ret = Alconna("来只兽", headers=parsePrefix("e621")).parse(message[Plain])
     config = ReadConfig("e621")
+    ret = Alconna("来只兽", headers=parsePrefix("e621")).parse(message[Plain])
+    ret2 = Alconna("来只兽{name}", headers=parsePrefix("e621")).parse(message[Plain])
+    if not ret.matched and not ret2.matched:
+        return
     if ret.matched:
         ret = await GetRandomFurryImg(
             config["default"][random.randint(0, len(config["default"]))]
         )
-        await app.send_message(
-            friend,
-            MessageChain(
-                [
-                    Image(url=ret["url"]),
-                    Plain(f'\nsources:{ret["sources"]}\nid:{ret["id"]}'),
-                ]
-            ),
-        )
-    ret = Alconna("来只兽{name}", headers=parsePrefix("e621")).parse(message[Plain])
-    if ret.matched:
-        ret = await GetRandomFurryImg(ret.header["name"])
-        await app.send_message(
-            friend,
-            MessageChain(
-                [
-                    Image(url=ret["url"]),
-                    Plain(f'\nsources:{ret["sources"]}\nid:{ret["id"]}'),
-                ]
-            ),
-        )
+    if ret2.matched:
+        ret = await GetRandomFurryImg(ret2.header["name"])
+
+    config = ReadConfig("e621")
+    await app.send_message(
+        friend,
+        MessageChain(
+            [
+                Image(url=ret["url"]),
+                Plain(f'\nsources:{ret["sources"]}\nid:{ret["id"]}'),
+            ]
+        ),
+    )
 
 
 async def GetFurryJson(Tag: str) -> dict:
