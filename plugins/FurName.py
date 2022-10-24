@@ -57,17 +57,14 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if ret.matched:
         name = getName(event.sender.id)
         if name == "[未设置圈名]":
-            await app.send_message(
-                friend,
-                MessageChain(Plain(f"你是……咦，我不知道你是谁")),
-            )
-            return
+            await app.send_message(friend, MessageChain(Plain("你是……咦，我不知道你是谁")))
         else:
             await app.send_message(
                 friend,
                 MessageChain(Plain(f"你是{name}!")),
             )
-            return
+
+        return
 
 
 @l.catch
@@ -97,9 +94,7 @@ def addName(n: str, qq: int) -> str:
 def SafeIndex(l: dict, key: str, wt: Any) -> int:
     if key not in l:
         return -1
-    if wt not in l[key]:
-        return -1
-    return l[key].index(wt)
+    return -1 if wt not in l[key] else l[key].index(wt)
 
 
 @l.catch

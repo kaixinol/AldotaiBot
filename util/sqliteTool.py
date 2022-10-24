@@ -24,11 +24,11 @@ class sqlLink:
         for i in pool:
             pool[i].commit()
 
-    def Fetchone(s: sqlite3.Cursor) -> tuple:
-        return s.fetchone()
+    def Fetchone(self) -> tuple:
+        return self.fetchone()
 
-    def Fetchall(s: sqlite3.Cursor) -> dict | list:
-        return s.fetchall()
+    def Fetchall(self) -> dict | list:
+        return self.fetchall()
 
     def SearchData(
         self, table: str, column: list | dict | str = "*", require: type = list
@@ -40,33 +40,19 @@ class sqlLink:
         elif type(column) == dict:
             cmd = f"SELECT {'*' if 'select' not in column else column['select']} FROM {table} WHERE {list(column['data'].keys())[0]} LIKE '{list(column['data'].values())[0]}';"
         if require == list:
-            return (
-                self.Execute(cmd)
-                if not self.b64
-                else self.__decodeb64(self.Execute(cmd))
-            )
+            return self.__decodeb64(self.Execute(cmd)) if self.b64 else self.Execute(cmd)
         else:
             return self.parseDataToDict(
-                (
-                    self.Execute(cmd)
-                    if not self.b64
-                    else self.__decodeb64(self.Execute(cmd))
-                ),
+                self.__decodeb64(self.Execute(cmd))
+                if self.b64
+                else self.Execute(cmd),
                 column,
             )
 
     def InsertTable(self, name: str, cmd: dict) -> bool:
         ls = [(k, v) for k, v in cmd.items() if v is not None]
-        if not self.b64:
-            sentence = (
-                f"INSERT INTO  {name} ("
-                + ",".join([i[0] for i in ls])
-                + ") VALUES ("
-                + ",".join(repr(i[1]) for i in ls)
-                + ");"
-            )
-        else:
-            sentence = (
+        sentence = (
+            (
                 f"INSERT INTO  {name} ("
                 + ",".join([i[0] for i in ls])
                 + ") VALUES ("
@@ -80,6 +66,15 @@ class sqlLink:
                 )
                 + ");"
             )
+            if self.b64
+            else (
+                f"INSERT INTO  {name} ("
+                + ",".join([i[0] for i in ls])
+                + ") VALUES ("
+                + ",".join(repr(i[1]) for i in ls)
+                + ");"
+            )
+        )
 
         self.Execute(sentence)
 
@@ -89,9 +84,9 @@ class sqlLink:
 
         cmd = (
             f"CREATE TABLE IF NOT EXISTS {name}("
-            + ",".join([i + qParser(struct[i]) for i in struct.keys()])
-            + ");"
-        )
+            + ",".join([i + qParser(struct[i]) for i in struct])
+        ) + ");"
+
         self.Execute(cmd)
 
     @staticmethod
@@ -105,9 +100,7 @@ class sqlLink:
     def __decodeb64(self, data: list):
         rzt = []
         for i in data:
-            rztB = []
-            for ii in i:
-                rztB.append(self.__decode(ii) if type(ii) == str else ii)
+            rztB = [self.__decode(ii) if type(ii) == str else ii for ii in i]
             rzt.append(rztB)
         return rzt
 
@@ -115,21 +108,19 @@ class sqlLink:
     def ToPureList(l: list):
         ret = []
         for ii in l:
-            for iii in ii:
-                ret.append(iii)
+            ret.extend(iter(ii))
         return ret
 
     @staticmethod
     def parseDataToDict(data: list, key: list | str) -> dict:
-        ret = {}
-        if not type(key) == str:
-            for i in data:
-                for num in range(len(key)):
-                    ret[key[num]] = [] if key[num] not in ret else ret[key[num]]
-                    ret[key[num]].append(i[num])
-            return ret
-        else:
+        if type(key) == str:
             return data
+        ret = {}
+        for i in data:
+            for num in range(len(key)):
+                ret[key[num]] = [] if key[num] not in ret else ret[key[num]]
+                ret[key[num]].append(i[num])
+        return ret
 
     def UpdateTable(self, name: str, struct: dict) -> bool:
         cmd = f"DELETE FROM {name} WHERE {struct['select'][0]} = {struct['select'][1]};"

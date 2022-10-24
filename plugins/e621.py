@@ -84,13 +84,15 @@ async def GetFurryJson(Tag: str) -> dict:
     if re.compile("[\u4e00-\u9fa5]").search(Tag):
         return None
     base64string = base64.b64encode(
-        bytes("{}:{}".format(config["username"], config["secret"]), "ascii")
+        bytes(f'{config["username"]}:{config["secret"]}', "ascii")
     )
+
     url = f"https://e621.net/posts.json?tags=rating:s+{Tag}&limit=50"
     headers = {
         "User-Agent": "AldotaiBot/1.0 krawini",
-        "Authorization": "Basic {}".format(base64string.decode("utf-8")),
+        "Authorization": f'Basic {base64string.decode("utf-8")}',
     }
+
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as resp:
             r = await resp.json()

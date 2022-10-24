@@ -15,7 +15,4 @@ def parseMsgType(config: str) -> list:
 
 def parsePrefix(config: str) -> list | None:
     config = ReadConfig(config)
-    if "prefix" not in config:
-        return None
-    else:
-        return config["prefix"]
+    return None if "prefix" not in config else config["prefix"]

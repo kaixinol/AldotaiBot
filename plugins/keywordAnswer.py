@@ -90,6 +90,6 @@ def ignore(s: str, db: list):
 
 
 def replaceMsg(s: str, d: dict):
-    for i in d.keys():
+    for i in d:
         s = s.replace("{" + i + "}", d[i])
     return s
