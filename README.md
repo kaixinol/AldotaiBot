@@ -21,7 +21,8 @@
 <li>[ ] 绒狸</li>
 <li>[x] 每日一兽</li>
 <li>[x] 圈名</li>
-<li>[x] 接话</li>
+<li>[x] 关键词回复</li>
+<li>[ ] 随机meme</li>
 <li>[ ] 自动广播</li>
 <li>[ ] <em>排行榜</em></li>
 <li>[ ] <em>交易</em></li>
@@ -32,7 +33,7 @@
 <details>
 <summary>无头插件</summary>
 <ul>
-<li>[ ] 关键词屏蔽<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></li>
+<li><del>关键词屏蔽</del><sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></li>
 <li>jsonTool</li>
 <li>qliteTool</li>
 <li>initializer</li>
@@ -54,7 +55,7 @@
 <hr class="footnotes-sep">
 <section class="footnotes">
 <ol class="footnotes-list">
-<li id="fn1" class="footnote-item"><p>目前仅有<code>在线编译</code>和<code>设定分享</code>可选使用 <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+<li id="fn1" class="footnote-item"><p>[^1]: 由于性能问题，不再计划开发<a href="#fnref1" class="footnote-backref">↩︎</a></p>
 </li>
 </ol>
 </section>
@@ -81,7 +82,8 @@
 - [ ] 绒狸
 - [x] 每日一兽
 - [x] 圈名
-- [x] 接话
+- [x] 关键词回复
+- [ ] 随机meme
 - [ ] 自动广播
 - [ ] *排行榜*
 - [ ] *交易*
@@ -93,7 +95,7 @@
 <details>
 <summary>无头插件</summary>
 
-- [ ] 关键词屏蔽[^1]
+- ~~关键词屏蔽~~[^1]
 - jsonTool
 - qliteTool
 - initializer
@@ -111,7 +113,7 @@
 
 >...以及更多?（可以联系作者进行定制，本机器人大部分功能只是按照凯叽bot功能的高级复刻）
 
-[^1]: 目前仅有`在线编译`和`设定分享`可选使用
+[^1]: 由于性能问题，不再计划开发
 
 Made by [markdown-it](https://markdown-it.github.io/)
 
