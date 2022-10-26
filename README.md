@@ -33,7 +33,7 @@
 <details>
 <summary>无头插件</summary>
 <ul>
-<li><del>关键词屏蔽</del><sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></li>
+<li><s>关键词屏蔽</s><sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></li>
 <li>jsonTool</li>
 <li>qliteTool</li>
 <li>initializer</li>
@@ -55,11 +55,13 @@
 <hr class="footnotes-sep">
 <section class="footnotes">
 <ol class="footnotes-list">
-<li id="fn1" class="footnote-item"><p>[^1]: 由于性能问题，不再计划开发<a href="#fnref1" class="footnote-backref">↩︎</a></p>
+<li id="fn1" class="footnote-item"><p>由于性能问题，不再计划开发 <a href="#fnref1" class="footnote-backref">↩︎</a></p>
 </li>
 </ol>
 </section>
+
 <!--
+
 # 阿尔多泰Bot
 ## 快速开始
 
