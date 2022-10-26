@@ -42,8 +42,8 @@
 <details>
 <summary>杂项</summary>
 <ul>
-<li>[ ] 不同群组件管理</li>
-<li>[ ] 分群冻结使用频率</li>
+<li>[x] 权限管理</li>
+<li>[x] 分群冻结使用频率</li>
 <li>[ ] 反馈</li>
 </ul>
 </details>
@@ -103,8 +103,8 @@
 <details>
 <summary>杂项</summary>
 
-- [ ] 不同群组件管理
-- [ ] 分群冻结使用频率
+- [x] 权限管理
+- [x] 分群冻结使用频率
 - [ ] 反馈
 
 </details>

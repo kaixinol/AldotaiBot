@@ -3,8 +3,11 @@ import sys
 
 from creart import create
 from graia.ariadne.app import Ariadne
-from graia.ariadne.connection.config import (HttpClientConfig,
-                                             WebsocketClientConfig, config)
+from graia.ariadne.connection.config import (
+    HttpClientConfig,
+    WebsocketClientConfig,
+    config,
+)
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.model import Group

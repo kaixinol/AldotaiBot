@@ -1,24 +1,37 @@
 import asyncio
 import base64
+import os
 import random
 import re
 import sys
-from email.policy import default
 
 import aiohttp
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import (FriendMessage, GroupMessage,
-                                         MessageEvent)
+from graia.ariadne.event.message import FriendMessage, GroupMessage, MessageEvent
 from graia.ariadne.event.mirai import MemberJoinEvent
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import (App, At, AtAll, Face, Forward,
-                                           Image, Json, MarketFace, Plain,
-                                           Poke, Quote, Xml)
-from graia.ariadne.model import Friend, Group
+from graia.ariadne.message.element import (
+    App,
+    At,
+    AtAll,
+    Face,
+    Forward,
+    Image,
+    Json,
+    MarketFace,
+    Plain,
+    Poke,
+    Quote,
+    Xml,
+)
+from graia.ariadne.model import Friend, Group, Member, MemberPerm
+from graia.ariadne.util.saya import decorate, listen
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from graia.saya.event import SayaModuleInstalled
 
+from util.control import GroupPermission
+from util.interval import GroupInterval
 from util.initializer import *
 from util.parseTool import *
 
@@ -33,7 +46,8 @@ async def module_listener(event: SayaModuleInstalled):
     print(f"{event.module}::模块加载成功!!!")
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("FurName")))
+@listen(GroupMessage)
+@decorate(GroupPermission.require(), GroupInterval.require(20, 10, send_alert=True))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     from arclet.alconna import Alconna
 
@@ -47,10 +61,10 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         return
     if ret.matched:
         ret = await GetRandomFurryImg(
-            config["default"][random.randint(0, len(config["default"]))]
+            config["default"][random.randint(0, len(config["default"]) - 1)]
         )
     if ret2.matched:
-        ret = await GetRandomFurryImg(ret2.header["name"])
+        ret = await GetRandomFurryImg(ret2.header["name"].replace(",", "+"))
 
     config = ReadConfig("e621")
     await app.send_message(
@@ -58,13 +72,14 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         MessageChain(
             [
                 Image(url=ret["url"]),
-                Plain(f'\nsources:{ret["sources"]}\nid:{ret["id"]}'),
+                Plain(f'\nsources:{ret["sources"][-2:]}\nid:{ret["id"]}'),
             ]
         ),
     )
 
 
-async def GetFurryJson(Tag: str) -> dict:
+async def GetFurryJson(Tag: str, context: str = "Safe") -> dict:
+    t = {"Safe": "s", "Questionable": "q", "Explicit": "e"}[context]
     config = ReadConfig("e621")
     if re.compile("[\u4e00-\u9fa5]").search(Tag):
         return None
@@ -72,7 +87,7 @@ async def GetFurryJson(Tag: str) -> dict:
         bytes(f'{config["username"]}:{config["secret"]}', "ascii")
     )
 
-    url = f"https://e621.net/posts.json?tags=rating:s+{Tag}&limit=50"
+    url = f"https://e621.net/posts.json?tags=rating:{t}+{Tag}&limit=50"
     headers = {
         "User-Agent": "AldotaiBot/1.0 krawini",
         "Authorization": f'Basic {base64string.decode("utf-8")}',
@@ -95,10 +110,10 @@ async def GetRandomFurryImg(Tag: str):
         }
     except:
         return {
-            "url": r"https://s1.ax1x.com/2022/07/23/jXR9D1.png",
-            "sources": "None",
+            "url": rf"file:///{os.getcwd()}/res/error.jpg",
+            "sources": ["发生了错误！可能由于网络错误或api配置不正确"],
             "id": 114514,
         }
 
 
-#print(asyncio.run(GetRandomFurryImg("dog+cat")))
+# print(asyncio.run(GetRandomFurryImg("dog+cat")))

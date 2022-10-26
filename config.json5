@@ -1,8 +1,11 @@
 {
     name: 'xxBot',
-    master: 3607922630,
     'ignored group': [],
     abuser: [],
+    control: {
+            master: 3607922630,
+            admins: [3607922630,114514]
+    },
     plugin: {
         '33': {
             process: [
@@ -122,7 +125,7 @@
         },
         e621: {
             username: 'krawini',
-            secret: 'jtEwW9fouujoaTAE8dnQm2NQ',
+            secret: '',
             prefix: [
                 '!',
                 '！',

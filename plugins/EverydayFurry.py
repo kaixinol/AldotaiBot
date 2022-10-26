@@ -3,13 +3,23 @@ import time
 
 import aiohttp
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import (FriendMessage, GroupMessage,
-                                         MessageEvent)
+from graia.ariadne.event.message import FriendMessage, GroupMessage, MessageEvent
 from graia.ariadne.event.mirai import MemberJoinEvent
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import (App, At, AtAll, Face, Forward,
-                                           Image, Json, MarketFace, Plain,
-                                           Poke, Quote, Xml)
+from graia.ariadne.message.element import (
+    App,
+    At,
+    AtAll,
+    Face,
+    Forward,
+    Image,
+    Json,
+    MarketFace,
+    Plain,
+    Poke,
+    Quote,
+    Xml,
+)
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
@@ -37,8 +47,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if len(message[Plain]) == 0:
         return
-    ret = Alconna("每日一兽", headers=parsePrefix(
-        "EverydayFurry")).parse(message[Plain])
+    ret = Alconna("每日一兽", headers=parsePrefix("EverydayFurry")).parse(message[Plain])
     ret2 = Alconna("每日一兽{name}", headers=parsePrefix("EverydayFurry")).parse(
         message[Plain]
     )

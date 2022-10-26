@@ -46,7 +46,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MemberJoinEvent):
 
 @channel.use(ListenerSchema(listening_events=[MemberCardChangeEvent]))
 async def setu(app: Ariadne, friend: Friend | Group, event: MemberCardChangeEvent):
-    if 'stop' in event.current.lower():
+    if "stop" in event.current.lower():
         await app.send_message(
             friend,
             MessageChain("Bot全局终止"),

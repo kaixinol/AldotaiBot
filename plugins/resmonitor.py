@@ -1,26 +1,22 @@
 import os
 import sys
 
+from graia.ariadne.util.saya import decorate, listen
+
+from util.control import GroupPermission
+
 sys.path.append("../")
+import platform
+
 import psutil
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import FriendMessage, GroupMessage, MessageEvent
+from graia.ariadne.event.message import (FriendMessage, GroupMessage,
+                                         MessageEvent)
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import (
-    App,
-    At,
-    AtAll,
-    Face,
-    Forward,
-    Image,
-    Json,
-    MarketFace,
-    Plain,
-    Poke,
-    Quote,
-    Xml,
-)
-from graia.ariadne.model import Friend, Group
+from graia.ariadne.message.element import (App, At, AtAll, Face, Forward,
+                                           Image, Json, MarketFace, Plain,
+                                           Poke, Quote, Xml)
+from graia.ariadne.model import Friend, Group, Member, MemberPerm
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from graia.saya.event import SayaModuleInstalled
@@ -33,6 +29,8 @@ channel = Channel.current()
 import platform
 import re
 import subprocess
+
+from util.control import GroupPermission
 
 
 async def get_processor_name():
@@ -58,21 +56,24 @@ async def module_listener(event: SayaModuleInstalled):
 async def msg() -> str:
     GB = 1024 * 1024 * 1024
     return f"""
-CPU名称：{await get_processor_name()}\n
-CPU利用率：{psutil.cpu_percent(interval=1)}%\n
-CPU 当前频率：{psutil.cpu_freq().current}MHz\n
-可用内存：{round(psutil.virtual_memory().available / GB, 1)}GB\n
+CPU名称：{await get_processor_name()}
+CPU利用率：{psutil.cpu_percent(interval=1)}%
+CPU 当前频率：{psutil.cpu_freq().current}MHz
+可用内存：{round(psutil.virtual_memory().available / GB, 1)}GB
 可用磁盘容量：{round(psutil.disk_usage("/").free / GB, 1)}GB
+Python 版本：{platform.python_version()}
 """
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("resmonitor")))
+@listen(GroupMessage)
+@decorate(GroupPermission.require(MemberPerm.Administrator))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if len(message[Plain]) == 0:
         return
     from arclet.alconna import Alconna
 
+    print()
     if Alconna("获取配置", headers=parsePrefix("resmonitor")).parse(message[Plain]).matched:
         data = await msg()
         await app.send_message(
