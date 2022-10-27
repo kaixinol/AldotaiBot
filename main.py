@@ -17,13 +17,39 @@ from loguru import logger as l
 import util.jsonTool as js
 
 l.add(
-    os.getcwd() + "/log/{time: YYYY-MM-DD}.log",
+    os.getcwd() + "/log/{time: YYYY-MM-DD}/bot.log",
     rotation="00:00",
     level="INFO",
     encoding="utf-8",
-    filter=lambda rec: "graia" not in rec["name"] and "launart" not in rec["name"],
+    filter=lambda rec: "graia" not in rec["name"] and "launart" not in rec[
+        "name"] and rec["name"] != 'util.sqliteTool',
 )
 
+l.add(
+    os.getcwd() + "/log/{time: YYYY-MM-DD}/graia.log",
+    rotation="00:00",
+    level="INFO",
+    encoding="utf-8",
+    compression='xz',
+    filter=lambda rec: "graia" in rec["name"] or "launart" in rec["name"],
+)
+
+l.add(
+    os.getcwd() + "/log/{time: YYYY-MM-DD}/sql.log",
+    rotation="00:00",
+    level="INFO",
+    encoding="utf-8",
+    filter=lambda rec: rec["name"] == 'util.sqliteTool',
+)
+'''
+l.add(
+    os.getcwd() + "/log/groupEvent.log",
+    rotation="00:00",
+    level="INFO",
+    encoding="utf-8",
+    filter=lambda rec: rec["name"] == 'util.sqliteTool',
+)
+'''
 saya = create(Saya)
 configJson = js.ReadJson("config.json5")
 

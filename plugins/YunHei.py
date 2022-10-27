@@ -82,7 +82,7 @@ async def IsBlacklisted(qq: int):
     txt = html2text.html2text(r)
     return txt[txt.find("请输入账号或群号查询:") + 13 : txt.find("[举报上黑]") - 3]
 
-
+@l.catch
 async def IsMemberBlacklisted(qq: list):
     l.debug(f"共{len(qq)}条数据")
     if len(qq) <= 200:
@@ -144,6 +144,7 @@ def chunk(lst, n):
         inline_dispatchers=[CoolDown(60 * 60)],
     )
 )
+@l.catch
 async def GroupFind(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     qq = Alconna("查群云黑", headers=parsePrefix("YunHei")).parse(message.display)
@@ -178,14 +179,6 @@ async def GroupFind(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             MessageChain(data),
         )
 
-
-async def apiIsBlackListed():
-    keywords = {"qq": 1}
-    url = "https://yunhei.qimeng.fun/Piliang.php"
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, data=keywords) as resp:
-            r = await resp.json()
-    txt = html2text.html2text(r)
 
 
 # print(IsMemberBlacklisted([35464, 634132164, 643161, 16541365, 2352449583]))
