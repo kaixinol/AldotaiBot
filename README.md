@@ -44,6 +44,7 @@
 <summary>杂项</summary>
 <ul>
 <li>[x] 权限管理</li>
+<li>[ ] 群权限记录</li>
 <li>[x] 分群冻结使用频率</li>
 <li>[ ] 反馈</li>
 </ul>
@@ -52,6 +53,8 @@
 <p>…以及更多?（可以联系作者进行定制，本机器人大部分功能只是按照凯叽bot功能的高级复刻）</p>
 </blockquote>
 <p>Made by <a href="https://markdown-it.github.io/">markdown-it</a></p>
+<h2>参考</h2>
+<p><a href="https://github.com/Redlnn/redbot/tree/master/core_modules">Redbot</a></p>
 <hr class="footnotes-sep">
 <section class="footnotes">
 <ol class="footnotes-list">
@@ -108,6 +111,7 @@
 <summary>杂项</summary>
 
 - [x] 权限管理
+- [ ] 群权限记录
 - [x] 分群冻结使用频率
 - [ ] 反馈
 
@@ -118,5 +122,8 @@
 [^1]: 由于性能问题，不再计划开发
 
 Made by [markdown-it](https://markdown-it.github.io/)
+
+## 参考
+[Redbot](https://github.com/Redlnn/redbot/tree/master/core_modules)
 
 -->
