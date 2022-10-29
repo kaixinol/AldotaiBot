@@ -65,7 +65,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     from arclet.alconna import Alconna
 
     print()
-    if Alconna("获取配置", headers=parsePrefix("resmonitor")).parse(message[Plain]).matched:
+    if Alconna("获取配置", headers=parsePrefix("Resmonitor")).parse(message[Plain]).matched:
         data = await msg()
         await app.send_message(
             friend,
