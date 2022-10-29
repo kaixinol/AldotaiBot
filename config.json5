@@ -4,7 +4,7 @@
     3607922630,
     114514,
   ],
-  plugins: {
+  plugin: {
     Logger: {},
     Misc: {},
     OnlineCompile: {
@@ -32,13 +32,13 @@
       ],
     },
     Randomvideo: {
-      disabled: true,
       process: [
         'Group',
       ],
       fav_id: '1280741082',
       prefix: [
-        'gfhfgh',
+        '!',
+        '！'
       ],
     },
     Resmonitor: {

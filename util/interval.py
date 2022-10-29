@@ -11,7 +11,6 @@ from graia.ariadne.model import Group, Member
 from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 
-from util.control import GroupPermission
 
 
 class GroupInterval:
@@ -35,7 +34,6 @@ class GroupInterval:
         max_exec: int = 1,
         send_alert: bool = True,
         alert_time_interval: int = 5,
-        override_level: int = GroupPermission.ADMIN,
     ) -> Depend:
         """
         指示用户每执行 `max_exec` 次后需要至少相隔 `suspend_time` 秒才能再次触发功能
@@ -48,8 +46,6 @@ class GroupInterval:
         """
 
         async def cd_check(app: Ariadne, group: Group, member: Member):
-            if await GroupPermission.get(member) >= override_level:
-                return
             current = time.time()
             async with (await cls.get_lock()):
                 last = cls.last_exec[group.id]
@@ -104,7 +100,6 @@ class MemberInterval:
         max_exec: int = 1,
         send_alert: bool = True,
         alert_time_interval: int = 5,
-        override_level: int = GroupPermission.ADMIN,
     ) -> Depend:
         """
         指示用户每执行 `max_exec` 次后需要至少相隔 `suspend_time` 秒才能再次触发功能
@@ -117,8 +112,6 @@ class MemberInterval:
         """
 
         async def cd_check(app: Ariadne, group: Group, member: Member):
-            if await GroupPermission.get(member) >= override_level:
-                return
             current = time.time()
             name = f"{member.id}_{group.id}"
             async with (await cls.get_lock()):

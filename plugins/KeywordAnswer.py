@@ -34,7 +34,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
     for i in data["react"]:
         if i[0].startswith("Alconna:") and not ignore(
-            message.display, ReadConfig("keywordAnswer")["alconna"]
+            message.display, ReadConfig("KeywordAnswer")["alconna"]
         ):
             t = i[0].replace("Alconna:", "")
             Ret = Alconna(t).parse(message.display)
