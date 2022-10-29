@@ -19,17 +19,10 @@ class sqlLink:
     def Execute(self, s: str) -> sqlite3.Cursor:
         l.info(f"[SQL]\t{s}")
         return self.link.cursor().execute(s)
-
+    @staticmethod
     def CommitAll():
         for i in pool:
             pool[i].commit()
-
-    def Fetchone(self) -> tuple:
-        return self.fetchone()
-
-    def Fetchall(self) -> dict | list:
-        return self.fetchall()
-
     def SearchData(
         self, table: str, column: list | dict | str = "*", require: type = list
     ):
@@ -138,8 +131,6 @@ if __name__ == "__main__":
     l.debug(
         x.ToPureList(x.SearchData("furry", {"select": "圈名", "data": {"qq": 114514}}))
     )
-    x.link.commit()
-    x.link.close()
     l.warning("Created a database whose strings are all plaintext")
     x = sqlLink("test2.db")
     x.CreateTable("furry", {"QQ": int, "圈名": str, "其他": str})
@@ -152,5 +143,5 @@ if __name__ == "__main__":
     l.debug(
         x.ToPureList(x.SearchData("furry", {"select": "圈名", "data": {"qq": 114514}}))
     )
-    x.link.commit()
+    sqlLink.CommitAll()
     x.link.close()

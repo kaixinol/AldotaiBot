@@ -3,22 +3,11 @@ import time
 
 import aiohttp
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import FriendMessage, GroupMessage, MessageEvent
-from graia.ariadne.event.mirai import MemberJoinEvent
+from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import (
-    App,
-    At,
-    AtAll,
-    Face,
-    Forward,
     Image,
-    Json,
-    MarketFace,
     Plain,
-    Poke,
-    Quote,
-    Xml,
 )
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
@@ -57,7 +46,6 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         msg = await get_furry_img()
     if ret2.matched:
         msg = await get_furry_img(ret2.header["name"])
-    print(msg)
     try:
         if not msg is None:
             await app.send_message(

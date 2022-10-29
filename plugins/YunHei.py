@@ -37,7 +37,6 @@ from loguru import logger as l
 
 from util.initializer import *
 from util.parseTool import *
-from util.sqliteTool import sqlLink
 
 sys.path.append("../")
 
@@ -82,7 +81,6 @@ async def IsBlacklisted(qq: int):
     txt = html2text.html2text(r)
     return txt[txt.find("请输入账号或群号查询:") + 13 : txt.find("[举报上黑]") - 3]
 
-@l.catch
 async def IsMemberBlacklisted(qq: list):
     l.debug(f"共{len(qq)}条数据")
     if len(qq) <= 200:
@@ -144,7 +142,6 @@ def chunk(lst, n):
         inline_dispatchers=[CoolDown(60 * 60)],
     )
 )
-@l.catch
 async def GroupFind(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     qq = Alconna("查群云黑", headers=parsePrefix("YunHei")).parse(message.display)

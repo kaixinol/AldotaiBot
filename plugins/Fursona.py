@@ -5,26 +5,16 @@ import re
 import sys
 
 import wget
-from arclet.alconna import Alconna, Args, Option, Subcommand
+from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import FriendMessage, GroupMessage, MessageEvent
+from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import (
-    App,
-    At,
-    AtAll,
-    Face,
-    Forward,
     Image,
-    Json,
-    MarketFace,
-    Plain,
-    Poke,
-    Quote,
-    Xml,
+    Plain
 )
 from graia.ariadne.model import Friend, Group
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from graia.saya.event import SayaModuleInstalled
 from loguru import logger as l
@@ -84,7 +74,8 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             )
             l.debug(
                 x.SearchData(
-                    "fursona", {"select": "imgJson", "data": {"qq": event.sender.id}}
+                    "fursona", {"select": "imgJson",
+                                "data": {"qq": event.sender.id}}
                 )
             )
 
@@ -98,12 +89,14 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             x = sqlLink("./db/furryData.db")
             data = x.ToPureList(
                 x.SearchData(
-                    "fursona", {"select": "imgJson", "data": {"qq": event.sender.id}}
+                    "fursona", {"select": "imgJson",
+                                "data": {"qq": event.sender.id}}
                 )
             )
             desc = x.ToPureList(
                 x.SearchData(
-                    "fursona", {"select": "desc", "data": {"qq": event.sender.id}}
+                    "fursona", {"select": "desc",
+                                "data": {"qq": event.sender.id}}
                 )
             )[0]
             if data == []:
@@ -117,14 +110,12 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                 friend,
                 MessageChain(
                     (
-                        (
-                            [Image(path=f"./db/{i}") for i in rzt]
-                            + [
-                                Plain("")
-                                if desc is None
-                                else Plain(decode(desc) + "\n")
-                            ]
-                        )
+                        [Image(path=f"./db/{i}") for i in rzt]
+                        + [
+                            Plain("")
+                            if desc is None
+                            else Plain(decode(desc) + "\n")
+                        ]
                         + [Plain(f"主人：🐾{getName(event.sender.id)}({event.sender.id})🐾")]
                     )
                 ),
@@ -141,7 +132,8 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 @channel.use(ListenerSchema(listening_events=parseMsgType("FurName")))
 async def addDesc(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    ret = Alconna("添加介绍{desc}", headers=parsePrefix("Fursona")).parse(message[Plain])
+    ret = Alconna("添加介绍{desc}", headers=parsePrefix(
+        "Fursona")).parse(message[Plain])
     if ret.matched and getName(event.sender.id) != "[未设置圈名]":
         x = sqlLink("./db/furryData.db")
         x.Execute(

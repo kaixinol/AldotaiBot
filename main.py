@@ -41,15 +41,14 @@ l.add(
     encoding="utf-8",
     filter=lambda rec: rec["name"] == 'util.sqliteTool',
 )
-'''
 l.add(
     os.getcwd() + "/log/groupEvent.log",
     rotation="00:00",
     level="INFO",
     encoding="utf-8",
-    filter=lambda rec: rec["name"] == 'util.sqliteTool',
+    filter=lambda rec: rec["name"] == 'plugins.logger',
 )
-'''
+
 saya = create(Saya)
 configJson = js.ReadJson("config.json5")
 

@@ -1,3 +1,5 @@
+import os
+
 import pyjson5 as json
 from loguru import logger as l
 
@@ -13,6 +15,8 @@ def ReadJson(n: str) -> dict:
 
 def CreateJson(n: str, data: dict):
     try:
+        if os.path.exists(n):
+            os.remove(n)
         with open(n, "w", encoding="utf-8") as f:
             json.dump(data, f)
     except Exception as e:

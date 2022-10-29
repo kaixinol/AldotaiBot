@@ -1,140 +1,124 @@
 {
-    name: 'xxBot',
-    'ignored group': [],
-    abuser: [],
-    control: {
-            master: 3607922630,
-            admins: [3607922630,114514]
+  name: 'AldotaiBot',
+  admins: [
+    3607922630,
+    114514,
+  ],
+  plugins: {
+    Logger: {},
+    Misc: {},
+    OnlineCompile: {
+      process: [
+        'Group',
+        'Friend',
+      ],
+      id: '9919ec260bc24c2c4eab4534d7df9225',
+      secret: '50419d8f128885d6ba5dc01f32f85aa9fc350e0187ffe21bb8281c5d4c40fae',
+      prefix: [
+        '?',
+        '？',
+      ],
     },
-    plugin: {
-        '33': {
-            process: [
-                'Group',
-            ],
-            prefix: [
-                '!',
-                '！',
-            ],
-        },
-        OnlineCompile: {
-            process: [
-                'Group',
-                'Friend',
-            ],
-            id: '9919ec260bc24c2c4eab4534d7df9225',
-            secret: '50419d8f128885d6ba5dc01f32f85aa9fc350e0187ffe21bb8281c5d4c40fae',
-            prefix: [
-                '?',
-                '？',
-            ],
-        },
-        E621: {
-            disabled: true,
-            process: [
-                'Group',
-            ],
-            username: '*',
-            secret: '*',
-            limit: 200,
-        },
-        randomvideo: {
-            disabled: true,
-            process: [
-                'Group',
-            ],
-            fav_id: '1280741082',
-            prefix: [
-                'gfhfgh',
-            ],
-        },
-        resmonitor: {
-            process: [
-                'Group',
-                'Friend',
-            ],
-        },
-        FurName: {
-            process: [
-                'Group',
-            ],
-            prefix: [
-                '!',
-                '！',
-            ],
-        },
-        keywordAnswer: {
-            ignore: [
-                'Reg:^((?=\\!|！).)*',
-            ],
-            alconna: [
-                '我是谁',
-            ],
-            process: [
-                'Group',
-                'Friend',
-            ],
-            react: [
-                [
-                    "message.display=='我是傻逼'",
-                    "'你好!!我也是傻逼'",
-                ],
-                [
-                    "re.search('(设置|圈名)(.{0,3})(设置|圈名)',message.display)!=None",
-                    "'发送\\n！设置圈名[你的圈名]\\n不需要带空格'",
-                ],
-                [
-                    "message.display=='不会画画'",
-                    "'你好，我也不会！！'",
-                ],
-                [
-                    "message.display=='教我画画'",
-                    "f'{getName(event.sender.id)}教我画画！！'",
-                ],
-                [
-                    'Alconna:我是{name}',
-                    '你好{name}',
-                ],
-            ],
-        },
-        Fursona: {
-            process: [
-                'Group',
-                'Friend',
-            ],
-            prefix: [
-                '!',
-                '！',
-            ],
-        },
-        YunHei: {
-            process: [
-                'Group',
-                'Friend',
-            ],
-            prefix: [
-                '!',
-                '！',
-            ],
-        },
-        welcome: {},
-        EverydayFurry: {
-            process: [
-                'Group',
-                'Friend',
-            ]
-        },
-        e621: {
-            username: 'krawini',
-            secret: '',
-            prefix: [
-                '!',
-                '！',
-            ],
-            default: ['dog+cat','changed_(video_game)'],
-        },
-        _: [
-            'xx',
-            'xxx',
+    E621: {
+      username: 'krawini',
+      secret: '',
+      prefix: [
+        '!',
+        '！',
+      ],
+      default: [
+        'dog+cat',
+        'changed_(video_game)',
+      ],
+    },
+    Randomvideo: {
+      disabled: true,
+      process: [
+        'Group',
+      ],
+      fav_id: '1280741082',
+      prefix: [
+        'gfhfgh',
+      ],
+    },
+    Resmonitor: {
+      process: [
+        'Group',
+        'Friend',
+      ],
+    },
+    FurName: {
+      process: [
+        'Group',
+      ],
+      prefix: [
+        '!',
+        '！',
+      ],
+    },
+    KeywordAnswer: {
+      ignore: [
+        'Reg:^((?=\\!|！).)*',
+      ],
+      alconna: [
+        '我是谁',
+      ],
+      process: [
+        'Group',
+        'Friend',
+      ],
+      react: [
+        [
+          "message.display=='我是傻逼'",
+          "'你好!!我也是傻逼'",
         ],
+        [
+          "re.search('(设置|圈名)(.{0,3})(设置|圈名)',message.display)!=None",
+          "'发送\\n！设置圈名[你的圈名]\\n不需要带空格'",
+        ],
+        [
+          "message.display=='不会画画'",
+          "'你好，我也不会！！'",
+        ],
+        [
+          "message.display=='教我画画'",
+          "f'{getName(event.sender.id)}教我画画！！'",
+        ],
+        [
+          'Alconna:我是{name}',
+          '你好{name}',
+        ],
+      ],
     },
+    Fursona: {
+      process: [
+        'Group',
+        'Friend',
+      ],
+      prefix: [
+        '!',
+        '！',
+      ],
+    },
+    YunHei: {
+      process: [
+        'Group',
+        'Friend',
+      ],
+      prefix: [
+        '!',
+        '！',
+      ],
+    },
+    EverydayFurry: {
+      process: [
+        'Group',
+        'Friend',
+      ],
+    },
+    _: [
+      'xx',
+      'xxx',
+    ],
+  },
 }

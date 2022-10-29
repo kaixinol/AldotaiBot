@@ -23,7 +23,7 @@
 <li>[x] 圈名</li>
 <li>[x] 关键词回复</li>
 <li>[ ] 随机meme</li>
-<li>[ ] 自动广播</li>
+<li>[ ] <s>自动广播</s><sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></li>
 <li>[ ] <em>排行榜</em></li>
 <li>[ ] <em>交易</em></li>
 <li>[ ] <em>签到</em></li>
@@ -33,7 +33,7 @@
 <details>
 <summary>无头插件</summary>
 <ul>
-<li><s>关键词屏蔽</s><sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></li>
+<li><s>关键词屏蔽</s><sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></li>
 <li>jsonTool</li>
 <li>qliteTool</li>
 <li>initializer</li>
@@ -58,17 +58,18 @@
 <hr class="footnotes-sep">
 <section class="footnotes">
 <ol class="footnotes-list">
-<li id="fn1" class="footnote-item"><p>由于性能问题，不再计划开发 <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+<li id="fn1" class="footnote-item"><p>由于潜在的风控问题，不再计划开发 <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>由于性能问题，不再计划开发 <a href="#fnref2" class="footnote-backref">↩︎</a></p>
 </li>
 </ol>
 </section>
-
 <!--
 
 # 阿尔多泰Bot
 ## 快速开始
 
-1. `pip install -r requirements.txt` 
+1. `pip install -r requirements.txt`
 2.  配置config.json
 3. 配置mirai和http api
 4. `python main.py`
@@ -89,7 +90,7 @@
 - [x] 圈名
 - [x] 关键词回复
 - [ ] 随机meme
-- [ ] 自动广播
+- [ ] ~~自动广播~~[^2]
 - [ ] *排行榜*
 - [ ] *交易*
 - [ ] *签到* 
@@ -121,9 +122,10 @@
 
 [^1]: 由于性能问题，不再计划开发
 
+[^2]: 由于潜在的风控问题，不再计划开发
+
 Made by [markdown-it](https://markdown-it.github.io/)
 
 ## 参考
 [Redbot](https://github.com/Redlnn/redbot/tree/master/core_modules)
-
 -->

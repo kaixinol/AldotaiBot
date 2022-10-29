@@ -20,9 +20,8 @@ from graia.ariadne.message.element import (
     Xml,
 )
 from graia.ariadne.model import Friend, Group
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from graia.saya.event import SayaModuleInstalled
 from loguru import logger as l
 
 from util.initializer import *
@@ -31,12 +30,7 @@ from util.sqliteTool import sqlLink
 
 sys.path.append("../")
 
-
 channel = Channel.current()
-
-
-async def module_listener(event: SayaModuleInstalled):
-    print(f"{event.module}::模块加载成功!!!")
 
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("FurName")))
@@ -46,7 +40,8 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if len(message[Plain]) == 0:
         return
-    ret = Alconna("设置圈名{name}", headers=parsePrefix("FurName")).parse(message[Plain])
+    ret = Alconna("设置圈名{name}", headers=parsePrefix(
+        "FurName")).parse(message[Plain])
     if ret.matched:
         await app.send_message(
             friend,
@@ -67,37 +62,31 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         return
 
 
-@l.catch
 def addName(n: str, qq: int) -> str:
     x = sqlLink("./db/furryData.db", b64=True)
     x.CreateTable("name", {"qq": int, "name": str})
-    ret = x.SearchData("name", ["qq", "name"], require=dict)
-    a, b = SafeIndex(ret, "name", n), SafeIndex(ret, "qq", qq)
-    l.debug(SafeIndex(ret, "name", n) == SafeIndex(ret, "qq", qq) != -1)
-    l.debug(f"{a},{b}")
-    l.debug(ret)
-    if SafeIndex(ret, "name", n) == SafeIndex(ret, "qq", qq) != -1:
-        return f"你的圈名已经是{n}了"
-    elif ret != {} and n in ret["name"] and a != -1:
-        sm = ret["qq"][ret["name"].index(n)]
-        return f"警告！您的圈名与{n}({sm})重名"
-    if "qq" in ret and qq not in ret["qq"]:
-        x.InsertTable("name", {"qq": qq, "name": n})
-    else:
-        x.UpdateTable(
-            "name", struct={"select": ["qq", qq], "data": {"qq": qq, "name": n}}
-        )
-    x.link.commit()
+    ret = x.SearchData("name", ["qq", "name"])
+    retDict = x.parseDataToDict(ret, ["qq", "name"])
+    for i in ret:
+        if i == [qq, n]:
+            return f"你的圈名已经是{n}了"
+        if i[0] == qq and SafeIndex(retDict, 'qq', qq) == SafeIndex(retDict, 'name', n) != -1:
+            x.UpdateTable(
+                "name", {"select": ["qq", qq], "data": {"qq": qq, "name": n}})
+            return f"你的圈名现在是{n}了"
+        if i[1] == n and SafeIndex(retDict, 'qq', qq) != SafeIndex(retDict, 'name', n):
+            same_name = retDict['qq'][retDict['name'].index(n)]
+            return f"你的圈名与{same_name}重名"
+    x.InsertTable("name", {"qq": qq, "name": n})
     return f"你的圈名现在是{n}了"
 
 
-def SafeIndex(l: dict, key: str, wt: Any) -> int:
+def SafeIndex(l: dict, key: str, wt) -> int:
     if key not in l:
         return -1
     return -1 if wt not in l[key] else l[key].index(wt)
 
 
-@l.catch
 def getName(qq: int) -> str:
     x = sqlLink("./db/furryData.db", b64=True)
     x.CreateTable("name", {"qq": int, "name": str})
