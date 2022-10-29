@@ -20,16 +20,16 @@ sys.path.append("../")
 channel = Channel.current()
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("keywordAnswer")))
+@channel.use(ListenerSchema(listening_events=parseMsgType("KeywordAnswer")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     from arclet.alconna import Alconna
 
     message = event.message_chain
     if len(message[Plain]) == 0 or ignore(
-        message.display, ReadConfig("keywordAnswer")["ignore"]
+        message.display, ReadConfig("KeywordAnswer")["ignore"]
     ):
         return
-    data = ReadConfig("keywordAnswer")
+    data = ReadConfig("KeywordAnswer")
     ret = ""
 
     for i in data["react"]:
