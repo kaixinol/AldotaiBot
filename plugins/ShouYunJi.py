@@ -28,7 +28,7 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         return
     from arclet.alconna import Alconna
     if Alconna("兽兽", headers=parsePrefix("ShouYunJi")).parse(message[Plain]).matched:
-        data = await GetFurryJson(f'https://cloud.foxtail.cn/api/function/random')
+        data = await GetFurryJson('https://cloud.foxtail.cn/api/function/random')
         data2 = (await  GetFurryJson(f'https://cloud.foxtail.cn/api/function/pictures?picture={data["picture"]["id"]}&model=1'))
         await app.send_message(
             friend,
@@ -56,5 +56,4 @@ async def GetFurryJson(s:str) -> dict:
         headers = {
         "User-Agent": "AldotaiBot/1.0 Askirin",}
         async with session.get(s, headers=headers) as resp:
-            r = await resp.json()
-            return r
+            return await resp.json()

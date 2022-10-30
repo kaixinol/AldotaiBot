@@ -76,8 +76,7 @@ async def GetFurryJson(Tag: str, context: str = "Safe") -> dict:
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as resp:
-            r = await resp.json()
-            return r
+            return await resp.json()
 
 
 async def GetRandomFurryImg(Tag: str):

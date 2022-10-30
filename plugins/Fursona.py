@@ -103,8 +103,10 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                 },
             )
     except asyncio.exceptions.TimeoutError:
-        await app.send_message(friend, MessageChain(
-            f'超时，取消操作!'), quote=message[Source][0])
+        await app.send_message(
+            friend, MessageChain('超时，取消操作!'), quote=message[Source][0]
+        )
+
         return
 import asyncio
 async def async_download(url: str,save: str):
