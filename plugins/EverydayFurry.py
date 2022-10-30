@@ -44,7 +44,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if ret2.matched:
         msg = await get_furry_img(ret2.header["name"])
     try:
-        if not msg is None:
+        if msg is not None:
             await app.send_message(
                 friend,
                 MessageChain(

@@ -24,13 +24,11 @@ sys.path.append("../")
 async def getdata(url: str):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
-            r = await resp.json()
-            return r
+            return await resp.json()
 async def getfile(f: str):
     async with aiohttp.ClientSession() as session:
         async with session.get(f) as resp:
-            r =await resp.read()
-            return r
+            return await resp.read()
 channel = Channel.current()
 data = asyncio.run(getdata(
     f'https://api.bilibili.com/x/v3/fav/resource/list?media_id={ReadConfig("Randomvideo")["fav_id"]}&ps=20'))['data']['medias']
@@ -41,9 +39,8 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     async def get_good_data():
         rt=(await getdata(f'https://api.bilibili.com/x/web-interface/archive/related?bvid={data[randint(0,len(data)-1)]["bvid"]}'))['data']
-        if not rt:
-            return await get_good_data()
-        return rt
+        return rt or await get_good_data()
+
     if Alconna("来个meme", headers=parsePrefix("Randomvideo")).parse(message[Plain]).matched:
         datat = await get_good_data()
         data2 = datat[randint(0, len(datat)-1)]
