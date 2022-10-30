@@ -12,7 +12,6 @@ from graia.ariadne.message.element import (
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from graia.saya.event import SayaModuleInstalled
 from loguru import logger as l
 
 from util.initializer import *

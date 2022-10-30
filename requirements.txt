@@ -1,5 +1,8 @@
+aiohttp==3.8.1
 creart==0.2.2
+html2text==2020.1.16
 loguru==0.6.0
 psutil==5.9.2
 pydoodle==1.1.3
+pyjson5==1.6.2
 wget==3.2
