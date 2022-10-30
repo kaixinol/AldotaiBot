@@ -6,11 +6,11 @@ from loguru import logger as l
 pool = {}
 
 
-@l.catch
 class sqlLink:
     def __init__(self, path: str, b64: bool = False):
         self.b64 = b64
         if path not in pool:
+            l.info('新连接一个数据库')
             self.link = sqlite3.connect(path)
             pool[path] = self.link
         else:
