@@ -10,7 +10,7 @@ class sqlLink:
     def __init__(self, path: str, b64: bool = False):
         self.b64 = b64
         if path not in pool:
-            l.info('新连接一个数据库')
+            l.info("新连接一个数据库")
             self.link = sqlite3.connect(path)
             pool[path] = self.link
         else:
@@ -19,10 +19,12 @@ class sqlLink:
     def Execute(self, s: str) -> sqlite3.Cursor:
         l.info(f"[SQL]\t{s}")
         return self.link.cursor().execute(s)
+
     @staticmethod
     def CommitAll():
         for i in pool:
             pool[i].commit()
+
     def SearchData(
         self, table: str, column: list | dict | str = "*", require: type = list
     ):

@@ -5,10 +5,9 @@ from util.initializer import *
 from graia.saya.event import SayaModuleInstalled
 from graia.saya import Channel, Saya
 from graia.ariadne.model import Friend, Group
-from graia.ariadne.message.element import (Plain)
+from graia.ariadne.message.element import Plain
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.event.message import (GroupMessage,
-                                         MessageEvent)
+from graia.ariadne.event.message import GroupMessage, MessageEvent
 from graia.ariadne.app import Ariadne
 import psutil
 import platform
@@ -16,6 +15,7 @@ import os
 import sys
 
 from graia.ariadne.util.saya import decorate, listen
+
 sys.path.append("../")
 
 
@@ -32,15 +32,11 @@ async def get_processor_name():
         return subprocess.check_output(command).strip()
     elif platform.system() == "Linux":
         command = "cat /proc/cpuinfo"
-        all_info = subprocess.check_output(
-            command, shell=True).decode().strip()
+        all_info = subprocess.check_output(command, shell=True).decode().strip()
         for line in all_info.split("\n"):
             if "model name" in line:
                 return re.sub(".*model name.*:", "", line, 1)
     return ""
-
-
-
 
 
 async def msg() -> str:
@@ -61,6 +57,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if len(message[Plain]) == 0:
         return
     from arclet.alconna import Alconna
+
     if Alconna("获取配置", headers=parsePrefix("Resmonitor")).parse(message[Plain]).matched:
         data = await msg()
         await app.send_message(

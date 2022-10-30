@@ -25,7 +25,6 @@ saya = Saya.current()
 channel = Channel.current()
 
 
-
 @channel.use(ListenerSchema(listening_events=parseMsgType("EverydayFurry")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     from arclet.alconna import Alconna

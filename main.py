@@ -18,8 +18,9 @@ l.add(
     rotation="00:00",
     level="INFO",
     encoding="utf-8",
-    filter=lambda rec: "graia" not in rec["name"] and "launart" not in rec[
-        "name"] and rec["name"] != 'util.sqliteTool',
+    filter=lambda rec: "graia" not in rec["name"]
+    and "launart" not in rec["name"]
+    and rec["name"] != "util.sqliteTool",
 )
 
 l.add(
@@ -27,7 +28,7 @@ l.add(
     rotation="00:00",
     level="INFO",
     encoding="utf-8",
-    compression='xz',
+    compression="xz",
     filter=lambda rec: "graia" in rec["name"] or "launart" in rec["name"],
 )
 
@@ -36,14 +37,14 @@ l.add(
     rotation="00:00",
     level="INFO",
     encoding="utf-8",
-    filter=lambda rec: rec["name"] == 'util.sqliteTool',
+    filter=lambda rec: rec["name"] == "util.sqliteTool",
 )
 l.add(
     f"{os.getcwd()}/log/groupEvent.log",
     rotation="00:00",
     level="INFO",
     encoding="utf-8",
-    filter=lambda rec: rec["name"] == 'plugins.logger',
+    filter=lambda rec: rec["name"] == "plugins.logger",
 )
 
 

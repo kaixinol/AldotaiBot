@@ -27,12 +27,21 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if len(message[Plain]) == 0:
         return
     from arclet.alconna import Alconna
+
     if Alconna("兽兽", headers=parsePrefix("ShouYunJi")).parse(message[Plain]).matched:
-        data = await GetFurryJson('https://cloud.foxtail.cn/api/function/random')
-        data2 = (await  GetFurryJson(f'https://cloud.foxtail.cn/api/function/pictures?picture={data["picture"]["id"]}&model=1'))
+        data = await GetFurryJson("https://cloud.foxtail.cn/api/function/random")
+        data2 = await GetFurryJson(
+            f'https://cloud.foxtail.cn/api/function/pictures?picture={data["picture"]["id"]}&model=1'
+        )
         await app.send_message(
             friend,
-            MessageChain([Plain(f'名字:{data2["name"]}'),Image(url=data2['url']),Plain(f'id:{data2["picture"]}')]),
+            MessageChain(
+                [
+                    Plain(f'名字:{data2["name"]}'),
+                    Image(url=data2["url"]),
+                    Plain(f'id:{data2["picture"]}'),
+                ]
+            ),
         )
 
 
@@ -42,18 +51,34 @@ async def rdfurry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if len(message[Plain]) == 0:
         return
     from arclet.alconna import Alconna
-    ret=Alconna("兽兽{name}", headers=parsePrefix("ShouYunJi")).parse(message[Plain])
+
+    ret = Alconna("兽兽{name}", headers=parsePrefix("ShouYunJi")).parse(message[Plain])
     if ret.matched:
-        data = (await GetFurryJson(f'https://cloud.foxtail.cn/api/function/pulllist?name={ret.header["name"]}'))['open']
-        datat=data[randint(0,len(data)-1)]
-        data2 = (await  GetFurryJson(f'https://cloud.foxtail.cn/api/function/pictures?picture={datat["id"]}&model=1'))
+        data = (
+            await GetFurryJson(
+                f'https://cloud.foxtail.cn/api/function/pulllist?name={ret.header["name"]}'
+            )
+        )["open"]
+        datat = data[randint(0, len(data) - 1)]
+        data2 = await GetFurryJson(
+            f'https://cloud.foxtail.cn/api/function/pictures?picture={datat["id"]}&model=1'
+        )
         await app.send_message(
             friend,
-            MessageChain([Plain(f'名字:{data2["name"]}'),Image(url=data2['url']),Plain(f'id:{data2["picture"]}')]),
+            MessageChain(
+                [
+                    Plain(f'名字:{data2["name"]}'),
+                    Image(url=data2["url"]),
+                    Plain(f'id:{data2["picture"]}'),
+                ]
+            ),
         )
-async def GetFurryJson(s:str) -> dict:
+
+
+async def GetFurryJson(s: str) -> dict:
     async with aiohttp.ClientSession() as session:
         headers = {
-        "User-Agent": "AldotaiBot/1.0 Askirin",}
+            "User-Agent": "AldotaiBot/1.0 Askirin",
+        }
         async with session.get(s, headers=headers) as resp:
             return await resp.json()

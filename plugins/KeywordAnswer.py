@@ -2,9 +2,9 @@ import re
 import sys
 
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import (MessageEvent)
+from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import (Plain)
+from graia.ariadne.message.element import Plain
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema

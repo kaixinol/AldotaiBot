@@ -3,10 +3,9 @@ import sys
 
 import pydoodle
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import (MessageEvent)
+from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import (Forward,
-                                           ForwardNode, Plain)
+from graia.ariadne.message.element import Forward, ForwardNode, Plain
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
@@ -20,6 +19,7 @@ sys.path.append("../")
 saya = Saya.current()
 
 channel = Channel.current()
+
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("OnlineCompile")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):

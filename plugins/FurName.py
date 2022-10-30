@@ -42,8 +42,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if len(message[Plain]) == 0:
         return
-    ret = Alconna("设置圈名{name}", headers=parsePrefix(
-        "FurName")).parse(message[Plain])
+    ret = Alconna("设置圈名{name}", headers=parsePrefix("FurName")).parse(message[Plain])
     if ret.matched:
         await app.send_message(
             friend,
@@ -70,12 +69,14 @@ def addName(n: str, qq: int) -> str:
     for i in ret:
         if i == [qq, n]:
             return f"你的圈名已经是{n}了"
-        if i[0] == qq and SafeIndex(retDict, 'qq', qq) == SafeIndex(retDict, 'name', n) != -1:
-            x.UpdateTable(
-                "name", {"select": ["qq", qq], "data": {"qq": qq, "name": n}})
+        if (
+            i[0] == qq
+            and SafeIndex(retDict, "qq", qq) == SafeIndex(retDict, "name", n) != -1
+        ):
+            x.UpdateTable("name", {"select": ["qq", qq], "data": {"qq": qq, "name": n}})
             return f"你的圈名现在是{n}了"
-        if i[1] == n and SafeIndex(retDict, 'qq', qq) != SafeIndex(retDict, 'name', n):
-            same_name = retDict['qq'][retDict['name'].index(n)]
+        if i[1] == n and SafeIndex(retDict, "qq", qq) != SafeIndex(retDict, "name", n):
+            same_name = retDict["qq"][retDict["name"].index(n)]
             return f"你的圈名与{same_name}重名"
     x.InsertTable("name", {"qq": qq, "name": n})
     return f"你的圈名现在是{n}了"

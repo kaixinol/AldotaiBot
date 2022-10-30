@@ -9,10 +9,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage, MessageEvent
 from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import (
-    Image,
-    Plain
-)
+from graia.ariadne.message.element import Image, Plain
 from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel, Saya
@@ -28,7 +25,7 @@ channel = Channel.current()
 
 
 @listen(GroupMessage)
-@dispatch(Twilight(RegexMatch(f'^(来只兽).{{0,}}')))
+@dispatch(Twilight(RegexMatch(f"^(来只兽).{{0,}}")))
 @decorate(GroupInterval.require(20, 10, send_alert=True))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     from arclet.alconna import Alconna
@@ -38,8 +35,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         return
     config = ReadConfig("E621")
     ret = Alconna("来只兽", headers=parsePrefix("E621")).parse(message[Plain])
-    ret2 = Alconna("来只兽{name}", headers=parsePrefix(
-        "E621")).parse(message[Plain])
+    ret2 = Alconna("来只兽{name}", headers=parsePrefix("E621")).parse(message[Plain])
     if not ret.matched and not ret2.matched:
         return
     if ret.matched:
@@ -53,9 +49,10 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         MessageChain(
             [
                 Image(url=ret["url"]),
-                Plain(f'\nsources:{ret["sources"][-2:]}\nid:{ret["id"]}')
+                Plain(f'\nsources:{ret["sources"][-2:]}\nid:{ret["id"]}'),
             ]
-        ), quote=event.id
+        ),
+        quote=event.id,
     )
 
 

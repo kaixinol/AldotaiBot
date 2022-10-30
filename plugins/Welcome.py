@@ -21,4 +21,3 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MemberJoinEvent):
         friend,
         MessageChain("欢迎新成员，本bot文档地址：https://botdoc-jlmo.vercel.app/"),
     )
-

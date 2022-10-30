@@ -12,7 +12,6 @@ from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 
 
-
 class GroupInterval:
     """用于管理群组调用bot的冷却的类，不应被实例化"""
 

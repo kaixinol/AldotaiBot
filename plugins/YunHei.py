@@ -44,9 +44,6 @@ sys.path.append("../")
 channel = Channel.current()
 
 
-
-
-
 @channel.use(ListenerSchema(listening_events=parseMsgType("YunHei")))
 async def Single(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
@@ -79,6 +76,7 @@ async def IsBlacklisted(qq: int):
             r = await resp.text()
     txt = html2text.html2text(r)
     return txt[txt.find("请输入账号或群号查询:") + 13 : txt.find("[举报上黑]") - 3]
+
 
 async def IsMemberBlacklisted(qq: list):
     l.debug(f"共{len(qq)}条数据")
@@ -174,7 +172,6 @@ async def GroupFind(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             friend,
             MessageChain(data),
         )
-
 
 
 # print(IsMemberBlacklisted([35464, 634132164, 643161, 16541365, 2352449583]))
