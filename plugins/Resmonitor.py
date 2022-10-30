@@ -40,8 +40,7 @@ async def get_processor_name():
     return ""
 
 
-async def module_listener(event: SayaModuleInstalled):
-    print(f"{event.module}::模块加载成功!!!")
+
 
 
 async def msg() -> str:
@@ -53,7 +52,6 @@ CPU 当前频率：{psutil.cpu_freq().current//1}MHz
 可用内存：{psutil.virtual_memory().available / GB// 1}GB
 可用磁盘容量：{psutil.disk_usage("/").free / GB //1}GB
 Python 版本：{platform.python_version()}
-Mirai-http-api：{await Ariadne.get_version()}
 """
 
 
@@ -63,8 +61,6 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if len(message[Plain]) == 0:
         return
     from arclet.alconna import Alconna
-
-    print()
     if Alconna("获取配置", headers=parsePrefix("Resmonitor")).parse(message[Plain]).matched:
         data = await msg()
         await app.send_message(

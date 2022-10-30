@@ -44,8 +44,7 @@ sys.path.append("../")
 channel = Channel.current()
 
 
-async def module_listener(event: SayaModuleInstalled):
-    print(f"{event.module}::模块加载成功!!!")
+
 
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("YunHei")))

@@ -29,6 +29,8 @@ from util.parseTool import *
 from util.sqliteTool import sqlLink
 
 sys.path.append("../")
+x = sqlLink("./db/furryData.db", b64=True)
+x.CreateTable("name", {"qq": int, "name": str})
 
 channel = Channel.current()
 
@@ -63,8 +65,6 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
 
 def addName(n: str, qq: int) -> str:
-    x = sqlLink("./db/furryData.db", b64=True)
-    x.CreateTable("name", {"qq": int, "name": str})
     ret = x.SearchData("name", ["qq", "name"])
     retDict = x.parseDataToDict(ret, ["qq", "name"])
     for i in ret:
@@ -88,8 +88,6 @@ def SafeIndex(l: dict, key: str, wt) -> int:
 
 
 def getName(qq: int) -> str:
-    x = sqlLink("./db/furryData.db", b64=True)
-    x.CreateTable("name", {"qq": int, "name": str})
     ret = x.SearchData("name", {"select": "name", "data": {"qq": qq}})
     return x.ToPureList(ret)[0] if len(ret) == 1 else "[未设置圈名]"
 

@@ -18,8 +18,6 @@ from loguru import logger as l
 
 from util.initializer import *
 from util.parseTool import *
-from io import BytesIO
-from PIL import Image as im
 sys.path.append("../")
 
 
@@ -36,18 +34,22 @@ async def getfile(f: str):
 channel = Channel.current()
 data = asyncio.run(getdata(
     f'https://api.bilibili.com/x/v3/fav/resource/list?media_id={ReadConfig("Randomvideo")["fav_id"]}&ps=20'))['data']['medias']
-print(data)
-
+l.info(f'缓存了{len(data)}条数据')
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("Randomvideo")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
+    async def get_good_data():
+        rt=(await getdata(f'https://api.bilibili.com/x/web-interface/archive/related?bvid={data[randint(0,len(data)-1)]["bvid"]}'))['data']
+        if not rt:
+            return await get_good_data()
+        return rt
     if Alconna("来个meme", headers=parsePrefix("Randomvideo")).parse(message[Plain]).matched:
-      try:
-        datat = (await getdata(f'https://api.bilibili.com/x/web-interface/archive/related?bvid={data[randint(0,len(data)-1)]["bvid"]}'))['data']
+        datat = await get_good_data()
         data2 = datat[randint(0, len(datat)-1)]
-        await app.send_message(friend, [Plain(data2['title']+'\n')+Image(url=data2['pic']+'@400w.png')+Plain('https://www.bilibili.com/video/'+data2['bvid'])])
-      except:
-        await app.send_message(friend, [Image(url=f"file:///{os.getcwd()}/res/error.jpg")+Plain('发生了错误，可能是因为超时或者风控')])
+        try:
+         await app.send_message(friend, [Plain(data2['title']+'\n')+Image(url=data2['pic']+'@400w.png')+Plain('https://www.bilibili.com/video/'+data2['bvid'])])
+        except Exception as e:
+         await app.send_message(friend, [Image(url=f"file:///{os.getcwd()}/res/error.jpg")+Plain(f'发生了错误，{str(e)}')])
 
 

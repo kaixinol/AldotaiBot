@@ -8,9 +8,6 @@ from graia.ariadne.connection.config import (
     WebsocketClientConfig,
     config,
 )
-from graia.ariadne.event.message import GroupMessage
-from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.model import Group
 from graia.saya import Saya
 from loguru import logger as l
 
@@ -82,6 +79,5 @@ app = Ariadne(
         WebsocketClientConfig("http://127.0.0.1:8087"),
     ),
 )
-
 
 app.launch_blocking()

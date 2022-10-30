@@ -15,17 +15,13 @@
       id: '9919ec260bc24c2c4eab4534d7df9225',
       secret: '50419d8f128885d6ba5dc01f32f85aa9fc350e0187ffe21bb8281c5d4c40fae',
       prefix: [
-        '?',
-        '？',
+        '！',
+        '!',
       ],
     },
     E621: {
       username: 'krawini',
       secret: '',
-      prefix: [
-        '!',
-        '！',
-      ],
       default: [
         'dog+cat',
         'changed_(video_game)',
@@ -36,15 +32,15 @@
         'Group',
       ],
       fav_id: '1280741082',
-      prefix: [
-        '!',
-        '！'
-      ],
     },
     Resmonitor: {
       process: [
         'Group',
         'Friend',
+      ],
+      prefix: [
+        '！',
+        '!',
       ],
     },
     FurName: {
@@ -52,8 +48,8 @@
         'Group',
       ],
       prefix: [
-        '!',
         '！',
+        '!',
       ],
     },
     KeywordAnswer: {
@@ -116,6 +112,7 @@
         'Friend',
       ],
     },
+    ShouYunJi:{},
     _: [
       'xx',
       'xxx',

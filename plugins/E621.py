@@ -26,9 +26,10 @@ sys.path.append("../")
 saya = Saya.current()
 channel = Channel.current()
 
+
 @listen(GroupMessage)
-@dispatch(Twilight(RegexMatch(f'[{"".join(parsePrefix("E621"))}.](来只兽)')))
-@decorate(GroupInterval.require(20, 10,send_alert=True))
+@dispatch(Twilight(RegexMatch(f'^(来只兽).{{0,}}')))
+@decorate(GroupInterval.require(20, 10, send_alert=True))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     from arclet.alconna import Alconna
 
@@ -37,7 +38,8 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         return
     config = ReadConfig("E621")
     ret = Alconna("来只兽", headers=parsePrefix("E621")).parse(message[Plain])
-    ret2 = Alconna("来只兽{name}", headers=parsePrefix("E621")).parse(message[Plain])
+    ret2 = Alconna("来只兽{name}", headers=parsePrefix(
+        "E621")).parse(message[Plain])
     if not ret.matched and not ret2.matched:
         return
     if ret.matched:
@@ -46,22 +48,20 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         )
     if ret2.matched:
         ret = await GetRandomFurryImg(ret2.header["name"].replace(",", "+"))
-
-    config = ReadConfig("E621")
     await app.send_message(
         friend,
         MessageChain(
             [
                 Image(url=ret["url"]),
-                Plain(f'\nsources:{ret["sources"][-2:]}\nid:{ret["id"]}'),
+                Plain(f'\nsources:{ret["sources"][-2:]}\nid:{ret["id"]}')
             ]
-        ),
+        ), quote=event.id
     )
 
 
 async def GetFurryJson(Tag: str, context: str = "Safe") -> dict:
     t = {"Safe": "s", "Questionable": "q", "Explicit": "e"}[context]
-    config = ReadConfig("e621")
+    config = ReadConfig("E621")
     if re.compile("[\u4e00-\u9fa5]").search(Tag):
         return None
     base64string = base64.b64encode(
@@ -89,7 +89,7 @@ async def GetRandomFurryImg(Tag: str):
             "sources": aBuffer["sources"],
             "id": aBuffer["id"],
         }
-    except:
+    except Exception as e:
         return {
             "url": rf"file:///{os.getcwd()}/res/error.jpg",
             "sources": ["发生了错误！可能由于网络错误或api配置不正确"],

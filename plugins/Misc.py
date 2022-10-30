@@ -9,7 +9,7 @@ from loguru import logger as l
 channel = Channel.current()
 
 
-@channel.use(SchedulerSchema(timers.every_minute()))
+@channel.use(SchedulerSchema(timers.every_custom_minutes(10)))
 async def every_minute_speaking(app: Ariadne):
     sqlLink.CommitAll()
 

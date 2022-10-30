@@ -17,12 +17,12 @@
 <li>[x] 云黑</li>
 <li>[x] 设定分享</li>
 <li>[x] Furry图片(E621)</li>
-<li>[ ] Furry图片(兽云祭)</li>
+<li>[x] Furry图片(兽云祭)</li>
 <li>[ ] 绒狸</li>
 <li>[x] 每日一兽</li>
 <li>[x] 圈名</li>
 <li>[x] 关键词回复</li>
-<li>[ ] 随机meme</li>
+<li>[x] 随机meme</li>
 <li>[ ] <s>自动广播</s><sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></li>
 <li>[ ] <em>排行榜</em></li>
 <li>[ ] <em>交易</em></li>
@@ -84,12 +84,12 @@
 - [x] 云黑
 - [x] 设定分享
 - [x] Furry图片(E621)
-- [ ] Furry图片(兽云祭)
+- [x] Furry图片(兽云祭)
 - [ ] 绒狸
 - [x] 每日一兽
 - [x] 圈名
 - [x] 关键词回复
-- [ ] 随机meme
+- [x] 随机meme
 - [ ] ~~自动广播~~[^2]
 - [ ] *排行榜*
 - [ ] *交易*
@@ -128,4 +128,5 @@ Made by [markdown-it](https://markdown-it.github.io/)
 
 ## 参考
 [Redbot](https://github.com/Redlnn/redbot/tree/master/core_modules)
+
 -->

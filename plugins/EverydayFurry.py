@@ -25,9 +25,6 @@ saya = Saya.current()
 channel = Channel.current()
 
 
-async def module_listener(event: SayaModuleInstalled):
-    print(f"{event.module}::模块加载成功!!!")
-
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("EverydayFurry")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
