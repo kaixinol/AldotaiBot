@@ -24,7 +24,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MemberJoinEvent):
     )
 
 @channel.use(ListenerSchema(listening_events=[GroupMessage,FriendMessage]))
-async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+async def help(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if message.display.lower() in ["帮助","!帮助","！帮助","help"]:
         await app.send_message(

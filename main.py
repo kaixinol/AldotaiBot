@@ -51,26 +51,20 @@ l.add(
 saya = create(Saya)
 configJson = js.ReadJson("config.json5")
 
+enabled_plugins = [
+    ii
+    for ii in list(configJson["plugin"].keys())[:-1]
+    if "disabled" not in configJson["plugin"][ii]
+    or not configJson["plugin"][ii]["disabled"]
+]
 l.debug(
-    str(
-        [
-            ii
-            for ii in list(configJson["plugin"].keys())[:-1]
-            if "disabled" not in configJson["plugin"][ii]
-            or not configJson["plugin"][ii]["disabled"]
-        ]
-    )
+    f'共加载{len(enabled_plugins)}个插件。{enabled_plugins}'
 )
 
 sys.path.append("plugins")
 
 with saya.module_context():
-    for i in [
-        ii
-        for ii in list(configJson["plugin"].keys())[:-1]
-        if "disabled" not in configJson["plugin"][ii]
-        or not configJson["plugin"][ii]["disabled"]
-    ]:
+    for i in enabled_plugins:
         saya.require(f"plugins.{i}")
 
 app = Ariadne(

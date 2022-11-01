@@ -5,6 +5,7 @@
     114514,
   ],
   plugin: {
+    Welcome: {},
     Logger: {},
     Misc: {},
     OnlineCompile: {
