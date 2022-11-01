@@ -91,10 +91,15 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     try:
         result = await FunctionWaiter(
             waiter, [GroupMessage], block_propagation=True
-        ).wait(timeout=10)
-        if not result.get(Image):
+        ).wait(timeout=30)
+    except asyncio.exceptions.TimeoutError:
+            await app.send_message(
+                friend, MessageChain("超时，取消操作!"), quote=message[Source][0]
+        )
+            return
+    if not result[Image]:
             await app.send_message(friend, Plain("非图片，取消操作"))
-        else:
+    else:
             imgList = []
             for i in result[Image]:
                 if not os.path.exists(f"./db/{i.id}"):
@@ -108,12 +113,7 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                     "data": {"qq": event.sender.id, "imgJson": json.dumps(imgList)},
                 },
             )
-    except asyncio.exceptions.TimeoutError:
-        await app.send_message(
-            friend, MessageChain("超时，取消操作!"), quote=message[Source][0]
-        )
 
-        return
 
 
 import asyncio
