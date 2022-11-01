@@ -23,7 +23,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MemberJoinEvent):
         MessageChain("欢迎新成员，本bot文档地址：https://botdoc-jlmo.vercel.app/"),
     )
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("Fursona")))
+@channel.use(ListenerSchema(listening_events=[GroupMessage,FriendMessage]))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if message.display.lower() in ["帮助","!帮助","！帮助","help"]:
