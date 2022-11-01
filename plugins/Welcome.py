@@ -20,7 +20,7 @@ channel = Channel.current()
 async def setu(app: Ariadne, friend: Friend | Group, event: MemberJoinEvent):
     await app.send_message(
         friend,
-        MessageChain("欢迎新成员，本bot文档地址：https://botdoc-jlmo.vercel.app/"),
+        MessageChain("欢迎新成员，本bot文档地址：https://reset.forcecat.cn/AldotaiDoc/"),
     )
 
 @channel.use(ListenerSchema(listening_events=[GroupMessage,FriendMessage]))
@@ -29,5 +29,5 @@ async def help(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if message.display.lower() in ["帮助","!帮助","！帮助","help"]:
         await app.send_message(
         friend,
-        MessageChain("本bot文档地址：https://botdoc-jlmo.vercel.app/"),
+        MessageChain("本bot文档地址：https://reset.forcecat.cn/AldotaiDoc/https://botdoc-jlmo.vercel.app/"),
     )

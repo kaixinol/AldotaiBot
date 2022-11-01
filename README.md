@@ -1,5 +1,5 @@
 <h1>阿尔多泰Bot</h1>
-<p>文档：<a href="https://botdoc-jlmo.vercel.app/">https://botdoc-jlmo.vercel.app/</a></p>
+<p>文档：<a href="https://reset.forcecat.cn/AldotaiDoc/">https://reset.forcecat.cn/AldotaiDoc/</a></p>
 <h2>快速开始</h2>
 <ol>
 <li><code>pip install -r requirements.txt</code></li>
@@ -69,7 +69,7 @@
 
 
 # 阿尔多泰Bot
-文档：https://botdoc-jlmo.vercel.app/
+文档：https://reset.forcecat.cn/AldotaiDoc/
 ## 快速开始
 
 1. `pip install -r requirements.txt`
