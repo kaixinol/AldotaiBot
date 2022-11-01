@@ -1,4 +1,5 @@
 <h1>阿尔多泰Bot</h1>
+<p>文档：<a href="https://botdoc-jlmo.vercel.app/">https://botdoc-jlmo.vercel.app/</a></p>
 <h2>快速开始</h2>
 <ol>
 <li><code>pip install -r requirements.txt</code></li>
@@ -35,7 +36,7 @@
 <ul>
 <li><s>关键词屏蔽</s><sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></li>
 <li>jsonTool</li>
-<li>qliteTool</li>
+<li>sqliteTool</li>
 <li>initializer</li>
 <li>parseTool</li>
 </ul>
@@ -46,7 +47,6 @@
 <li>[x] 权限管理</li>
 <li>[x] 群权限记录</li>
 <li>[x] 分群冻结使用频率</li>
-<li>[ ] 反馈</li>
 </ul>
 </details>
 <blockquote>
@@ -64,9 +64,12 @@
 </li>
 </ol>
 </section>
+
 <!--
 
+
 # 阿尔多泰Bot
+文档：https://botdoc-jlmo.vercel.app/
 ## 快速开始
 
 1. `pip install -r requirements.txt`
@@ -103,7 +106,7 @@
 
 - ~~关键词屏蔽~~[^1]
 - jsonTool
-- qliteTool
+- sqliteTool
 - initializer
 - parseTool
 </details>
@@ -114,7 +117,6 @@
 - [x] 权限管理
 - [x] 群权限记录
 - [x] 分群冻结使用频率
-- [ ] 反馈
 
 </details>
 
@@ -128,5 +130,6 @@ Made by [markdown-it](https://markdown-it.github.io/)
 
 ## 参考
 [Redbot](https://github.com/Redlnn/redbot/tree/master/core_modules)
+
 
 -->

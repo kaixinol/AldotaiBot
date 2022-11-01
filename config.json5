@@ -112,10 +112,13 @@
         'Friend',
       ],
     },
-    ShouYunJi:{},
+    ShouYunJi: {},
     _: [
-      'xx',
-      'xxx',
+      'jsonTool',
+      'sqliteTool',
+      'initializer',
+      'parseTool',
+      'interval.py'
     ],
   },
 }
