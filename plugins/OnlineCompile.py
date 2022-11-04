@@ -5,12 +5,14 @@ import pydoodle
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import Forward, ForwardNode, Plain
+from graia.ariadne.message.element import Forward, ForwardNode, Plain,Source
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from graia.saya.event import SayaModuleInstalled
 from loguru import logger as l
+from graia.ariadne.util.saya import decorate, dispatch, listen
+
 
 from util.initializer import *
 from util.parseTool import *
@@ -21,6 +23,7 @@ saya = Saya.current()
 channel = Channel.current()
 
 
+    
 @channel.use(ListenerSchema(listening_events=parseMsgType("OnlineCompile")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
@@ -34,6 +37,10 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         .header
     )
     if not dic:
+        return
+    if type(friend)==Group:
+        await app.send_message(
+                friend, MessageChain(Plain('加好友后才能使用本功能')),quote=message[Source][0])
         return
     infos = ""
     try:

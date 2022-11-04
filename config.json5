@@ -7,7 +7,9 @@
   plugin: {
     Welcome: {},
     Logger: {},
-    Misc: {},
+    Misc: {
+      message: ['*突然出现','awa','o(´^｀)o','你好！我是机器兽','抱抱你们……','呜呜呜','你知道我的主人是谁吗owo']
+    },
     OnlineCompile: {
       process: [
         'Group',
