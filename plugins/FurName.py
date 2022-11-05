@@ -96,7 +96,7 @@ def SafeIndex(l: dict, key: str, wt) -> int:
 
 def getName(qq: int) -> str:
     ret = x.SearchData("name", {"select": "name", "data": {"qq": qq}})
-    return x.ToPureList(ret)[0] if len(ret) == 1 else "[未设置圈名]"
+    return x.ToPureList(ret)[len(ret)-1] if len(ret) >= 1 else "[未设置圈名]"
 
 
 if __name__ == "__main__":
