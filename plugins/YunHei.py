@@ -151,7 +151,7 @@ async def GroupFind(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             MessageChain(f"数据较多……需要等待{2*len(qqMember)/200}秒"),
         )
     data = await IsMemberBlacklisted([i.id for i in qqMember])
-    if len(data) == 0:
+    if  not data:
         data = "无上云黑人员"
     if data.count("\n") > 5 or len(data) > 128:
         await app.send_message(

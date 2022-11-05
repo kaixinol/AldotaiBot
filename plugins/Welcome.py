@@ -9,7 +9,7 @@ from graia.ariadne.message.chain import MessageChain,Plain
 from graia.ariadne.app import Ariadne
 import sys
 from graia.ariadne.util.saya import decorate, dispatch, listen
-
+import asyncio
 
 sys.path.append("../")
 
@@ -22,7 +22,7 @@ channel = Channel.current()
 async def setu(app: Ariadne, friend: Friend | Group, event: MemberJoinEvent):
     await app.send_message(
         friend,
-        MessageChain("欢迎新成员，本bot文档地址：https://reset.forcecat.cn/"),
+        MessageChain("欢迎新成员，本bot文档地址：https://reset.forcecat.cn/（复制到浏览器后访问）"),
     )
 
 @channel.use(ListenerSchema(listening_events=[GroupMessage,FriendMessage]))
@@ -31,7 +31,7 @@ async def help(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if message.display.lower() in ["帮助","!帮助","！帮助","help"]:
         await app.send_message(
         friend,
-        MessageChain("本bot文档地址：https://reset.forcecat.cn/"),
+        MessageChain("本bot文档地址：https://reset.forcecat.cn/（复制到浏览器后访问）"),
     )
 
 @listen(NewFriendRequestEvent)
@@ -40,5 +40,6 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
     收到好友申请
     """
     await event.accept()
+    await asyncio.sleep(10)
     await app.send_friend_message(event.supplicant, MessageChain(Plain('已通过你的好友申请')))
     return

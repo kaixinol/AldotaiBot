@@ -23,10 +23,9 @@ sys.path.append("../")
 saya = Saya.current()
 channel = Channel.current()
 
-
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^(来只兽).{{0,}}")))
-@decorate(GroupInterval.require(20, 10, send_alert=True))
+@decorate(GroupInterval.require(5, 10, send_alert=True))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     from arclet.alconna import Alconna
 

@@ -84,7 +84,7 @@ def addName(n: str, qq: int) -> str:
         if i[1] == n and SafeIndex(retDict, "qq", qq) != SafeIndex(retDict, "name", n):
             same_name = retDict["qq"][retDict["name"].index(n)]
             return f"你的圈名与{same_name}重名"
-    x.InsertTable("name", {"qq": qq, "name": n})
+    x.UpdateTable("name", {"select": ["qq", qq], "data": {"qq": qq, "name": n}})
     return f"你的圈名现在是{n}了"
 
 

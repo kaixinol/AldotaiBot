@@ -23,7 +23,7 @@ async def every_minute_speaking(app: Ariadne):
     sqlLink.CommitAll()
 
 
-@channel.use(SchedulerSchema(timers.every_custom_hours(randint(3, 9))))
+@channel.use(SchedulerSchema(timers.every_custom_hours(randint(1, 4))))
 async def TRCX(app: Ariadne):
     rand_group = (await app.get_group_list())
     send_group = rand_group[randint(0, len(rand_group)-1)]

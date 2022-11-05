@@ -49,6 +49,7 @@
     FurName: {
       process: [
         'Group',
+        'Friend'
       ],
       prefix: [
         '！',
