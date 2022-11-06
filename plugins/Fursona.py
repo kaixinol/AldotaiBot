@@ -4,7 +4,8 @@ import json
 import os
 import re
 import sys
-import wget
+import aiohttp
+import aiofiles
 from graia.ariadne.util.async_exec import io_bound, cpu_bound
 from graia.ariadne.util.interrupt import FunctionWaiter
 from arclet.alconna import Alconna
@@ -38,9 +39,13 @@ def imgcmp(img: Image):
 
 
 async def async_download(url: str, save: str):
-    loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(None, wget.download, url, save)
-
+ async with aiohttp.ClientSession() as session:
+    async with session.get(url) as resp:
+        print(resp.status)
+        if resp.status == 200:
+            with open(save, mode='wb') as f:
+             f.write(await resp.read())
+             f.close()
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("Fursona")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
