@@ -10,6 +10,7 @@ from graia.ariadne.app import Ariadne
 import sys
 from graia.ariadne.util.saya import decorate, dispatch, listen
 import asyncio
+from util.interval import GroupInterval
 
 sys.path.append("../")
 
@@ -18,11 +19,12 @@ saya = Saya.current()
 channel = Channel.current()
 
 
-@channel.use(ListenerSchema(listening_events=[MemberJoinEvent]))
+@listen(MemberJoinEvent)
+@decorate(GroupInterval.require(1, 60*10))
 async def setu(app: Ariadne, friend: Friend | Group, event: MemberJoinEvent):
     await app.send_message(
         friend,
-        MessageChain("欢迎新成员，本bot文档地址：https://reset.forcecat.cn/（复制到浏览器后访问）"),
+        MessageChain("欢迎新成员，本bot使用方法请发送help。"),
     )
 
 @channel.use(ListenerSchema(listening_events=[GroupMessage,FriendMessage]))
