@@ -23,6 +23,7 @@ sys.path.append("../")
 saya = Saya.current()
 channel = Channel.current()
 
+
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^(来只兽).{{0,}}")))
 @decorate(GroupInterval.require(5, 10, send_alert=True))

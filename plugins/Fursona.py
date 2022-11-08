@@ -17,7 +17,7 @@ from graia.ariadne.model import Friend, Group, Member
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger as l
-from graia.ariadne.util.validator import CertainMember,CertainFriend
+from graia.ariadne.util.validator import CertainMember, CertainFriend
 
 from plugins.FurName import getName
 from util.initializer import *
@@ -39,13 +39,14 @@ def imgcmp(img: Image):
 
 
 async def async_download(url: str, save: str):
- async with aiohttp.ClientSession() as session:
-    async with session.get(url) as resp:
-        print(resp.status)
-        if resp.status == 200:
-            with open(save, mode='wb') as f:
-             f.write(await resp.read())
-             f.close()
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            print(resp.status)
+            if resp.status == 200:
+                with open(save, mode="wb") as f:
+                    f.write(await resp.read())
+                    f.close()
+
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("Fursona")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
@@ -63,7 +64,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         else:
             imgList = []
             for img in message.get(Image):
-                if (imgcmp(img)):
+                if imgcmp(img):
                     await app.send_message(
                         friend,
                         MessageChain(Plain("警告:图片分辨率过大或图片体积过大")),
@@ -96,21 +97,28 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     async def waiter(
         waiter_message: MessageChain,
     ):
-        return waiter_message if waiter_message.has(Image) else 'ERROR'
-    if type(friend)==Group:
+        return waiter_message if waiter_message.has(Image) else "ERROR"
+
+    if type(friend) == Group:
         result = await FunctionWaiter(
-        waiter, [GroupMessage], decorators=[CertainMember(event.sender.id, event.sender.group)], block_propagation=True,
-        ).wait(timeout=30, default='ERROR')
+            waiter,
+            [GroupMessage],
+            decorators=[CertainMember(event.sender.id, event.sender.group)],
+            block_propagation=True,
+        ).wait(timeout=30, default="ERROR")
     else:
         result = await FunctionWaiter(
-        waiter, [FriendMessage], decorators=[CertainFriend(event.sender.id)], block_propagation=True,
-        ).wait(timeout=30, default='ERROR')
-    if result == 'ERROR':
+            waiter,
+            [FriendMessage],
+            decorators=[CertainFriend(event.sender.id)],
+            block_propagation=True,
+        ).wait(timeout=30, default="ERROR")
+    if result == "ERROR":
         await app.send_message(friend, Plain("超时或类型不对，取消操作"))
     else:
         imgList = []
         for i in result[Image]:
-            if (imgcmp(i)):
+            if imgcmp(i):
                 await app.send_message(
                     friend,
                     MessageChain(Plain("警告:图片分辨率过大或图片体积过大")),
@@ -136,8 +144,7 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         if getName(event.sender.id) != "[未设置圈名]":
             data = x.ToPureList(
                 x.SearchData(
-                    "fursona", {"select": "imgJson",
-                                "data": {"qq": event.sender.id}}
+                    "fursona", {"select": "imgJson", "data": {"qq": event.sender.id}}
                 )
             )
             if not data:
@@ -148,8 +155,7 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                 return
             desc = x.ToPureList(
                 x.SearchData(
-                    "fursona", {"select": "desc",
-                                "data": {"qq": event.sender.id}}
+                    "fursona", {"select": "desc", "data": {"qq": event.sender.id}}
                 )
             )[0]
             rzt = json.loads(data[0])
@@ -175,8 +181,7 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 @channel.use(ListenerSchema(listening_events=parseMsgType("FurName")))
 async def addDesc(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    ret = Alconna("添加介绍{desc}", headers=parsePrefix(
-        "Fursona")).parse(message[Plain])
+    ret = Alconna("添加介绍{desc}", headers=parsePrefix("Fursona")).parse(message[Plain])
     if ret.matched and getName(event.sender.id) != "[未设置圈名]":
         x.Execute(
             f'UPDATE fursona SET desc = \'{encode(ret.header["desc"])}\' WHERE qq={event.sender.id};'

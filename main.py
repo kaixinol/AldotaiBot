@@ -57,9 +57,7 @@ enabled_plugins = [
     if "disabled" not in configJson["plugin"][ii]
     or not configJson["plugin"][ii]["disabled"]
 ]
-l.debug(
-    f'共加载{len(enabled_plugins)}个插件。{enabled_plugins}'
-)
+l.debug(f"共加载{len(enabled_plugins)}个插件。{enabled_plugins}")
 
 sys.path.append("plugins")
 

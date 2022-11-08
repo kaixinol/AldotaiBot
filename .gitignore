@@ -133,3 +133,4 @@ util/*.db
 db/*.mirai
 db/*.db-journal
 db/*.db
+nohup.out

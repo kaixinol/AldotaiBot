@@ -22,9 +22,11 @@ from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from util.initializer import *
 from util.parseTool import *
 from graia.ariadne.util.saya import decorate, dispatch, listen
-from graia.ariadne.util.validator import CertainMember,CertainFriend
+from graia.ariadne.util.validator import CertainMember, CertainFriend
 from graia.ariadne.util.interrupt import FunctionWaiter
 from urllib.parse import quote_plus
+
+
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^兽兽")))
 @decorate(GroupInterval.require(3, 10, send_alert=True))
@@ -60,8 +62,7 @@ async def rdfurry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         return
     from arclet.alconna import Alconna
 
-    ret = Alconna("兽兽{name}", headers=parsePrefix(
-        "ShouYunJi")).parse(message[Plain])
+    ret = Alconna("兽兽{name}", headers=parsePrefix("ShouYunJi")).parse(message[Plain])
     if ret.matched:
         data = (
             await GetFurryJson(
@@ -98,49 +99,58 @@ async def GetFurryJson(s: str) -> dict:
 @decorate(GroupInterval.require(3, 10, send_alert=True))
 async def upload_shouyunji(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     # await async_download(message.url,message.id)
-    message=event.message_chain
-    ret = Alconna("上传兽云祭{name}").parse(message[Plain]).header['name']
-    p={}
-    p['name']=quote_plus(ret)
-# WAITER
+    message = event.message_chain
+    ret = Alconna("上传兽云祭{name}").parse(message[Plain]).header["name"]
+    p = {}
+    p["name"] = quote_plus(ret)
+    # WAITER
     def waiter(
         waiter_message: MessageChain,
     ):
-        return waiter_message[Image][0] if waiter_message.has(Image) else 'ERROR'
+        return waiter_message[Image][0] if waiter_message.has(Image) else "ERROR"
+
     def waiter2(
         waiter_message: MessageChain,
     ):
-        return waiter_message if waiter_message.display in ['0','1','2'] else 'ERROR'
+        return waiter_message if waiter_message.display in ["0", "1", "2"] else "ERROR"
+
     await app.send_message(friend, Plain("请发送图片"))
-# INIT IMG
+    # INIT IMG
     result = await FunctionWaiter(
-        waiter, [GroupMessage], decorators=[CertainMember(event.sender.id, event.sender.group)], block_propagation=True,
-        ).wait(timeout=30, default='ERROR')
-    if result=='ERROR':
+        waiter,
+        [GroupMessage],
+        decorators=[CertainMember(event.sender.id, event.sender.group)],
+        block_propagation=True,
+    ).wait(timeout=30, default="ERROR")
+    if result == "ERROR":
         await app.send_message(friend, Plain("超时或类型不对，取消操作"))
     else:
-        await async_download(result.url,result.id)
-        p['file']=open(result.id,mode='r+b')
+        await async_download(result.url, result.id)
+        p["file"] = open(result.id, mode="r+b")
     await app.send_message(friend, Plain("请发送类型数字\n0.设定 1.毛图  2.插画"))
-# INIT TYPE
+    # INIT TYPE
     result2 = await FunctionWaiter(
-        waiter2, [GroupMessage], decorators=[CertainMember(event.sender.id, event.sender.group)], block_propagation=True,
-        ).wait(timeout=30, default='ERROR')
-    if result2=='ERROR':
+        waiter2,
+        [GroupMessage],
+        decorators=[CertainMember(event.sender.id, event.sender.group)],
+        block_propagation=True,
+    ).wait(timeout=30, default="ERROR")
+    if result2 == "ERROR":
         await app.send_message(friend, Plain("超时或类型不对，取消操作"))
     else:
-        p['type']=result2.display
+        p["type"] = result2.display
     async with aiohttp.ClientSession() as session:
-            url = 'https://cloud.foxtail.cn/api/function/upload'
-            s=await session.post(url, data=p)
-            print(await s.json())
-            os.remove(result.id)
+        url = "https://cloud.foxtail.cn/api/function/upload"
+        s = await session.post(url, data=p)
+        print(await s.json())
+        os.remove(result.id)
+
 
 async def async_download(url: str, save: str):
- async with aiohttp.ClientSession() as session:
-    async with session.get(url) as resp:
-        print(resp.status)
-        if resp.status == 200:
-            with open(save, mode='wb') as f:
-             f.write(await resp.read())
-             f.close()
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            print(resp.status)
+            if resp.status == 200:
+                with open(save, mode="wb") as f:
+                    f.write(await resp.read())
+                    f.close()

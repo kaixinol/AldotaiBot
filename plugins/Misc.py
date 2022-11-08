@@ -19,13 +19,13 @@ channel = Channel.current()
 
 @channel.use(SchedulerSchema(timers.every_custom_minutes(30)))
 async def every_minute_speaking(app: Ariadne):
-    l.info('COMMIT')
+    l.info("COMMIT")
     sqlLink.CommitAll()
 
 
 @channel.use(SchedulerSchema(timers.every_custom_hours(randint(1, 4))))
 async def TRCX(app: Ariadne):
-    rand_group = (await app.get_group_list())
-    send_group = rand_group[randint(0, len(rand_group)-1)]
-    send_msg = ReadConfig('Misc')['message']
-    await app.send_group_message(send_group, send_msg[randint(0, len(send_msg)-1)])
+    rand_group = await app.get_group_list()
+    send_group = rand_group[randint(0, len(rand_group) - 1)]
+    send_msg = ReadConfig("Misc")["message"]
+    await app.send_group_message(send_group, send_msg[randint(0, len(send_msg) - 1)])

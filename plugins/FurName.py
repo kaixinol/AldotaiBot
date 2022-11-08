@@ -44,17 +44,15 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         return
     ret = Alconna("设置圈名{name}", headers=parsePrefix("FurName")).parse(message[Plain])
     if ret.matched:
-        if len(ret.header["name"])<12:
+        if len(ret.header["name"]) < 12:
             await app.send_message(
-            friend,
-            MessageChain(Plain(addName(ret.header["name"], event.sender.id))),
-        )
+                friend,
+                MessageChain(Plain(addName(ret.header["name"], event.sender.id))),
+            )
             return
         else:
-            await app.send_message(
-            friend,
-            MessageChain(Plain('你的名字太长了，阿尔多泰记不住！')))
-        
+            await app.send_message(friend, MessageChain(Plain("你的名字太长了，阿尔多泰记不住！")))
+
     ret = Alconna("我是谁").parse(message[Plain])
     if ret.matched:
         name = getName(event.sender.id)
@@ -96,7 +94,7 @@ def SafeIndex(l: dict, key: str, wt) -> int:
 
 def getName(qq: int) -> str:
     ret = x.SearchData("name", {"select": "name", "data": {"qq": qq}})
-    return x.ToPureList(ret)[len(ret)-1] if len(ret) >= 1 else "[未设置圈名]"
+    return x.ToPureList(ret)[len(ret) - 1] if len(ret) >= 1 else "[未设置圈名]"
 
 
 if __name__ == "__main__":
