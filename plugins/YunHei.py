@@ -34,6 +34,9 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from graia.saya.event import SayaModuleInstalled
 from loguru import logger as l
+from graia.ariadne.util.saya import decorate, dispatch, listen
+from util.interval import GroupInterval
+from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 
 from util.initializer import *
 from util.parseTool import *
@@ -133,12 +136,9 @@ def chunk(lst, n):
         yield lst[i : i + n]
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=parseMsgType("YunHei"),
-        inline_dispatchers=[CoolDown(60 * 60)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(f"^(!|！)查群云黑")))
+@decorate(GroupInterval.require(1, 60*60*24, send_alert=True))
 async def GroupFind(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     qq = Alconna("查群云黑", headers=parsePrefix("YunHei")).parse(message.display)
