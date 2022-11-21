@@ -25,6 +25,7 @@ channel = Channel.current()
 
 async def get_processor_name():
     if platform.system() == "Windows":
+        return subprocess.check_output('wmic CPU get NAME')[4:].strip()
         return platform.processor()
     elif platform.system() == "Darwin":
         os.environ["PATH"] = os.environ["PATH"] + os.pathsep + "/usr/sbin"
@@ -44,9 +45,9 @@ async def msg() -> str:
     return f"""
 CPU名称：{await get_processor_name()}
 CPU利用率：{psutil.cpu_percent(interval=1)}%
-CPU 当前频率：{psutil.cpu_freq().current//1}MHz
-可用内存：{psutil.virtual_memory().available / GB// 1}GB
-可用磁盘容量：{psutil.disk_usage("/").free / GB //1}GB
+CPU 当前频率：{round(psutil.cpu_freq().current,1)}MHz
+可用内存：{round(psutil.virtual_memory().available / GB,1)}GB
+可用磁盘容量：{round(psutil.disk_usage("/").free / GB ,1)}GB
 Python 版本：{platform.python_version()}
 """
 
