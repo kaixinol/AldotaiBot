@@ -28,7 +28,6 @@ from graia.ariadne.message.element import (
     Xml,
 )
 from graia.ariadne.model import Friend, Group
-from graia.ariadne.util.cooldown import CoolDown
 from graia.broadcast import Broadcast as bcc
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
@@ -138,7 +137,7 @@ def chunk(lst, n):
 
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^(!|！)查群云黑")))
-@decorate(GroupInterval.require(1, 60*60*24, send_alert=True))
+@decorate(GroupInterval.require(60*60*24,1,send_alert=True))
 async def GroupFind(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     qq = Alconna("查群云黑", headers=parsePrefix("YunHei")).parse(message.display)
