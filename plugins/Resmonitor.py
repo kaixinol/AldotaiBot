@@ -47,6 +47,7 @@ CPU利用率：{psutil.cpu_percent(interval=1)}%
 CPU 当前频率：{round(psutil.cpu_freq().current,1)}MHz
 可用内存：{round(psutil.virtual_memory().available / GB,1)}GB
 可用磁盘容量：{round(psutil.disk_usage("/").free / GB ,1)}GB
+程序已使用内存：{round(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2,1)}MB
 Python 版本：{platform.python_version()}
 """
 
