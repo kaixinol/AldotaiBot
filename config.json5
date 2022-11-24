@@ -7,7 +7,14 @@
     Welcome: {},
     Logger: {},
     Misc: {
-      message: ['*突然出现','awa','o(´^｀)o','你好！我是机器兽','抱抱你们……','呜呜呜','你知道我的主人是谁吗owo','呜呜呜，群友都教我画画']
+      message: [
+        '*突然出现',
+        'awa',
+        'o(´^｀)o',
+        '你好！我是机器兽',
+        '道我的主人是谁吗owo',
+        '呜呜呜，群友都教我画画',
+      ],
     },
     OnlineCompile: {
       process: [
@@ -48,7 +55,7 @@
     FurName: {
       process: [
         'Group',
-        'Friend'
+        'Friend',
       ],
       prefix: [
         '！',
@@ -61,7 +68,7 @@
       ],
       alconna: [
         '我是谁',
-        '我是傻逼'
+        '我是傻逼',
       ],
       process: [
         'Group',
@@ -81,12 +88,20 @@
           "'发送\\n！上传设定\\n不需要带空格'",
         ],
         [
-          "message.display=='不会画画'",
+          "'不会画画' in message.display",
           "'你好，我也不会！！'",
         ],
         [
           "message.display=='教我画画'",
           "f'{getName(event.sender.id)}教我画画！！'",
+        ],
+        [
+          "message.display=='你是谁'",
+          "'我是阿尔多泰！'",
+        ],
+        [
+          "(lambda x,q:True in [i in q for i in x])(['uwu','ovo','owo','qwq','xvx','xwx','awa'],message.display)",
+          "(lambda x,q:x[[i for i in range(len(x)) if x[i] in q][0]])(['uwu','ovo','owo','qwq','xvx','xwx','awa'],message.display)",
         ],
         [
           'Alconna:我是{name}',
@@ -126,7 +141,7 @@
       'sqliteTool',
       'initializer',
       'parseTool',
-      'interval.py'
+      'interval.py',
     ],
   },
 }

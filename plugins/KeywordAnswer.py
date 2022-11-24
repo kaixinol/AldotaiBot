@@ -9,7 +9,6 @@ from graia.ariadne.model import Friend, Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger as l
-
 from plugins.FurName import getName
 from util.initializer import *
 from util.parseTool import parseMsgType, parsePrefix
