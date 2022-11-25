@@ -26,6 +26,12 @@ from graia.ariadne.util.validator import CertainMember, CertainFriend
 from graia.ariadne.util.interrupt import FunctionWaiter
 from urllib.parse import quote_plus
 
+alcn = {
+    "兽兽": Alconna("兽兽", headers=parsePrefix("ShouYunJi")),
+    "兽兽{name}": Alconna("兽兽{name}", headers=parsePrefix("ShouYunJi")),
+    "上传兽云祭{name}": Alconna("上传兽云祭{name}"),
+}
+
 
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^兽兽")))
@@ -34,9 +40,7 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if len(message[Plain]) == 0:
         return
-    from arclet.alconna import Alconna
-
-    if Alconna("兽兽", headers=parsePrefix("ShouYunJi")).parse(message[Plain]).matched:
+    if alcn["兽兽"].parse(message[Plain]).matched:
         data = await GetFurryJson("https://cloud.foxtail.cn/api/function/random")
         data2 = await GetFurryJson(
             f'https://cloud.foxtail.cn/api/function/pictures?picture={data["picture"]["id"]}&model=1'
@@ -60,9 +64,7 @@ async def rdfurry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if len(message[Plain]) == 0:
         return
-    from arclet.alconna import Alconna
-
-    ret = Alconna("兽兽{name}", headers=parsePrefix("ShouYunJi")).parse(message[Plain])
+    ret = alcn["兽兽{name}"].parse(message[Plain])
     if ret.matched:
         data = (
             await GetFurryJson(
@@ -100,10 +102,11 @@ async def GetFurryJson(s: str) -> dict:
 async def upload_shouyunji(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     # await async_download(message.url,message.id)
     message = event.message_chain
-    ret = Alconna("上传兽云祭{name}").parse(message[Plain]).header["name"]
+    ret = alcn["上传兽云祭{name}"].parse(message[Plain]).header["name"]
     p = {}
     p["name"] = quote_plus(ret)
     # WAITER
+
     def waiter(
         waiter_message: MessageChain,
     ):

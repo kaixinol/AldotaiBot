@@ -32,6 +32,11 @@ channel = Channel.current()
 
 x = sqlLink("./db/furryData.db")
 x.CreateTable("fursona", {"qq": int, "imgJson": str, "desc": str})
+alcn = {
+    "上传设定": Alconna("上传设定", headers=parsePrefix("Fursona")),
+    "设定": Alconna("设定", headers=parsePrefix("Fursona")),
+    "添加介绍{desc}": Alconna("添加介绍{desc}", headers=parsePrefix("Fursona")),
+}
 
 
 def imgcmp(img: Image):
@@ -51,7 +56,7 @@ async def async_download(url: str, save: str):
 @channel.use(ListenerSchema(listening_events=parseMsgType("Fursona")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    ret = Alconna("上传设定", headers=parsePrefix("Fursona")).parse(message[Plain])
+    ret = alcn["上传设定"].parse(message[Plain])
     if not message.has(Image):
         return
     if ret.matched:
@@ -87,7 +92,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 @channel.use(ListenerSchema(listening_events=parseMsgType("Fursona")))
 async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    ret = Alconna("上传设定", headers=parsePrefix("Fursona")).parse(message[Plain])
+    ret = alcn["上传设定"].parse(message[Plain])
     if not ret.matched:
         return
     if message.has(Image):
@@ -139,7 +144,7 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 @channel.use(ListenerSchema(listening_events=parseMsgType("Fursona")))
 async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    ret = Alconna("设定", headers=parsePrefix("Fursona")).parse(message[Plain])
+    ret = alcn["设定"].parse(message[Plain])
     if ret.matched:
         if getName(event.sender.id) != "[未设置圈名]":
             data = x.ToPureList(
@@ -181,7 +186,7 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 @channel.use(ListenerSchema(listening_events=parseMsgType("FurName")))
 async def addDesc(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    ret = Alconna("添加介绍{desc}", headers=parsePrefix("Fursona")).parse(message[Plain])
+    ret = alcn["添加介绍{desc}"].parse(message[Plain])
     if ret.matched and getName(event.sender.id) != "[未设置圈名]":
         x.Execute(
             f'UPDATE fursona SET desc = \'{encode(ret.header["desc"])}\' WHERE qq={event.sender.id};'

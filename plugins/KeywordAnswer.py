@@ -17,26 +17,29 @@ sys.path.append("../")
 
 
 channel = Channel.current()
+from arclet.alconna import Alconna
+
+data = ReadConfig("KeywordAnswer")
+alcn = dict()
+for i in data["react"]:
+    if i[0].startswith("Alconna:"):
+        alcn[i[0]] = Alconna(i[0].replace("Alconna:", ""))
 
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("KeywordAnswer")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    from arclet.alconna import Alconna
-
     message = event.message_chain
     if not message[Plain] or ignore(
         message.display, ReadConfig("KeywordAnswer")["ignore"]
     ):
         return
-    data = ReadConfig("KeywordAnswer")
     ret = ""
 
     for i in data["react"]:
         if i[0].startswith("Alconna:") and not ignore(
             message.display, ReadConfig("KeywordAnswer")["alconna"]
         ):
-            t = i[0].replace("Alconna:", "")
-            Ret = Alconna(t).parse(message.display)
+            Ret = alcn[i[0]].parse(message.display)
             if Ret.matched:
                 await app.send_message(
                     friend,

@@ -31,18 +31,21 @@ from util.sqliteTool import sqlLink
 sys.path.append("../")
 x = sqlLink("./db/furryData.db", b64=True)
 x.CreateTable("name", {"qq": int, "name": str})
+from arclet.alconna import Alconna
 
+alcn = {
+    "设置圈名{name}": Alconna("设置圈名{name}", headers=parsePrefix("FurName")),
+    "我是谁": Alconna("我是谁"),
+}
 channel = Channel.current()
 
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("FurName")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    from arclet.alconna import Alconna
-
     message = event.message_chain
     if len(message[Plain]) == 0:
         return
-    ret = Alconna("设置圈名{name}", headers=parsePrefix("FurName")).parse(message[Plain])
+    ret = alcn["设置圈名{name}"].parse(message[Plain])
     if ret.matched:
         if len(ret.header["name"]) < 12:
             await app.send_message(
@@ -53,7 +56,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         else:
             await app.send_message(friend, MessageChain(Plain("你的名字太长了，阿尔多泰记不住！")))
 
-    ret = Alconna("我是谁").parse(message[Plain])
+    ret = alcn["我是谁"].parse(message[Plain])
     if ret.matched:
         name = getName(event.sender.id)
         if name == "[未设置圈名]":

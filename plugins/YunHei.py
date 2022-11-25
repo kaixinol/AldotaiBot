@@ -45,11 +45,17 @@ sys.path.append("../")
 
 channel = Channel.current()
 
+alcn = {
+    "查云黑": Alconna("查云黑", headers=parsePrefix("YunHei")),
+    "查云黑{qq}": Alconna("查云黑{qq}", headers=parsePrefix("YunHei")),
+    "查群云黑": Alconna("查群云黑", headers=parsePrefix("YunHei")),
+}
+
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("YunHei")))
 async def Single(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    qq = Alconna("查云黑{qq}", headers=parsePrefix("YunHei")).parse(message[Plain])
+    qq = alcn["查云黑{qq}"].parse(message[Plain])
     if not qq.matched:
         return
     await app.send_message(
@@ -61,7 +67,7 @@ async def Single(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 @channel.use(ListenerSchema(listening_events=parseMsgType("YunHei")))
 async def Atsb(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    qq = Alconna("查云黑", headers=parsePrefix("YunHei")).parse(message[Plain])
+    qq = alcn["查云黑"].parse(message[Plain])
     if not qq.matched:
         return
     await app.send_message(
@@ -137,10 +143,10 @@ def chunk(lst, n):
 
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^(!|！)查群云黑")))
-@decorate(GroupInterval.require(60*60*24,1,send_alert=True))
+@decorate(GroupInterval.require(60 * 60 * 24, 1, send_alert=True))
 async def GroupFind(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    qq = Alconna("查群云黑", headers=parsePrefix("YunHei")).parse(message.display)
+    qq = alcn["查群云黑"].parse(message.display)
     if not qq.matched:
         return
     qqMember = await app.get_member_list(event.sender.group)

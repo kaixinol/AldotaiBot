@@ -1,3 +1,4 @@
+from arclet.alconna import Alconna
 import base64
 import os
 import random
@@ -22,20 +23,23 @@ sys.path.append("../")
 
 saya = Saya.current()
 channel = Channel.current()
+alcn = {
+    "来只兽": Alconna("来只兽", headers=parsePrefix("E621")),
+    "来只兽{name}": Alconna("来只兽{name}", headers=parsePrefix("E621")),
+}
 
 
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^(来只兽).{{0,}}")))
 @decorate(GroupInterval.require(5, 10, send_alert=True))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    from arclet.alconna import Alconna
 
     message = event.message_chain
     if len(message[Plain]) == 0:
         return
     config = ReadConfig("E621")
-    ret = Alconna("来只兽", headers=parsePrefix("E621")).parse(message[Plain])
-    ret2 = Alconna("来只兽{name}", headers=parsePrefix("E621")).parse(message[Plain])
+    ret = alcn["来只兽"].parse(message[Plain])
+    ret2 = alcn["来只兽{name}"].parse(message[Plain])
     if not ret.matched and not ret2.matched:
         return
     if ret.matched:

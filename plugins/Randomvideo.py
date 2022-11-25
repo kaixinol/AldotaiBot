@@ -41,6 +41,7 @@ data = asyncio.run(
     )
 )["data"]["medias"]
 l.info(f"缓存了{len(data)}条数据")
+alcn = {"来个meme": Alconna("来个meme", headers=parsePrefix("Randomvideo"))}
 
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("Randomvideo")))
@@ -55,11 +56,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         )["data"]
         return rt or await get_good_data()
 
-    if (
-        Alconna("来个meme", headers=parsePrefix("Randomvideo"))
-        .parse(message[Plain])
-        .matched
-    ):
+    if alcn["来个meme"].parse(message[Plain]).matched:
         datat = await get_good_data()
         data2 = datat[randint(0, len(datat) - 1)]
         try:

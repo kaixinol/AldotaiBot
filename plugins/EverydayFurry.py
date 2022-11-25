@@ -1,3 +1,4 @@
+from arclet.alconna import Alconna
 import sys
 import time
 
@@ -22,19 +23,19 @@ sys.path.append("../")
 
 saya = Saya.current()
 channel = Channel.current()
+alcn = {
+    "每日一兽": Alconna("每日一兽", headers=parsePrefix("EverydayFurry")),
+    "每日一兽{name}": Alconna("每日一兽{name}", headers=parsePrefix("EverydayFurry")),
+}
 
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("EverydayFurry")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    from arclet.alconna import Alconna
-
     message = event.message_chain
     if len(message[Plain]) == 0:
         return
-    ret = Alconna("每日一兽", headers=parsePrefix("EverydayFurry")).parse(message[Plain])
-    ret2 = Alconna("每日一兽{name}", headers=parsePrefix("EverydayFurry")).parse(
-        message[Plain]
-    )
+    ret = alcn["每日一兽"].parse(message[Plain])
+    ret2 = alcn["每日一兽{name}"].parse(message[Plain])
     if not ret.matched and not ret2.matched:
         return
     if ret.matched:

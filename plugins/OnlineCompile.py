@@ -1,3 +1,4 @@
+from arclet.alconna import Alconna
 import datetime
 import sys
 
@@ -21,20 +22,15 @@ sys.path.append("../")
 saya = Saya.current()
 
 channel = Channel.current()
+alcn = Alconna("在线编译{lang}", headers=parsePrefix("OnlineCompile"))
 
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("OnlineCompile")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    from arclet.alconna import Alconna
-
     if len(message[Plain]) == 0:
         return
-    dic = (
-        Alconna("在线编译{lang}", headers=parsePrefix("OnlineCompile"))
-        .parse(message[Plain][0].text.splitlines()[0])
-        .header
-    )
+    dic = alcn.parse(message[Plain][0].text.splitlines()[0]).header
     if not dic:
         return
     if type(friend) == Group:
