@@ -100,8 +100,8 @@
           "'我是阿尔多泰！'",
         ],
         [
-          "(lambda x,q:True in [i in q for i in x])(['uwu','ovo','owo','qwq','xvx','xwx','awa','qaq'],message.display.lower())",
-          "(lambda x,q:x[[i for i in range(len(x)) if x[i] in q][0]])(['uwu','ovo','owo','qwq','xvx','xwx','awa','qaq'],message.display.lower())",
+          "re.search(r'([A-z]|0)(v|w|a)([A-z]|0)',message.display, re.IGNORECASE)!=None",
+          "re.search(r'([A-z]|0)(v|w|a)([A-z]|0)',message.display, re.IGNORECASE).group()",
         ],
         [
           'Alconna:我是{name}',

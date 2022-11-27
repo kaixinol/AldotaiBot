@@ -29,8 +29,10 @@ for i in data["react"]:
 @channel.use(ListenerSchema(listening_events=parseMsgType("KeywordAnswer")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    if not message[Plain] or ignore(
-        message.display, ReadConfig("KeywordAnswer")["ignore"]
+    if (
+        not message[Plain]
+        or ignore(message.display, ReadConfig("KeywordAnswer")["ignore"])
+        or event.sender == app.account
     ):
         return
     ret = ""
