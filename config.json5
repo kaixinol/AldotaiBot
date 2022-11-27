@@ -100,7 +100,7 @@
           "'我是阿尔多泰！'",
         ],
         [
-          "re.search(r'([A-z]|0)(v|w|a)([A-z]|0)',message.display, re.IGNORECASE)!=None",
+          "Exec:tp=re.search(r'([A-z]|0)(v|w|a)([A-z]|0)','owo', re.IGNORECASE)\nverify=tp!=None and tp.group()[0]==tp.group()[2]",
           "re.search(r'([A-z]|0)(v|w|a)([A-z]|0)',message.display, re.IGNORECASE).group()",
         ],
         [
