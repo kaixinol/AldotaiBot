@@ -100,8 +100,8 @@
           "'我是阿尔多泰！'",
         ],
         [
-          "Exec:tp=re.search(r'([A-z]|0)(v|w|a)([A-z]|0)','owo', re.IGNORECASE)\nverify=tp!=None and tp.group()[0]==tp.group()[2]",
-          "re.search(r'([A-z]|0)(v|w|a)([A-z]|0)',message.display, re.IGNORECASE).group()",
+          "Exec:def f(s: str):\n\ttp=re.search(r'([A-z]|0)(v|w|a|u)([A-z]|0)',s, re.IGNORECASE)\n\tverify=tp!=None and tp.group()[0]==tp.group()[2]\n\treturn verify",
+          "re.search(r'([A-z]|0)(v|w|a|u)([A-z]|0)',message.display.lower(), re.IGNORECASE).group()",
         ],
         [
           'Alconna:我是{name}',
