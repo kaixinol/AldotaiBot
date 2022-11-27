@@ -143,7 +143,7 @@ def chunk(lst, n):
 
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^(!|！)查群云黑")))
-@decorate(GroupInterval.require(60 * 60 * 24, 1, send_alert=True))
+@decorate(GroupInterval.require(60 * 20, 3, send_alert=True))
 async def GroupFind(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     qq = alcn["查群云黑"].parse(message.display)

@@ -20,7 +20,7 @@ channel = Channel.current()
 
 
 @listen(MemberJoinEvent)
-@decorate(GroupInterval.require(1, 60 * 60))
+@decorate(GroupInterval.require(30, 2))
 async def setu(app: Ariadne, friend: Friend | Group, event: MemberJoinEvent):
     await app.send_message(
         friend,

@@ -35,7 +35,7 @@ alcn = {
 
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^兽兽")))
-@decorate(GroupInterval.require(3, 10, send_alert=True))
+@decorate(GroupInterval.require(10, 3, send_alert=True))
 async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if len(message[Plain]) == 0:
@@ -59,7 +59,7 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^(兽兽).{{0,}}")))
-@decorate(GroupInterval.require(3, 10, send_alert=True))
+@decorate(GroupInterval.require(10, 3, send_alert=True))
 async def rdfurry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if len(message[Plain]) == 0:
@@ -98,7 +98,7 @@ async def GetFurryJson(s: str) -> dict:
 
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^(上传兽云祭).+")))
-@decorate(GroupInterval.require(3, 10, send_alert=True))
+@decorate(GroupInterval.require(10, 3, send_alert=True))
 async def upload_shouyunji(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     # await async_download(message.url,message.id)
     message = event.message_chain
