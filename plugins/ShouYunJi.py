@@ -26,7 +26,7 @@ from graia.ariadne.util.validator import CertainMember, CertainFriend
 from graia.ariadne.util.interrupt import FunctionWaiter
 from urllib.parse import quote_plus
 import io
-
+from PIL import Image as Img
 alcn = {
     "兽兽": Alconna("兽兽", headers=parsePrefix("ShouYunJi")),
     "兽兽{name}": Alconna("兽兽{name}", headers=parsePrefix("ShouYunJi")),
@@ -51,11 +51,10 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             MessageChain(
                 [
                     Plain(f'名字:{data2["name"]}'),
-                    Image(data_bytes=get_byte_from_url(data2["url"])),
+                    Image(data_bytes=await get_byte_from_url(data2["url"])),
                     Plain(f'id:{data2["picture"]}'),
-                ],
-                quote=event.id,
-            ),
+                ]
+            ),quote=event.id
         )
 
 
@@ -83,11 +82,10 @@ async def rdfurry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                 MessageChain(
                     [
                         Plain(f'名字:{data2["name"]}'),
-                        Image(data_bytes=get_byte_from_url(data2["url"])),
+                        Image(data_bytes=await get_byte_from_url(data2["url"])),
                         Plain(f'id:{data2["picture"]}'),
                     ]
-                ),
-                quote=event.id,
+                ),quote=event.id,
             )
         except:
             await app.send_message(
@@ -171,7 +169,7 @@ async def get_byte_from_url(url: str):
     async with aiohttp.ClientSession() as s:
         async with s.get(url) as r:
             if round(r.content_length / 1024**2) > 1:
-                foo = Image.open(io.BytesIO(await r.read()))
+                foo = Img.open(io.BytesIO(await r.read()))
                 foo.thumbnail((1000, 1000))
                 img_byte_arr = io.BytesIO()
                 foo.save(img_byte_arr, format="PNG", optimize=True, quality=85)
