@@ -32,11 +32,10 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if (
         not message[Plain]
         or ignore(message.display, ReadConfig("KeywordAnswer")["ignore"])
-        or event.sender == app.account
+        or event.sender.id == app.account
     ):
         return
     ret = ""
-
     for i in data["react"]:
         if i[0].startswith("Alconna:") and not ignore(
             message.display, ReadConfig("KeywordAnswer")["alconna"]
@@ -47,11 +46,19 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                     friend,
                     MessageChain(Plain(replaceMsg(i[1], Ret.header))),
                 )
-        if not i[0].startswith("Alconna:") and eval(i[0], globals(), locals()):
+        if i[0].find(":") == -1 and eval(i[0], globals(), locals()):
             msg = eval(i[1], globals(), locals())
             await app.send_message(
                 friend,
                 MessageChain(Plain(msg)),
+            )
+        if i[0].startswith("Exec:"):
+            exec(i[0].replace("Exec:",""), globals(), globals())
+            if f(message.display.lower()):
+                msg = eval(i[1], globals(), locals())
+                await app.send_message(
+                    friend,
+                    MessageChain(Plain(msg)),
             )
 
 
