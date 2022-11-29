@@ -92,7 +92,7 @@
           "'你好，我也不会！！'",
         ],
         [
-          "message.display=='教我画画'",
+          "'教我画画' in message.display or 'jwhh' in message.display",
           "f'{getName(event.sender.id)}教我画画！！'",
         ],
         [
