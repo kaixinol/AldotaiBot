@@ -59,8 +59,8 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
 
 @listen(GroupMessage)
-@dispatch(Twilight(RegexMatch(f"^(兽兽).{{0,}}")))
-@decorate(GroupInterval.require(10, 3, send_alert=True))
+@dispatch(Twilight(RegexMatch(f"^(兽兽).+")))
+@decorate(GroupInterval.require(20, 3, send_alert=True))
 async def rdfurry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if len(message[Plain]) == 0:
