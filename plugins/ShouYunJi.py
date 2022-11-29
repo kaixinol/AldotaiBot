@@ -25,6 +25,7 @@ from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.ariadne.util.validator import CertainMember, CertainFriend
 from graia.ariadne.util.interrupt import FunctionWaiter
 from urllib.parse import quote_plus
+import io
 
 alcn = {
     "兽兽": Alconna("兽兽", headers=parsePrefix("ShouYunJi")),
@@ -50,9 +51,10 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             MessageChain(
                 [
                     Plain(f'名字:{data2["name"]}'),
-                    Image(url=data2["url"]),
+                    Image(data_bytes=get_byte_from_url(data2["url"])),
                     Plain(f'id:{data2["picture"]}'),
-                ]
+                ],
+                quote=event.id,
             ),
         )
 
@@ -66,25 +68,31 @@ async def rdfurry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         return
     ret = alcn["兽兽{name}"].parse(message[Plain])
     if ret.matched:
-        data = (
-            await GetFurryJson(
-                f'https://cloud.foxtail.cn/api/function/pulllist?name={ret.header["name"]}'
+        try:
+            data = (
+                await GetFurryJson(
+                    f'https://cloud.foxtail.cn/api/function/pulllist?name={ret.header["name"]}'
+                )
+            )["open"]
+            datat = data[randint(0, len(data) - 1)]
+            data2 = await GetFurryJson(
+                f'https://cloud.foxtail.cn/api/function/pictures?picture={datat["id"]}&model=1'
             )
-        )["open"]
-        datat = data[randint(0, len(data) - 1)]
-        data2 = await GetFurryJson(
-            f'https://cloud.foxtail.cn/api/function/pictures?picture={datat["id"]}&model=1'
-        )
-        await app.send_message(
-            friend,
-            MessageChain(
-                [
-                    Plain(f'名字:{data2["name"]}'),
-                    Image(url=data2["url"]),
-                    Plain(f'id:{data2["picture"]}'),
-                ]
-            ),
-        )
+            await app.send_message(
+                friend,
+                MessageChain(
+                    [
+                        Plain(f'名字:{data2["name"]}'),
+                        Image(data_bytes=get_byte_from_url(data2["url"])),
+                        Plain(f'id:{data2["picture"]}'),
+                    ]
+                ),
+                quote=event.id,
+            )
+        except:
+            await app.send_message(
+                friend, MessageChain([Plain(f"可能没有此兽xvx")]), quote=event.id
+            )
 
 
 async def GetFurryJson(s: str) -> dict:
@@ -157,3 +165,17 @@ async def async_download(url: str, save: str):
                 with open(save, mode="wb") as f:
                     f.write(await resp.read())
                     f.close()
+
+
+async def get_byte_from_url(url: str):
+    async with aiohttp.ClientSession() as s:
+        async with s.get(url) as r:
+            if round(r.content_length / 1024**2) > 1:
+                foo = Image.open(io.BytesIO(await r.read()))
+                foo.thumbnail((1000, 1000))
+                img_byte_arr = io.BytesIO()
+                foo.save(img_byte_arr, format="PNG", optimize=True, quality=85)
+                img_byte_arr = img_byte_arr.getvalue()
+                return img_byte_arr
+            else:
+                return await r.read()
