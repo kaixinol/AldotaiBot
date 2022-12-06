@@ -100,7 +100,7 @@
           "'我是阿尔多泰！'",
         ],
         [
-          "Exec:def f(s: str):\n\ttp=re.search(r'([A-z]|0)(v|w|a|u)([A-z]|0)',s, re.IGNORECASE)\n\tverify=tp!=None and tp.group()[0]==tp.group()[2]\n\treturn verify",
+          "Exec:def f(s: str):\n\ttp=re.search(r'([A-z]|0)(v|w|a|u)([A-z]|0)',s, re.IGNORECASE)\n\tverify=tp!=None and abs(ord(tp.group()[0])-ord(tp.group()[2])) in [0,1]\n\treturn verify",
           "re.search(r'([A-z]|0)(v|w|a|u)([A-z]|0)',message.display.lower(), re.IGNORECASE).group()",
         ],
         [
