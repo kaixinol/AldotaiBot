@@ -2,10 +2,10 @@
 <p>文档：<a href="https://reset.forcecat.cn/">https://reset.forcecat.cn/</a></p>
 <h2>快速开始</h2>
 <ol>
-<li><code>pip install -r requirements.txt</code></li>
+<li><code>poetry install</code></li>
 <li>配置config.json</li>
 <li>配置mirai和http api</li>
-<li><code>python main.py</code></li>
+<li><code>poetry run python main.py</code></li>
 </ol>
 <h2>功能支持</h2>
 <details>
@@ -44,7 +44,6 @@
 <details>
 <summary>杂项</summary>
 <ul>
-<li>[x] 权限管理</li>
 <li>[x] 群权限记录</li>
 <li>[x] 分群冻结使用频率</li>
 </ul>
@@ -64,18 +63,15 @@
 </li>
 </ol>
 </section>
-
 <!--
-
-
 # 阿尔多泰Bot
 文档：https://reset.forcecat.cn/
 ## 快速开始
 
-1. `pip install -r requirements.txt`
+1. `poetry install`
 2.  配置config.json
 3. 配置mirai和http api
-4. `python main.py`
+4. `poetry run python main.py`
 
 ## 功能支持
 <details>
@@ -114,7 +110,6 @@
 <details>
 <summary>杂项</summary>
 
-- [x] 权限管理
 - [x] 群权限记录
 - [x] 分群冻结使用频率
 
@@ -130,6 +125,5 @@ Made by [markdown-it](https://markdown-it.github.io/)
 
 ## 参考
 [Redbot](https://github.com/Redlnn/redbot/tree/master/core_modules)
-
 
 -->
