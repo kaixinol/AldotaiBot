@@ -101,7 +101,7 @@ async def GetFurryJson(s: str) -> dict:
         headers = {
             "User-Agent": "AldotaiBot/1.0 Askirin",
         }
-        async with session.get(s, headers) as resp:
+        async with session.get(s, headers=headers) as resp:
             return await resp.json()
 
 
@@ -173,9 +173,9 @@ async def get_byte_from_url(url: str):
         async with s.get(url) as r:
             if round(r.content_length / 1024**2) > 1:
                 foo = Img.open(io.BytesIO(await r.read()))
-                foo.thumbnail((1000, 1000))
+                foo.thumbnail((600, 600))
                 img_byte_arr = io.BytesIO()
-                foo.save(img_byte_arr, format="PNG", optimize=True, quality=85)
+                foo.save(img_byte_arr, format="PNG", optimize=True, quality=60)
                 img_byte_arr = img_byte_arr.getvalue()
                 return img_byte_arr
             else:

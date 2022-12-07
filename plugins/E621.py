@@ -76,7 +76,7 @@ async def GetFurryJson(Tag: str, context: str = "Safe") -> dict:
     }
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers) as resp:
+        async with session.get(url, headers=headers) as resp:
             return await resp.json()
 
 
