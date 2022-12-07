@@ -22,7 +22,7 @@ sys.path.append("../")
 saya = Saya.current()
 
 channel = Channel.current()
-alcn = Alconna("在线编译{lang}", headers=parsePrefix("OnlineCompile"))
+alcn = Alconna("在线编译{lang}", parsePrefix("OnlineCompile"))
 
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("OnlineCompile")))

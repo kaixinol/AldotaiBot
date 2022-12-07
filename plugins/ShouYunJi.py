@@ -27,9 +27,10 @@ from graia.ariadne.util.interrupt import FunctionWaiter
 from urllib.parse import quote_plus
 import io
 from PIL import Image as Img
+
 alcn = {
-    "兽兽": Alconna("兽兽", headers=parsePrefix("ShouYunJi")),
-    "兽兽{name}": Alconna("兽兽{name}", headers=parsePrefix("ShouYunJi")),
+    "兽兽": Alconna("兽兽", parsePrefix("ShouYunJi")),
+    "兽兽{name}": Alconna("兽兽{name}", parsePrefix("ShouYunJi")),
     "上传兽云祭{name}": Alconna("上传兽云祭{name}"),
 }
 
@@ -54,7 +55,8 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                     Image(data_bytes=await get_byte_from_url(data2["url"])),
                     Plain(f'id:{data2["picture"]}'),
                 ]
-            ),quote=event.id
+            ),
+            quote=event.id,
         )
 
 
@@ -85,7 +87,8 @@ async def rdfurry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                         Image(data_bytes=await get_byte_from_url(data2["url"])),
                         Plain(f'id:{data2["picture"]}'),
                     ]
-                ),quote=event.id,
+                ),
+                quote=event.id,
             )
         except:
             await app.send_message(
@@ -98,7 +101,7 @@ async def GetFurryJson(s: str) -> dict:
         headers = {
             "User-Agent": "AldotaiBot/1.0 Askirin",
         }
-        async with session.get(s, headers=headers) as resp:
+        async with session.get(s, headers) as resp:
             return await resp.json()
 
 

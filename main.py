@@ -14,17 +14,17 @@ from loguru import logger as l
 import util.jsonTool as js
 
 l.add(
-    os.getcwd() + "/log/{time: YYYY-MM-DD}/bot.log",
+    os.getcwd() + "/log/{time:YYYY-MM-DD}/bot.log",
     rotation="00:00",
     level="INFO",
     encoding="utf-8",
     filter=lambda rec: "graia" not in rec["name"]
     and "launart" not in rec["name"]
-    and rec["name"] != "util.sqliteTool",
+    and rec["name"] not in ["util.sqliteTool", "plugins.Logger"],
 )
 
 l.add(
-    os.getcwd() + "/log/{time: YYYY-MM-DD}/graia.log",
+    os.getcwd() + "/log/{time:YYYY-MM-DD}/graia.log",
     rotation="00:00",
     level="INFO",
     encoding="utf-8",
@@ -33,7 +33,7 @@ l.add(
 )
 
 l.add(
-    os.getcwd() + "/log/{time: YYYY-MM-DD}/sql.log",
+    os.getcwd() + "/log/{time:YYYY-MM-DD}/sql.log",
     rotation="00:00",
     level="INFO",
     encoding="utf-8",
@@ -44,7 +44,7 @@ l.add(
     rotation="00:00",
     level="INFO",
     encoding="utf-8",
-    filter=lambda rec: rec["name"] == "plugins.logger",
+    filter=lambda rec: rec["name"] == "plugins.Logger",
 )
 
 
@@ -67,7 +67,7 @@ with saya.module_context():
 
 app = Ariadne(
     config(
-        3056337852,  # 你的机器人的 qq 号
+        2634732881,  # 你的机器人的 qq 号
         "ServiceVerifyKey",  # 填入 VerifyKey
         HttpClientConfig("http://127.0.0.1:8088/"),
         WebsocketClientConfig("http://127.0.0.1:8087"),

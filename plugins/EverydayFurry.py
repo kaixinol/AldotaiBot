@@ -24,8 +24,8 @@ sys.path.append("../")
 saya = Saya.current()
 channel = Channel.current()
 alcn = {
-    "每日一兽": Alconna("每日一兽", headers=parsePrefix("EverydayFurry")),
-    "每日一兽{name}": Alconna("每日一兽{name}", headers=parsePrefix("EverydayFurry")),
+    "每日一兽": Alconna("每日一兽", parsePrefix("EverydayFurry")),
+    "每日一兽{name}": Alconna("每日一兽{name}", parsePrefix("EverydayFurry")),
 }
 
 

@@ -24,8 +24,8 @@ sys.path.append("../")
 saya = Saya.current()
 channel = Channel.current()
 alcn = {
-    "来只兽": Alconna("来只兽", headers=parsePrefix("E621")),
-    "来只兽{name}": Alconna("来只兽{name}", headers=parsePrefix("E621")),
+    "来只兽": Alconna("来只兽", parsePrefix("E621")),
+    "来只兽{name}": Alconna("来只兽{name}", parsePrefix("E621")),
 }
 
 
@@ -76,7 +76,7 @@ async def GetFurryJson(Tag: str, context: str = "Safe") -> dict:
     }
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers=headers) as resp:
+        async with session.get(url, headers) as resp:
             return await resp.json()
 
 

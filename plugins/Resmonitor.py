@@ -54,7 +54,7 @@ Python 版本：{platform.python_version()}
 
 from arclet.alconna import Alconna
 
-alcn = Alconna("获取配置", headers=parsePrefix("Resmonitor"))
+alcn = Alconna("获取配置", parsePrefix("Resmonitor"))
 
 
 @listen(GroupMessage)

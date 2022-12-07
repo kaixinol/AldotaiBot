@@ -41,7 +41,7 @@ data = asyncio.run(
     )
 )["data"]["medias"]
 l.info(f"缓存了{len(data)}条数据")
-alcn = {"来个meme": Alconna("来个meme", headers=parsePrefix("Randomvideo"))}
+alcn = {"来个meme": Alconna("来个meme", parsePrefix("Randomvideo"))}
 
 
 @channel.use(ListenerSchema(listening_events=parseMsgType("Randomvideo")))

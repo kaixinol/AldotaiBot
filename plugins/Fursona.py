@@ -5,7 +5,6 @@ import os
 import re
 import sys
 import aiohttp
-import aiofiles
 from graia.ariadne.util.async_exec import io_bound, cpu_bound
 from graia.ariadne.util.interrupt import FunctionWaiter
 from arclet.alconna import Alconna
@@ -33,9 +32,9 @@ channel = Channel.current()
 x = sqlLink("./db/furryData.db")
 x.CreateTable("fursona", {"qq": int, "imgJson": str, "desc": str})
 alcn = {
-    "上传设定": Alconna("上传设定", headers=parsePrefix("Fursona")),
-    "设定": Alconna("设定", headers=parsePrefix("Fursona")),
-    "添加介绍{desc}": Alconna("添加介绍{desc}", headers=parsePrefix("Fursona")),
+    "上传设定": Alconna("上传设定", parsePrefix("Fursona")),
+    "设定": Alconna("设定", parsePrefix("Fursona")),
+    "添加介绍{desc}": Alconna("添加介绍{desc}", parsePrefix("Fursona")),
 }
 
 

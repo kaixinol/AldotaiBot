@@ -46,9 +46,9 @@ sys.path.append("../")
 channel = Channel.current()
 
 alcn = {
-    "查云黑": Alconna("查云黑", headers=parsePrefix("YunHei")),
-    "查云黑{qq}": Alconna("查云黑{qq}", headers=parsePrefix("YunHei")),
-    "查群云黑": Alconna("查群云黑", headers=parsePrefix("YunHei")),
+    "查云黑": Alconna("查云黑", parsePrefix("YunHei")),
+    "查云黑{qq}": Alconna("查云黑{qq}", parsePrefix("YunHei")),
+    "查群云黑": Alconna("查群云黑", parsePrefix("YunHei")),
 }
 
 

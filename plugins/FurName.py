@@ -34,7 +34,7 @@ x.CreateTable("name", {"qq": int, "name": str})
 from arclet.alconna import Alconna
 
 alcn = {
-    "设置圈名{name}": Alconna("设置圈名{name}", headers=parsePrefix("FurName")),
+    "设置圈名{name}": Alconna("设置圈名{name}", parsePrefix("FurName")),
     "我是谁": Alconna("我是谁"),
 }
 channel = Channel.current()
