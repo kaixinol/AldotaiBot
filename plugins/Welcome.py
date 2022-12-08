@@ -1,6 +1,5 @@
 from graia.ariadne.event.mirai import MemberJoinEvent, NewFriendRequestEvent
 from util.parseTool import *
-from util.initializer import *
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from graia.saya import Channel, Saya
 from graia.ariadne.model import Friend, Group
@@ -29,9 +28,16 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MemberJoinEvent):
 
 
 @channel.use(ListenerSchema(listening_events=[GroupMessage, FriendMessage]))
-async def help(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+async def get_help_doc(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    if message.display.lower() in ["帮助", "!帮助", "！帮助", "help", ".help", ".帮助"]:
+    if message.display.lower() in [
+        "帮助",
+        "!帮助",
+        "！帮助",
+        "get_help_doc",
+        ".get_help_doc",
+        ".帮助",
+    ]:
         await app.send_message(
             friend,
             MessageChain("本bot文档地址：https://reset.forcecat.cn/（复制到浏览器后访问）"),

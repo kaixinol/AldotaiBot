@@ -1,38 +1,23 @@
-import asyncio
 import datetime
-import os
 import re
 import sys
-from itertools import islice
-from typing import Any
 
 import aiohttp
 import html2text
 from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import FriendMessage, GroupMessage, MessageEvent
+from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import (
-    App,
     At,
-    AtAll,
-    Face,
     Forward,
     ForwardNode,
-    Image,
-    Json,
-    MarketFace,
     Plain,
-    Poke,
-    Quote,
-    Xml,
 )
 from graia.ariadne.model import Friend, Group
-from graia.broadcast import Broadcast as bcc
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from graia.saya.event import SayaModuleInstalled
-from loguru import logger as l
+
 from graia.ariadne.util.saya import decorate, dispatch, listen
 from util.interval import GroupInterval
 from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
@@ -42,41 +27,40 @@ from util.parseTool import *
 
 sys.path.append("../")
 
-
 channel = Channel.current()
 
 alcn = {
-    "查云黑": Alconna("查云黑", parsePrefix("YunHei")),
-    "查云黑{qq}": Alconna("查云黑{qq}", parsePrefix("YunHei")),
-    "查群云黑": Alconna("查群云黑", parsePrefix("YunHei")),
+    "查云黑": Alconna("查云黑", parse_prefix("YunHei")),
+    "查云黑{qq}": Alconna("查云黑{qq}", parse_prefix("YunHei")),
+    "查群云黑": Alconna("查群云黑", parse_prefix("YunHei")),
 }
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("YunHei")))
-async def Single(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+@channel.use(ListenerSchema(listening_events=parse_msg_type("YunHei")))
+async def single_find(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     qq = alcn["查云黑{qq}"].parse(message[Plain])
     if not qq.matched:
         return
     await app.send_message(
         friend,
-        MessageChain(await IsBlacklisted(qq.header["qq"])),
+        MessageChain(await is_blacklisted(qq.header["qq"])),
     )
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("YunHei")))
-async def Atsb(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+@channel.use(ListenerSchema(listening_events=parse_msg_type("YunHei")))
+async def at_somebody(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     qq = alcn["查云黑"].parse(message[Plain])
     if not qq.matched:
         return
     await app.send_message(
         friend,
-        MessageChain(await IsBlacklisted(message[At][0].target)),
+        MessageChain(await is_blacklisted(message[At][0].target)),
     )
 
 
-async def IsBlacklisted(qq: int):
+async def is_blacklisted(qq: int):
     keywords = {"qq": qq}
     url = "https://yunhei.qimeng.fun/"
     async with aiohttp.ClientSession() as session:
@@ -86,7 +70,7 @@ async def IsBlacklisted(qq: int):
     return txt[txt.find("请输入账号或群号查询:") + 13 : txt.find("[举报上黑]") - 3]
 
 
-async def IsMemberBlacklisted(qq: list):
+async def is_member_blacklisted(qq: list):
     l.debug(f"共{len(qq)}条数据")
     if len(qq) <= 200:
         keywords = {"qq": "\n".join([str(i) for i in qq])}
@@ -110,8 +94,8 @@ async def IsMemberBlacklisted(qq: list):
         )
     else:
         data = ""
-        qqList = chunk(qq, 200)
-        for i in qqList:
+        qq_list = chunk(qq, 200)
+        for i in qq_list:
             keywords = {"qq": "\n".join([str(j) for j in i])}
             url = "https://yunhei.qimeng.fun/Piliang.php"
             async with aiohttp.ClientSession() as session:
@@ -144,18 +128,18 @@ def chunk(lst, n):
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^(!|！)查群云黑")))
 @decorate(GroupInterval.require(60 * 20, 3, send_alert=True))
-async def GroupFind(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+async def find_in_group(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     qq = alcn["查群云黑"].parse(message.display)
     if not qq.matched:
         return
-    qqMember = await app.get_member_list(event.sender.group)
-    if len(qqMember) > 200:
+    qq_member = await app.get_member_list(event.sender.group)
+    if len(qq_member) > 200:
         await app.send_message(
             friend,
-            MessageChain(f"数据较多……需要等待{2*len(qqMember)/200}秒"),
+            MessageChain(f"数据较多……需要等待{2 * len(qq_member) / 200}秒"),
         )
-    data = await IsMemberBlacklisted([i.id for i in qqMember])
+    data = await is_member_blacklisted([i.id for i in qq_member])
     if not data:
         data = "无上云黑人员"
     if data.count("\n") > 5 or len(data) > 128:
@@ -179,4 +163,4 @@ async def GroupFind(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         )
 
 
-# print(IsMemberBlacklisted([35464, 634132164, 643161, 16541365, 2352449583]))
+# print(is_member_blacklisted([35464, 634132164, 643161, 16541365, 2352449583]))

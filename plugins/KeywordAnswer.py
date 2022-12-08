@@ -8,55 +8,54 @@ from graia.ariadne.message.element import Plain
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from loguru import logger as l
 from plugins.FurName import getName
 from util.initializer import *
-from util.parseTool import parseMsgType, parsePrefix
+from util.parseTool import parse_msg_type, parse_prefix
+from util.initializer import setting
+from arclet.alconna import Alconna
 
 sys.path.append("../")
 
-
 channel = Channel.current()
-from arclet.alconna import Alconna
 
-data = ReadConfig("KeywordAnswer")
+data = setting["plugin"]["KeywordAnswer"]
 alcn = dict()
 for i in data["react"]:
     if i[0].startswith("Alconna:"):
         alcn[i[0]] = Alconna(i[0].replace("Alconna:", ""))
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("KeywordAnswer")))
+@channel.use(ListenerSchema(listening_events=parse_msg_type("KeywordAnswer")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if (
         not message[Plain]
-        or ignore(message.display, ReadConfig("KeywordAnswer")["ignore"])
+        or ignore(message.display, data["ignore"])
         or event.sender.id == app.account
         or "Aldotai" in event.sender.name
     ):
         return
     ret = ""
-    for i in data["react"]:
-        if i[0].startswith("Alconna:") and not ignore(
-            message.display, ReadConfig("KeywordAnswer")["alconna"]
+    for ii in data["react"]:
+        if ii[0].startswith("Alconna:") and not ignore(
+            message.display, data["alconna"]
         ):
-            Ret = alcn[i[0]].parse(message.display)
-            if Ret.matched:
+            ret = alcn[ii[0]].parse(message.display)
+            if ret.matched:
                 await app.send_message(
                     friend,
-                    MessageChain(Plain(replaceMsg(i[1], Ret.header))),
+                    MessageChain(Plain(replace_msg(ii[1], ret.header))),
                 )
-        if i[0].find(":") == -1 and eval(i[0], globals(), locals()):
-            msg = eval(i[1], globals(), locals())
+        if ii[0].find(":") == -1 and eval(ii[0], globals(), locals()):
+            msg = eval(ii[1], globals(), locals())
             await app.send_message(
                 friend,
                 MessageChain(Plain(msg)),
             )
-        if i[0].startswith("Exec:"):
-            exec(i[0].replace("Exec:", ""), globals(), globals())
+        if ii[0].startswith("Exec:"):
+            exec(ii[0].replace("Exec:", ""), globals(), globals())
             if f(message.display.lower()):
-                msg = eval(i[1], globals(), locals())
+                msg = eval(ii[1], globals(), locals())
                 await app.send_message(
                     friend,
                     MessageChain(Plain(msg)),
@@ -64,25 +63,25 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
 
 def ignore(s: str, db: list):
-    for i in db:
+    for ii in db:
         if (
-            "Reg:" in i
-            and re.search(i.replace("Reg:", ""), s).span() != (0, 0)
-            or s.find(i) == 0
+            "Reg:" in ii
+            and re.search(ii.replace("Reg:", ""), s).span() != (0, 0)
+            or s.find(ii) == 0
         ):
             l.debug(
                 "Reg:{}\t{},Find:{}".format(
-                    "Reg:" in i
-                    and re.search(i.replace("Reg:", ""), s).span() != (0, 0),
-                    i.replace("Reg:", ""),
-                    s.find(i),
+                    "Reg:" in ii
+                    and re.search(ii.replace("Reg:", ""), s).span() != (0, 0),
+                    ii.replace("Reg:", ""),
+                    s.find(ii),
                 )
             )
             return True
     return False
 
 
-def replaceMsg(s: str, d: dict):
-    for i in d:
-        s = s.replace("{" + i + "}", d[i])
+def replace_msg(s: str, d: dict):
+    for ii in d:
+        s = s.replace("{" + ii + "}", d[ii])
     return s

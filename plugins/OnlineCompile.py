@@ -10,25 +10,23 @@ from graia.ariadne.message.element import Forward, ForwardNode, Plain, Source
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from graia.saya.event import SayaModuleInstalled
 from loguru import logger as l
-from graia.ariadne.util.saya import decorate, dispatch, listen
 
-
-from util.initializer import *
+from util.initializer import setting
 from util.parseTool import *
 
 sys.path.append("../")
 saya = Saya.current()
 
 channel = Channel.current()
-alcn = Alconna("在线编译{lang}", parsePrefix("OnlineCompile"))
+alcn = Alconna("在线编译{lang}", parse_prefix("OnlineCompile"))
+data = setting["OnlineCompile"]
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("OnlineCompile")))
+@channel.use(ListenerSchema(listening_events=parse_msg_type("OnlineCompile")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    if len(message[Plain]) == 0:
+    if not message[Plain]:
         return
     dic = alcn.parse(message[Plain][0].text.splitlines()[0]).header
     if not dic:
@@ -38,20 +36,20 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             friend, MessageChain(Plain("加好友后才能使用本功能")), quote=message[Source][0]
         )
         return
-    infos = ""
+    info = ""
     try:
         buffer = message[Plain][0].text.find("\n")
         text = message[Plain][0].text
         l.info(text)
-        raw_info = Compile(text[buffer:], dic["lang"], ReadConfig("OnlineCompile"))
+        raw_info = compile_code(text[buffer:], dic["lang"], data)
 
         for index in raw_info:
-            infos += index
-        infos = infos[:512]
+            info += index
+        info = info[:512]
     except Exception as e:
-        infos = str(e)
+        info = str(e)
     finally:
-        if infos.count("\n") > 8 or len(infos) > 256:
+        if info.count("\n") > 8 or len(info) > 256:
             await app.send_message(
                 friend,
                 MessageChain(
@@ -60,7 +58,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                             ForwardNode(
                                 event.sender,
                                 datetime.datetime(2022, 1, 14, 5, 14, 1),
-                                MessageChain(infos),
+                                MessageChain(info),
                                 "阿尔多泰Aldotai",
                             )
                         ]
@@ -70,11 +68,11 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         else:
             await app.send_message(
                 friend,
-                MessageChain(infos),
+                MessageChain(info),
             )
 
 
-def Compile(script: str, lang: str, config: dict):
+def compile_code(script: str, lang: str, config: dict):
     c = pydoodle.Compiler(clientId=config["id"], clientSecret=config["secret"])
     result = c.execute(script, lang)
     return result.output

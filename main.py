@@ -49,7 +49,7 @@ l.add(
 
 
 saya = create(Saya)
-configJson = js.ReadJson("config.json5")
+configJson = js.read_json("config.json5")
 
 enabled_plugins = [
     ii

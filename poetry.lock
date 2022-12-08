@@ -311,6 +311,14 @@ python-versions = ">=3.8"
 typing-extensions = ">=4.4.0,<4.5.0"
 
 [[package]]
+name = "nest-asyncio"
+version = "1.5.6"
+description = "Patch asyncio to allow nested event loops"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "pillow"
 version = "9.3.0"
 description = "Python Imaging Library (Fork)"
@@ -471,7 +479,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "0937bf9c843ee8c7623a44a07cb2bff62fb6a85bca2b46b63c488d062f3c3f54"
+content-hash = "7d883f13bb2e49311dcf2de95a62e70c2070f1f00759861d82141bce3465d420"
 
 [metadata.files]
 aiohttp = [
@@ -802,6 +810,10 @@ multidict = [
 nepattern = [
     {file = "nepattern-0.3.2-py3-none-any.whl", hash = "sha256:0820d26aef1257271fb66d39947284df218a6e2431100c74b54c829e0d46c4ad"},
     {file = "nepattern-0.3.2.tar.gz", hash = "sha256:33dcb125868e19a2757359215be192626deac75387d0fbf0508c0f657eb549ea"},
+]
+nest-asyncio = [
+    {file = "nest_asyncio-1.5.6-py3-none-any.whl", hash = "sha256:b9a953fb40dceaa587d109609098db21900182b16440652454a146cffb06e8b8"},
+    {file = "nest_asyncio-1.5.6.tar.gz", hash = "sha256:d267cc1ff794403f7df692964d1d2a3fa9418ffea2a3f6859a439ff482fef290"},
 ]
 pillow = [
     {file = "Pillow-9.3.0-1-cp37-cp37m-win32.whl", hash = "sha256:e6ea6b856a74d560d9326c0f5895ef8050126acfdc7ca08ad703eb0081e82b74"},

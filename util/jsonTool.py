@@ -4,7 +4,7 @@ import pyjson5 as json
 from loguru import logger as l
 
 
-def ReadJson(n: str) -> dict:
+def read_json(n: str) -> dict:
     try:
         with open(n, "r", encoding="utf-8") as load_f:
             load_dict = json.load(load_f)
@@ -13,7 +13,7 @@ def ReadJson(n: str) -> dict:
         l.error(e)
 
 
-def CreateJson(n: str, data: dict):
+def create_json(n: str, data: dict):
     try:
         if os.path.exists(n):
             os.remove(n)

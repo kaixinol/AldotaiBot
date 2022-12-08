@@ -1,8 +1,8 @@
-from arclet.alconna import Alconna
 import sys
 import time
 
 import aiohttp
+from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
@@ -13,9 +13,7 @@ from graia.ariadne.message.element import (
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from loguru import logger as l
 
-from util.initializer import *
 from util.parseTool import *
 
 sys.path.append("../")
@@ -24,12 +22,12 @@ sys.path.append("../")
 saya = Saya.current()
 channel = Channel.current()
 alcn = {
-    "每日一兽": Alconna("每日一兽", parsePrefix("EverydayFurry")),
-    "每日一兽{name}": Alconna("每日一兽{name}", parsePrefix("EverydayFurry")),
+    "每日一兽": Alconna("每日一兽", parse_prefix("EverydayFurry")),
+    "每日一兽{name}": Alconna("每日一兽{name}", parse_prefix("EverydayFurry")),
 }
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("EverydayFurry")))
+@channel.use(ListenerSchema(listening_events=parse_msg_type("EverydayFurry")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if len(message[Plain]) == 0:
@@ -38,6 +36,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     ret2 = alcn["每日一兽{name}"].parse(message[Plain])
     if not ret.matched and not ret2.matched:
         return
+    msg = None
     if ret.matched:
         msg = await get_furry_img()
     if ret2.matched:

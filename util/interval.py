@@ -41,10 +41,9 @@ class GroupInterval:
         :param max_exec: 使用n次后进入冷却
         :param send_alert: 是否发送冷却提示
         :param alert_time_interval: 发送冷却提示时间间隔，在设定时间内不会重复警告
-        :param override_level: 可超越限制的最小等级，默认为群管理员
         """
 
-        async def cd_check(app: Ariadne, group: Group, member: Member):
+        async def cd_check(app: Ariadne, group: Group):
             current = time.time()
             async with (await cls.get_lock()):
                 last = cls.last_exec[group.id]
@@ -107,7 +106,6 @@ class MemberInterval:
         :param max_exec: 使用n次后进入冷却
         :param send_alert: 是否发送冷却提示
         :param alert_time_interval: 警告时间间隔，在设定时间内不会重复警告
-        :param override_level: 可超越限制的最小等级，默认为群管理员
         """
 
         async def cd_check(app: Ariadne, group: Group, member: Member):

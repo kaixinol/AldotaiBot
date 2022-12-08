@@ -1,28 +1,14 @@
-import os
 import sys
-from typing import Any
 
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import FriendMessage, GroupMessage, MessageEvent
+from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import (
-    App,
-    At,
-    AtAll,
-    Face,
-    Forward,
-    Image,
-    Json,
-    MarketFace,
     Plain,
-    Poke,
-    Quote,
-    Xml,
 )
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from loguru import logger as l
 
 from util.initializer import *
 from util.parseTool import *
@@ -34,16 +20,16 @@ x.CreateTable("name", {"qq": int, "name": str})
 from arclet.alconna import Alconna
 
 alcn = {
-    "设置圈名{name}": Alconna("设置圈名{name}", parsePrefix("FurName")),
+    "设置圈名{name}": Alconna("设置圈名{name}", parse_prefix("FurName")),
     "我是谁": Alconna("我是谁"),
 }
 channel = Channel.current()
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("FurName")))
+@channel.use(ListenerSchema(listening_events=parse_msg_type("FurName")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    if len(message[Plain]) == 0:
+    if not message[Plain]:
         return
     ret = alcn["设置圈名{name}"].parse(message[Plain])
     if ret.matched:

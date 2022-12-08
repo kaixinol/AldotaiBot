@@ -1,8 +1,5 @@
-from tempfile import TemporaryFile
-import asyncio
 from random import randint
 import aiohttp
-import sys
 import os
 from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
@@ -13,26 +10,23 @@ from graia.ariadne.message.element import (
     Plain,
 )
 from graia.ariadne.model import Friend, Group
-from graia.saya import Channel, Saya
-from graia.saya.builtins.broadcast.schema import ListenerSchema
-from loguru import logger as l
 from util.interval import GroupInterval
 
 from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
-from util.initializer import *
 from util.parseTool import *
+from util.spider import Session
 from graia.ariadne.util.saya import decorate, dispatch, listen
-from graia.ariadne.util.validator import CertainMember, CertainFriend
+from graia.ariadne.util.validator import CertainMember
 from graia.ariadne.util.interrupt import FunctionWaiter
 from urllib.parse import quote_plus
-import io
-from PIL import Image as Img
 
 alcn = {
-    "兽兽": Alconna("兽兽", parsePrefix("ShouYunJi")),
-    "兽兽{name}": Alconna("兽兽{name}", parsePrefix("ShouYunJi")),
+    "兽兽": Alconna("兽兽", parse_prefix("ShouYunJi")),
+    "兽兽{name}": Alconna("兽兽{name}", parse_prefix("ShouYunJi")),
     "上传兽云祭{name}": Alconna("上传兽云祭{name}"),
 }
+spider = Session()
+spider.init("ShouYunJi")
 
 
 @listen(GroupMessage)
@@ -43,8 +37,8 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if len(message[Plain]) == 0:
         return
     if alcn["兽兽"].parse(message[Plain]).matched:
-        data = await GetFurryJson("https://cloud.foxtail.cn/api/function/random")
-        data2 = await GetFurryJson(
+        data = await spider.get_json("https://cloud.foxtail.cn/api/function/random")
+        data2 = await spider.get_json(
             f'https://cloud.foxtail.cn/api/function/pictures?picture={data["picture"]["id"]}&model=1'
         )
         await app.send_message(
@@ -52,7 +46,7 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             MessageChain(
                 [
                     Plain(f'名字:{data2["name"]}'),
-                    Image(data_bytes=await get_byte_from_url(data2["url"])),
+                    Image(**await spider.get_image(data2["url"])),
                     Plain(f'id:{data2["picture"]}'),
                 ]
             ),
@@ -63,7 +57,7 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(f"^(兽兽).+")))
 @decorate(GroupInterval.require(20, 3, send_alert=True))
-async def rdfurry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+async def random_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     if len(message[Plain]) == 0:
         return
@@ -71,12 +65,12 @@ async def rdfurry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if ret.matched:
         try:
             data = (
-                await GetFurryJson(
+                await spider.get_json(
                     f'https://cloud.foxtail.cn/api/function/pulllist?name={ret.header["name"]}'
                 )
             )["open"]
             datat = data[randint(0, len(data) - 1)]
-            data2 = await GetFurryJson(
+            data2 = await spider.get_json(
                 f'https://cloud.foxtail.cn/api/function/pictures?picture={datat["id"]}&model=1'
             )
             await app.send_message(
@@ -84,25 +78,16 @@ async def rdfurry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                 MessageChain(
                     [
                         Plain(f'名字:{data2["name"]}'),
-                        Image(data_bytes=await get_byte_from_url(data2["url"])),
+                        Image(**await spider.get_image(data2["url"])),
                         Plain(f'id:{data2["picture"]}'),
                     ]
                 ),
                 quote=event.id,
             )
-        except:
+        except IndexError:
             await app.send_message(
                 friend, MessageChain([Plain(f"可能没有此兽xvx")]), quote=event.id
             )
-
-
-async def GetFurryJson(s: str) -> dict:
-    async with aiohttp.ClientSession() as session:
-        headers = {
-            "User-Agent": "AldotaiBot/1.0 Askirin",
-        }
-        async with session.get(s, headers=headers) as resp:
-            return await resp.json()
 
 
 @listen(GroupMessage)
@@ -112,8 +97,8 @@ async def upload_shouyunji(app: Ariadne, friend: Friend | Group, event: MessageE
     # await async_download(message.url,message.id)
     message = event.message_chain
     ret = alcn["上传兽云祭{name}"].parse(message[Plain]).header["name"]
-    p = {}
-    p["name"] = quote_plus(ret)
+    p = {"name": quote_plus(ret)}
+
     # WAITER
 
     def waiter(
@@ -137,7 +122,8 @@ async def upload_shouyunji(app: Ariadne, friend: Friend | Group, event: MessageE
     if result == "ERROR":
         await app.send_message(friend, Plain("超时或类型不对，取消操作"))
     else:
-        await async_download(result.url, result.id)
+        pass
+        # await async_download(result.url, result.id)
         p["file"] = open(result.id, mode="r+b")
     await app.send_message(friend, Plain("请发送类型数字\n0.设定 1.毛图  2.插画"))
     # INIT TYPE
@@ -156,27 +142,3 @@ async def upload_shouyunji(app: Ariadne, friend: Friend | Group, event: MessageE
         s = await session.post(url, data=p)
         print(await s.json())
         os.remove(result.id)
-
-
-async def async_download(url: str, save: str):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            print(resp.status)
-            if resp.status == 200:
-                with open(save, mode="wb") as f:
-                    f.write(await resp.read())
-                    f.close()
-
-
-async def get_byte_from_url(url: str):
-    async with aiohttp.ClientSession() as s:
-        async with s.get(url) as r:
-            if round(r.content_length / 1024**2) > 1:
-                foo = Img.open(io.BytesIO(await r.read()))
-                foo.thumbnail((600, 600))
-                img_byte_arr = io.BytesIO()
-                foo.save(img_byte_arr, format="PNG", optimize=True, quality=60)
-                img_byte_arr = img_byte_arr.getvalue()
-                return img_byte_arr
-            else:
-                return await r.read()

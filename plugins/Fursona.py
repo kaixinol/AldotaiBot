@@ -1,22 +1,19 @@
-import asyncio
 import base64
 import json
 import os
-import re
 import sys
+
 import aiohttp
-from graia.ariadne.util.async_exec import io_bound, cpu_bound
-from graia.ariadne.util.interrupt import FunctionWaiter
 from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import Image, Plain, Source
-from graia.ariadne.model import Friend, Group, Member
+from graia.ariadne.message.element import Image, Plain
+from graia.ariadne.model import Friend, Group
+from graia.ariadne.util.interrupt import FunctionWaiter
+from graia.ariadne.util.validator import CertainMember, CertainFriend
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from loguru import logger as l
-from graia.ariadne.util.validator import CertainMember, CertainFriend
 
 from plugins.FurName import getName
 from util.initializer import *
@@ -32,9 +29,9 @@ channel = Channel.current()
 x = sqlLink("./db/furryData.db")
 x.CreateTable("fursona", {"qq": int, "imgJson": str, "desc": str})
 alcn = {
-    "上传设定": Alconna("上传设定", parsePrefix("Fursona")),
-    "设定": Alconna("设定", parsePrefix("Fursona")),
-    "添加介绍{desc}": Alconna("添加介绍{desc}", parsePrefix("Fursona")),
+    "上传设定": Alconna("上传设定", parse_prefix("Fursona")),
+    "设定": Alconna("设定", parse_prefix("Fursona")),
+    "添加介绍{desc}": Alconna("添加介绍{desc}", parse_prefix("Fursona")),
 }
 
 
@@ -52,7 +49,7 @@ async def async_download(url: str, save: str):
                     f.close()
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("Fursona")))
+@channel.use(ListenerSchema(listening_events=parse_msg_type("Fursona")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     ret = alcn["上传设定"].parse(message[Plain])
@@ -88,7 +85,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             )
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("Fursona")))
+@channel.use(ListenerSchema(listening_events=parse_msg_type("Fursona")))
 async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     ret = alcn["上传设定"].parse(message[Plain])
@@ -140,7 +137,7 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         )
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("Fursona")))
+@channel.use(ListenerSchema(listening_events=parse_msg_type("Fursona")))
 async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     ret = alcn["设定"].parse(message[Plain])
@@ -182,7 +179,7 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             return
 
 
-@channel.use(ListenerSchema(listening_events=parseMsgType("FurName")))
+@channel.use(ListenerSchema(listening_events=parse_msg_type("FurName")))
 async def addDesc(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     ret = alcn["添加介绍{desc}"].parse(message[Plain])

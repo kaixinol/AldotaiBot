@@ -1,20 +1,19 @@
-import subprocess
-import re
-from util.parseTool import *
-from util.initializer import *
-from graia.saya.event import SayaModuleInstalled
-from graia.saya import Channel, Saya
-from graia.ariadne.model import Friend, Group
-from graia.ariadne.message.element import Plain
-from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.event.message import GroupMessage, MessageEvent
-from graia.ariadne.app import Ariadne
-import psutil
-import platform
 import os
+import platform
+import re
+import subprocess
 import sys
 
-from graia.ariadne.util.saya import decorate, listen
+import psutil
+from graia.ariadne.app import Ariadne
+from graia.ariadne.event.message import GroupMessage, MessageEvent
+from graia.ariadne.message.chain import MessageChain
+from graia.ariadne.message.element import Plain
+from graia.ariadne.model import Friend, Group
+from graia.ariadne.util.saya import listen
+from graia.saya import Channel, Saya
+
+from util.parseTool import *
 
 sys.path.append("../")
 
@@ -54,7 +53,7 @@ Python 版本：{platform.python_version()}
 
 from arclet.alconna import Alconna
 
-alcn = Alconna("获取配置", parsePrefix("Resmonitor"))
+alcn = Alconna("获取配置", parse_prefix("Resmonitor"))
 
 
 @listen(GroupMessage)

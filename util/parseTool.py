@@ -1,10 +1,10 @@
 from graia.ariadne.event.message import FriendMessage, GroupMessage
 
-from util.initializer import ReadConfig
+from util.initializer import setting
 
 
-def parseMsgType(config: str) -> list:
-    config = ReadConfig(config)
+def parse_msg_type(config_name: str) -> list:
+    config = setting[config_name]
     ret = []
     if "Group" in config["process"]:
         ret.append(GroupMessage)
@@ -13,6 +13,6 @@ def parseMsgType(config: str) -> list:
     return ret
 
 
-def parsePrefix(config: str) -> list | None:
-    config = ReadConfig(config)
+def parse_prefix(config_name: str) -> list | None:
+    config = setting[config_name]
     return None if "prefix" not in config else config["prefix"]

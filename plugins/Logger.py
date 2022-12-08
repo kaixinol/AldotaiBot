@@ -6,7 +6,6 @@ from graia.ariadne.event.mirai import (
     BotMuteEvent,
 )
 from graia.ariadne.model import Group
-from graia.ariadne.util.saya import listen
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger as l
