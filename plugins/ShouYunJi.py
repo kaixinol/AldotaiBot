@@ -30,7 +30,7 @@ spider.init("ShouYunJi")
 
 
 @listen(GroupMessage)
-@dispatch(Twilight(RegexMatch(f"^兽兽")))
+@dispatch(Twilight(RegexMatch("^兽兽")))
 @decorate(GroupInterval.require(10, 3, send_alert=True))
 async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
@@ -55,7 +55,7 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
 
 @listen(GroupMessage)
-@dispatch(Twilight(RegexMatch(f"^(兽兽).+")))
+@dispatch(Twilight(RegexMatch("^(兽兽).+")))
 @decorate(GroupInterval.require(20, 3, send_alert=True))
 async def random_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
@@ -86,12 +86,12 @@ async def random_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent
             )
         except IndexError:
             await app.send_message(
-                friend, MessageChain([Plain(f"可能没有此兽xvx")]), quote=event.id
+                friend, MessageChain([Plain("可能没有此兽xvx")]), quote=event.id
             )
 
 
 @listen(GroupMessage)
-@dispatch(Twilight(RegexMatch(f"^(上传兽云祭).+")))
+@dispatch(Twilight(RegexMatch("^(上传兽云祭).+")))
 @decorate(GroupInterval.require(10, 3, send_alert=True))
 async def upload_shouyunji(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     # await async_download(message.url,message.id)
@@ -122,7 +122,6 @@ async def upload_shouyunji(app: Ariadne, friend: Friend | Group, event: MessageE
     if result == "ERROR":
         await app.send_message(friend, Plain("超时或类型不对，取消操作"))
     else:
-        pass
         # await async_download(result.url, result.id)
         p["file"] = open(result.id, mode="r+b")
     await app.send_message(friend, Plain("请发送类型数字\n0.设定 1.毛图  2.插画"))

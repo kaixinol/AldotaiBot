@@ -17,7 +17,7 @@ class Session(object):
         if isinstance(header, dict):
             self.header = header
         else:
-            self.header = {f"User-Agent": "AldotaiBot/1.0 {header}"}
+            self.header = {"User-Agent": "AldotaiBot/1.0 {header}"}
 
     async def get_json(self, url: str):
         async with ClientSession() as session:
@@ -36,16 +36,14 @@ class Session(object):
             async with session.get(url, headers=self.header) as resp:
                 if resp.content_type == "image/gif":
                     return {"url": url}
-                else:
-                    if round(resp.content_length / 1024**2) >= 1:
-                        foo = Img.open(io.BytesIO(await resp.read()))
-                        foo.thumbnail((600, 600))
-                        img_byte_arr = io.BytesIO()
-                        foo.save(img_byte_arr, format="PNG", optimize=True, quality=60)
-                        img_byte_arr = img_byte_arr.getvalue()
-                        return {"data_bytes": img_byte_arr}
-                    else:
-                        return {"data_bytes": await resp.read()}
+                if round(resp.content_length / 1024**2) < 1:
+                    return {"data_bytes": await resp.read()}
+                foo = Img.open(io.BytesIO(await resp.read()))
+                foo.thumbnail((600, 600))
+                img_byte_arr = io.BytesIO()
+                foo.save(img_byte_arr, format="PNG", optimize=True, quality=60)
+                img_byte_arr = img_byte_arr.getvalue()
+                return {"data_bytes": img_byte_arr}
 
 
 if __name__ == "__main__":
