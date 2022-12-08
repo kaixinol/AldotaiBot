@@ -14,10 +14,5 @@ def read_json(n: str) -> dict:
 
 
 def create_json(n: str, data: dict):
-    try:
-        if os.path.exists(n):
-            os.remove(n)
-        with open(n, "w", encoding="utf-8") as f:
-            json.dump(data, f)
-    except Exception as e:
-        l.error(e)
+    with open(n, "wb") as f:
+        json.dump(data, f)

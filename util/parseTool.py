@@ -4,7 +4,7 @@ from util.initializer import setting
 
 
 def parse_msg_type(config_name: str) -> list:
-    config = setting[config_name]
+    config = setting["plugin"][config_name]
     ret = []
     if "Group" in config["process"]:
         ret.append(GroupMessage)
@@ -14,5 +14,5 @@ def parse_msg_type(config_name: str) -> list:
 
 
 def parse_prefix(config_name: str) -> list | None:
-    config = setting[config_name]
+    config = setting["plugin"][config_name]
     return None if "prefix" not in config else config["prefix"]

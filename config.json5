@@ -36,11 +36,11 @@
         'changed_(video_game)',
       ],
     },
-    Randomvideo: {
+    RandomVideo: {
       process: [
         'Group',
       ],
-      fav_id: '1280741082',
+      fav_id: '1723509882',
     },
     Resmonitor: {
       process: [
@@ -63,6 +63,7 @@
       ],
     },
     KeywordAnswer: {
+      ignore_group: [],
       ignore: [
         'Reg:^((?=\\!|！).)*',
       ],
@@ -93,7 +94,7 @@
         ],
         [
           "'教我画画' in message.display or 'jwhh' in message.display",
-          "f'{getName(event.sender.id)}教我画画！！'",
+          "f'{get_name(event.sender.id)}教我画画！！'",
         ],
         [
           "message.display=='你是谁'",

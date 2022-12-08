@@ -17,27 +17,17 @@ from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger as l
 
 from util.parseTool import *
+from util.spider import Session
 
 sys.path.append("../")
-config_data = setting["RandomVideo"]
-
-
-async def getdata(url: str):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            return await resp.json()
-
-
-async def getfile(f: str):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f) as resp:
-            return await resp.read()
-
+config_data = setting["plugin"]["RandomVideo"]
+spider = Session()
+spider.init("randomvideo")
 
 channel = Channel.current()
 data = asyncio.run(
-    getdata(
-        f'https://api.bilibili.com/x/v3/fav/resource/list?media_id={config_data("RandomVideo")["fav_id"]}&ps=20'
+    spider.get_json(
+        f'https://api.bilibili.com/x/v3/fav/resource/list?media_id={config_data["fav_id"]}&ps=20'
     )
 )["data"]["medias"]
 l.info(f"缓存了{len(data)}条数据")
@@ -50,7 +40,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
     async def get_good_data():
         rt = (
-            await getdata(
+            await spider.get_json(
                 f'https://api.bilibili.com/x/web-interface/archive/related?bvid={data[randint(0, len(data) - 1)]["bvid"]}'
             )
         )["data"]
@@ -64,7 +54,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                 friend,
                 [
                     Plain(data2["title"] + "\n")
-                    + Image(url=data2["pic"] + "@400w.png")
+                    + Image(**await spider.get_image(data2["pic"] + "@400w.png"))
                     + Plain("https://www.bilibili.com/video/" + data2["bvid"])
                 ],
             )

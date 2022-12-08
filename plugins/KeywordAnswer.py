@@ -2,17 +2,19 @@ import re
 import sys
 
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import MessageEvent
+from graia.ariadne.event.message import MessageEvent, GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
-from graia.ariadne.model import Friend, Group
+from graia.ariadne.model import Friend, Group, MemberPerm
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from plugins.FurName import getName
+from plugins.FurName import get_name
+from arclet.alconna import Alconna
 from util.initializer import *
 from util.parseTool import parse_msg_type, parse_prefix
 from util.initializer import setting
 from arclet.alconna import Alconna
+from graia.ariadne.util.saya import listen
 
 sys.path.append("../")
 
@@ -28,11 +30,19 @@ for i in data["react"]:
 @channel.use(ListenerSchema(listening_events=parse_msg_type("KeywordAnswer")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
+
+    def get_name(obj):
+        if hasattr(obj, "nickname"):
+            return obj.nickname
+        else:
+            return obj.name
+
     if (
         not message[Plain]
         or ignore(message.display, data["ignore"])
         or event.sender.id == app.account
-        or "Aldotai" in event.sender.name
+        or "Aldotai" in get_name(event.sender)
+        or event.sender.group.id in data["ignore_group"]
     ):
         return
     ret = ""
@@ -85,3 +95,38 @@ def replace_msg(s: str, d: dict):
     for ii in d:
         s = s.replace("{" + ii + "}", d[ii])
     return s
+
+
+alcn2 = Alconna("关键字开关", parse_prefix("KeywordAnswer"))
+
+
+@listen(GroupMessage)
+async def configure(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+    global data
+    message = event.message_chain
+    if not message[Plain]:
+        return
+    if alcn2.parse(message[Plain]).matched:
+        if (
+            event.sender.permission != MemberPerm.Member
+            or friend.id in setting["admins"]
+        ):
+            if event.sender.group.id in data["ignore_group"]:
+                setting["plugin"]["KeywordAnswer"]["ignore_group"].pop(
+                    setting["plugin"]["KeywordAnswer"]["ignore_group"].index(
+                        event.sender.group.id
+                    )
+                )
+                send = "已开启关键字回复"
+            else:
+                setting["plugin"]["KeywordAnswer"]["ignore_group"].append(
+                    event.sender.group.id
+                )
+                send = "已关闭关键字回复"
+            data = setting["plugin"]["KeywordAnswer"]
+        else:
+            send = "你非管理员"
+        await app.send_message(
+            friend,
+            MessageChain(Plain(send)),
+        )

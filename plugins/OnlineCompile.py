@@ -20,7 +20,7 @@ saya = Saya.current()
 
 channel = Channel.current()
 alcn = Alconna("在线编译{lang}", parse_prefix("OnlineCompile"))
-data = setting["OnlineCompile"]
+data = setting["plugin"]["OnlineCompile"]
 
 
 @channel.use(ListenerSchema(listening_events=parse_msg_type("OnlineCompile")))
@@ -33,7 +33,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         return
     if type(friend) == Group:
         await app.send_message(
-            friend, MessageChain(Plain("加好友后才能使用本功能")), quote=message[Source][0]
+            friend, MessageChain(Plain("加好友后才能使用本功能")), quote=event.id
         )
         return
     info = ""
@@ -46,6 +46,8 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         for index in raw_info:
             info += index
         info = info[:512]
+        if not info:
+            info = "[空]"
     except Exception as e:
         info = str(e)
     finally:
