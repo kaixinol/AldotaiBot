@@ -32,7 +32,7 @@ alcn = {
 base64string = base64.b64encode(
     bytes(f'{config["username"]}:{config["secret"]}', "ascii")
 )
-spider.init(
+spider = Session(
     {
         "User-Agent": "AldotaiBot/1.0 krawini",
         "Authorization": f'Basic {base64string.decode("utf-8")}',

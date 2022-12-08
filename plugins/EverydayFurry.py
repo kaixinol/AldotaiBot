@@ -46,7 +46,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             await app.send_message(
                 friend,
                 MessageChain(
-                    Image(url=msg["pic"]),
+                    Image(**await spider.get_image(msg["pic"])),
                     Plain(
                         f"""
 来源：{msg["author"]}
