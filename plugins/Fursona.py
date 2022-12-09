@@ -6,7 +6,7 @@ import sys
 import aiohttp
 from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import MessageEvent
+from graia.ariadne.event.message import MessageEvent, GroupMessage, FriendMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
 from graia.ariadne.model import Friend, Group
@@ -16,9 +16,10 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 
 from plugins.FurName import get_name
-from util.initializer import *
-from util.parseTool import *
+from util.initializer import setting
+from util.parseTool import parse_prefix, parse_msg_type
 from util.sqliteTool import sqlLink
+from util.spider import Session
 
 sys.path.append("../")
 
@@ -31,20 +32,11 @@ alcn = {
     "设定": Alconna("设定", parse_prefix("Fursona")),
     "添加介绍{desc}": Alconna("添加介绍{desc}", parse_prefix("Fursona")),
 }
+spider = Session("fursona")
 
 
 def imgcmp(img: Image):
     return img.width > 4096 or img.height > 2160 or img.size / (1024**2) > 4
-
-
-async def async_download(url: str, save: str):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            print(resp.status)
-            if resp.status == 200:
-                with open(save, mode="wb") as f:
-                    f.write(await resp.read())
-                    f.close()
 
 
 @channel.use(ListenerSchema(listening_events=parse_msg_type("Fursona")))
@@ -71,9 +63,8 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                     return
                 else:
                     if not os.path.exists(f"./db/{img.id}"):
-                        await async_download(img.url, f"./db/{img.id}")
+                        await spider.download_file(img.url, f"./db/{img.id}")
                     img_list.append(img.id)
-                    l.debug(f"./db/{img.id}")
             x.UpdateTable(
                 "fursona",
                 struct={
@@ -124,7 +115,7 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                 )
                 return
             if not os.path.exists(f"./db/{i.id}"):
-                await async_download(i.url, f"./db/{i.id}")
+                await spider.download_file(i.url, f"./db/{i.id}")
             img_list.append(i.id)
         x.UpdateTable(
             "fursona",

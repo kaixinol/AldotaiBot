@@ -28,7 +28,7 @@ alcn = {
     "来只兽": Alconna("来只兽", parse_prefix("E621")),
     "来只兽{name}": Alconna("来只兽{name}", parse_prefix("E621")),
 }
-spider = Session()
+
 base64string = base64.b64encode(
     bytes(f'{config["username"]}:{config["secret"]}', "ascii")
 )

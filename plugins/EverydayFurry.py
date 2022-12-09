@@ -1,7 +1,6 @@
 import sys
 import time
 
-import aiohttp
 from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
@@ -15,9 +14,9 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 
 from util.parseTool import *
+from util.spider import Session
 
 sys.path.append("../")
-
 
 saya = Saya.current()
 channel = Channel.current()
@@ -25,12 +24,13 @@ alcn = {
     "每日一兽": Alconna("每日一兽", parse_prefix("EverydayFurry")),
     "每日一兽{name}": Alconna("每日一兽{name}", parse_prefix("EverydayFurry")),
 }
+spider = Session("EverydayFurry")
 
 
 @channel.use(ListenerSchema(listening_events=parse_msg_type("EverydayFurry")))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    if len(message[Plain]) == 0:
+    if not message[Plain]:
         return
     ret = alcn["每日一兽"].parse(message[Plain])
     ret2 = alcn["每日一兽{name}"].parse(message[Plain])
@@ -64,17 +64,15 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
 
 async def get_furry_img(d: str = "today"):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://bot.hifurry.cn/everyfurry?date={d}") as resp:
-            r = await resp.json()
-            return (
-                {
-                    "pic": r["PictureUrl"],
-                    "author": r["AuthorName"],
-                    "desc": r["WorkInformation"],
-                    "org": r["SourceLink"],
-                    "date": f'https://bot.hifurry.cn/everyfurry?date={time.strftime("%Y%m%d")}',
-                }
-                if r["StateCode"]
-                else None
-            )
+    r = await spider.get_json(f"https://bot.hifurry.cn/everyfurry?date={d}")
+    return (
+        {
+            "pic": r["PictureUrl"],
+            "author": r["AuthorName"],
+            "desc": r["WorkInformation"],
+            "org": r["SourceLink"],
+            "date": f'https://bot.hifurry.cn/everyfurry?date={time.strftime("%Y%m%d")}',
+        }
+        if r["StateCode"]
+        else None
+    )

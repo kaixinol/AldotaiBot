@@ -9,15 +9,12 @@ from aiohttp import ClientSession
 
 
 class Session(object):
-    def __init__(self):
+    def __init__(self, header: str | dict):
         self.session = None
-        self.header = None
-
-    def init(self, header: str | dict):
         if isinstance(header, dict):
             self.header = header
         else:
-            self.header = {f"User-Agent": "AldotaiBot/1.0 {header}"}
+            self.header = {"User-Agent": f"AldotaiBot/1.0 {header}"}
 
     async def get_json(self, url: str):
         async with ClientSession() as session:
@@ -32,12 +29,14 @@ class Session(object):
                     f.close()
 
     async def get_image(self, url: str):
+        if url.startswith("file:"):
+            return {"url": url}
         async with ClientSession() as session:
             async with session.get(url, headers=self.header) as resp:
                 if resp.content_type == "image/gif":
                     return {"url": url}
                 else:
-                    if round(resp.content_length / 1024**2) >= 1:
+                    if round(resp.content_length / 1024) > 512:
                         foo = Img.open(io.BytesIO(await resp.read()))
                         foo.thumbnail((600, 600))
                         img_byte_arr = io.BytesIO()
@@ -52,8 +51,7 @@ if __name__ == "__main__":
 
     async def main():
         print(f"started main at {time.strftime('%X')}")
-        obj = Session()
-        obj.init("test")
+        obj = Session("test")
         await asyncio.gather(
             await asyncio.to_thread(
                 obj.get_image, "https://img-home.csdnimg.cn/images/20201124032511.png"

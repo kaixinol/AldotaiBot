@@ -109,7 +109,7 @@ async def configure(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if alcn2.parse(message[Plain]).matched:
         if (
             event.sender.permission != MemberPerm.Member
-            or friend.id in setting["admins"]
+            or event.sender.id in setting["admins"]
         ):
             if event.sender.group.id in data["ignore_group"]:
                 setting["plugin"]["KeywordAnswer"]["ignore_group"].pop(
