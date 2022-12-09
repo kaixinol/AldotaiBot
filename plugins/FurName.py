@@ -13,6 +13,7 @@ from graia.saya.builtins.broadcast.schema import ListenerSchema
 from util.parseTool import *
 from util.sqliteTool import SqlLink
 from arclet.alconna import Alconna
+import loguru
 
 sys.path.append("../")
 x = SqlLink("./db/furryData.db", b64=True)
@@ -91,13 +92,13 @@ def get_name(qq: int) -> str:
 
 if __name__ == "__main__":
     x = SqlLink("./db/furryData.db", b64=True)
-    l.debug(add_name("阿尔多泰", 114514))
-    l.debug(x.search_data("name", ["qq", "name"], require=list))
-    l.debug(add_name("阿尔多泰", 114))
-    l.debug(x.search_data("name", ["qq", "name"], require=dict))
-    l.debug(add_name("阿斯奇琳", 114))
-    l.debug(x.search_data("name", ["qq", "name"], require=dict))
-    l.debug(add_name("测你的码", 114))
-    l.debug(x.search_data("name", ["qq", "name"], require=dict))
-    l.debug(get_name(114))
-    l.debug(get_name(115))
+    loguru.logger.debug(add_name("阿尔多泰", 114514))
+    loguru.logger.debug(x.search_data("name", ["qq", "name"], require=list))
+    loguru.logger.debug(add_name("阿尔多泰", 114))
+    loguru.logger.debug(x.search_data("name", ["qq", "name"], require=dict))
+    loguru.logger.debug(add_name("阿斯奇琳", 114))
+    loguru.logger.debug(x.search_data("name", ["qq", "name"], require=dict))
+    loguru.logger.debug(add_name("测你的码", 114))
+    loguru.logger.debug(x.search_data("name", ["qq", "name"], require=dict))
+    loguru.logger.debug(get_name(114))
+    loguru.logger.debug(get_name(115))

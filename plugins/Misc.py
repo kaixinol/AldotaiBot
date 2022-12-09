@@ -3,7 +3,7 @@ from graia.scheduler.saya import SchedulerSchema
 from util.sqliteTool import SqlLink
 from graia.ariadne.app import Ariadne
 from graia.saya import Channel
-from loguru import logger as l
+from loguru import logger
 
 from random import randint
 from util.initializer import setting
@@ -14,7 +14,7 @@ data = setting["plugin"]["Misc"]
 
 @channel.use(SchedulerSchema(timers.every_custom_minutes(30)))
 async def every_minute_speaking():
-    l.info("COMMIT")
+    logger.info("COMMIT")
     SqlLink.commit_all()
 
 

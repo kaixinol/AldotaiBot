@@ -4,6 +4,7 @@ import sys
 
 import aiohttp
 import html2text
+import loguru
 from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
@@ -23,6 +24,7 @@ from util.interval import GroupInterval
 from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 
 from util.parseTool import *
+from loguru import logger as l
 
 sys.path.append("../")
 

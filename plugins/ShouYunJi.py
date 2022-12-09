@@ -73,7 +73,6 @@ async def random_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent
             data2 = await spider.get_json(
                 f'https://cloud.foxtail.cn/api/function/pictures?picture={datat["id"]}&model=1'
             )
-            print(data2)
             await app.send_message(
                 friend,
                 MessageChain(

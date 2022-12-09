@@ -15,6 +15,7 @@ from util.parseTool import parse_msg_type, parse_prefix
 from util.initializer import setting
 from arclet.alconna import Alconna
 from graia.ariadne.util.saya import listen
+from loguru import logger as l
 
 sys.path.append("../")
 

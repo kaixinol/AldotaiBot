@@ -13,7 +13,7 @@ from graia.ariadne.message.element import (
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from loguru import logger as l
+from loguru import logger
 
 from util.parseTool import *
 from util.spider import Session
@@ -28,7 +28,7 @@ data = asyncio.run(
         f'https://api.bilibili.com/x/v3/fav/resource/list?media_id={config_data["fav_id"]}&ps=20'
     )
 )["data"]["medias"]
-l.info(f"缓存了{len(data)}条数据")
+logger.info(f"缓存了{len(data)}条数据")
 alcn = {"来个meme": Alconna("来个meme", parse_prefix("RandomVideo"))}
 
 
@@ -39,7 +39,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     async def get_good_data():
         rt = (
             await spider.get_json(
-                f'https://api.bilibili.com/x/web-interface/archive/related?bvid={data[randint(0, len(data) - 1)]["bvid"]} '
+                f'https://api.bilibili.com/x/web-interface/archive/related?bvid={data[randint(0, len(data) - 1)]["bvid"]}'
             )
         )["data"]
         return rt or await get_good_data()

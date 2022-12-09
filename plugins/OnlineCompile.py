@@ -10,7 +10,7 @@ from graia.ariadne.message.element import Forward, ForwardNode, Plain
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from loguru import logger as l
+from loguru import logger
 
 from util.parseTool import *
 
@@ -39,7 +39,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     try:
         buffer = message[Plain][0].text.find("\n")
         text = message[Plain][0].text
-        l.info(text)
+        logger.info(text)
         raw_info = compile_code(text[buffer:], dic["lang"], data)
 
         for index in raw_info:

@@ -113,13 +113,9 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     else:
         img_list = []
         for i in result[Image]:
-            if imgcmp(i):
-                await app.send_message(
-                    friend,
-                    MessageChain(Plain("警告:图片分辨率过大或图片体积过大")),
-                )
-                return
             if not os.path.exists(f"./db/{i.id}"):
+                if imgcmp(i):
+                    await app.send_message(friend, "警告:图片分辨率过大或图片体积过大,将会被自动压缩处理")
                 await spider.download_file(i.url, f"./db/{i.id}")
             img_list.append(i.id)
         x.update_table(

@@ -45,7 +45,7 @@ spider = Session(
 @decorate(GroupInterval.require(5, 10, send_alert=True))
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    if len(message[Plain]) == 0:
+    if not message[Plain]:
         return
     ret = alcn["来只兽"].parse(message[Plain])
     ret2 = alcn["来只兽{name}"].parse(message[Plain])
