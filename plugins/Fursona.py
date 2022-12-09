@@ -174,7 +174,7 @@ async def random_fursona(app: Ariadne, friend: Friend | Group, event: MessageEve
     message = event.message_chain
     ret = alcn["随机设定"].parse(message[Plain])
     if ret.matched:
-        data = x.to_pure_list(x.exec_sql(f"SELECT * FROM fursona order by RANDOM();"))
+        data = x.to_pure_list(x.exec_sql(f"SELECT * FROM fursona order by RANDOM() LIMIT 1;"))
         if not data:
             await app.send_message(friend, MessageChain(Plain("设定库里还没有设定哦！")))
         else:
