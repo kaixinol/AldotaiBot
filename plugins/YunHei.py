@@ -22,7 +22,6 @@ from graia.ariadne.util.saya import decorate, dispatch, listen
 from util.interval import GroupInterval
 from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 
-from util.initializer import *
 from util.parseTool import *
 
 sys.path.append("../")

@@ -1,7 +1,5 @@
-import os
-
 import pyjson5 as json
-from loguru import logger as l
+import loguru
 
 
 def read_json(n: str) -> dict:
@@ -10,7 +8,7 @@ def read_json(n: str) -> dict:
             load_dict = json.load(load_f)
         return load_dict
     except Exception as e:
-        l.error(e)
+        loguru.logger.error(e)
 
 
 def create_json(n: str, data: dict):

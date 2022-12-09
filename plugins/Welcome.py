@@ -7,7 +7,7 @@ from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain, Plain
 from graia.ariadne.app import Ariadne
 import sys
-from graia.ariadne.util.saya import decorate, dispatch, listen
+from graia.ariadne.util.saya import decorate, listen
 import asyncio
 from util.interval import GroupInterval
 
@@ -20,7 +20,7 @@ channel = Channel.current()
 
 @listen(MemberJoinEvent)
 @decorate(GroupInterval.require(60 * 3, 2, send_alert=False))
-async def setu(app: Ariadne, friend: Friend | Group, event: MemberJoinEvent):
+async def setu(app: Ariadne, friend: Friend | Group):
     await app.send_message(
         friend,
         MessageChain("欢迎新成员，本bot使用方法请发送help。"),

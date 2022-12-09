@@ -6,7 +6,7 @@ import sys
 
 import psutil
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import GroupMessage, MessageEvent
+from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
 from graia.ariadne.model import Friend, Group
@@ -14,9 +14,9 @@ from graia.ariadne.util.saya import listen
 from graia.saya import Channel, Saya
 
 from util.parseTool import *
+from arclet.alconna import Alconna
 
 sys.path.append("../")
-
 
 saya = Saya.current()
 channel = Channel.current()
@@ -39,19 +39,17 @@ async def get_processor_name():
 
 
 async def msg() -> str:
-    GB = 1024 * 1024 * 1024
+    gb = 1024 * 1024 * 1024
     return f"""
 CPU名称：{await get_processor_name()}
 CPU利用率：{psutil.cpu_percent(interval=1)}%
-CPU 当前频率：{round(psutil.cpu_freq().current,1)}MHz
-可用内存：{round(psutil.virtual_memory().available / GB,1)}GB
-可用磁盘容量：{round(psutil.disk_usage("/").free / GB ,1)}GB
-程序已使用内存：{round(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2,1)}MB
+CPU 当前频率：{round(psutil.cpu_freq().current, 1)}MHz
+可用内存：{round(psutil.virtual_memory().available / gb, 1)}GB
+可用磁盘容量：{round(psutil.disk_usage("/").free / gb, 1)}GB
+程序已使用内存：{round(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2, 1)}MB
 Python 版本：{platform.python_version()}
 """
 
-
-from arclet.alconna import Alconna
 
 alcn = Alconna("获取配置", parse_prefix("Resmonitor"))
 

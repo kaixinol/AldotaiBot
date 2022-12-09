@@ -25,8 +25,7 @@ alcn = {
     "兽兽{name}": Alconna("兽兽{name}", parse_prefix("ShouYunJi")),
     "上传兽云祭{name}": Alconna("上传兽云祭{name}"),
 }
-spider = Session()
-spider.init("ShouYunJi")
+spider = Session("ShouYunJi")
 
 
 @listen(GroupMessage)
@@ -34,13 +33,14 @@ spider.init("ShouYunJi")
 @decorate(GroupInterval.require(10, 3, send_alert=True))
 async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    if len(message[Plain]) == 0:
+    if not message[Plain]:
         return
     if alcn["兽兽"].parse(message[Plain]).matched:
         data = await spider.get_json("https://cloud.foxtail.cn/api/function/random")
         data2 = await spider.get_json(
             f'https://cloud.foxtail.cn/api/function/pictures?picture={data["picture"]["id"]}&model=1'
         )
+        print(data2)
         await app.send_message(
             friend,
             MessageChain(
@@ -73,12 +73,15 @@ async def random_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent
             data2 = await spider.get_json(
                 f'https://cloud.foxtail.cn/api/function/pictures?picture={datat["id"]}&model=1'
             )
+            print(data2)
             await app.send_message(
                 friend,
                 MessageChain(
                     [
                         Plain(f'名字:{data2["name"]}'),
-                        Image(**await spider.get_image(data2["url"])),
+                        Image(**await spider.get_image(data2["url"]))
+                        if data2["examine"] in [0, 1]
+                        else Plain("\n" + data2["msg"]),
                         Plain(f'id:{data2["picture"]}'),
                     ]
                 ),

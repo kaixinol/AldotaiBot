@@ -6,13 +6,12 @@ import pydoodle
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import Forward, ForwardNode, Plain, Source
+from graia.ariadne.message.element import Forward, ForwardNode, Plain
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger as l
 
-from util.initializer import setting
 from util.parseTool import *
 
 sys.path.append("../")

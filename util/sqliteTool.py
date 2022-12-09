@@ -1,50 +1,55 @@
 import base64
 import sqlite3
 
-from loguru import logger as l
+import loguru
 
 pool = {}
 
 
-class sqlLink:
+class SqlLink:
     def __init__(self, path: str, b64: bool = False):
         self.b64 = b64
         if path not in pool:
-            l.info("新连接一个数据库")
+            loguru.logger.info("新连接一个数据库")
             self.link = sqlite3.connect(path)
             pool[path] = self.link
         else:
             self.link = pool[path]
 
-    def Execute(self, s: str) -> sqlite3.Cursor:
-        l.info(f"[SQL]\t{s}")
+    def exec_sql(self, s: str) -> sqlite3.Cursor:
+        loguru.logger.info(f"[SQL]\t{s}")
         return self.link.cursor().execute(s)
 
     @staticmethod
-    def CommitAll():
+    def commit_all():
         for i in pool:
             pool[i].commit()
 
-    def SearchData(
+    def search_data(
         self, table: str, column: list | dict | str = "*", require: type = list
     ):
+        cmd = None
         if type(column) == list:
             cmd = f"SELECT {', '.join(column)} FROM {table};"
         elif type(column) == str:
             cmd = f"SELECT {column} FROM {table};"
         elif type(column) == dict:
-            cmd = f"SELECT {'*' if 'select' not in column else column['select']} FROM {table} WHERE {list(column['data'].keys())[0]} LIKE '{list(column['data'].values())[0]}';"
+            cmd = f"SELECT {'*' if 'select' not in column else column['select']} FROM {table} WHERE {list(column['data'].keys())[0]} LIKE '{list(column['data'].values())[0]}'; "
         if require == list:
             return (
-                self.__decodeb64(self.Execute(cmd)) if self.b64 else self.Execute(cmd)
+                self.__decode_b64(self.exec_sql(cmd))
+                if self.b64
+                else self.exec_sql(cmd)
             )
         else:
-            return self.parseDataToDict(
-                self.__decodeb64(self.Execute(cmd)) if self.b64 else self.Execute(cmd),
+            return self.parse_data_to_dict(
+                self.__decode_b64(self.exec_sql(cmd))
+                if self.b64
+                else self.exec_sql(cmd),
                 column,
             )
 
-    def InsertTable(self, name: str, cmd: dict) -> bool:
+    def insert_table(self, name: str, cmd: dict):
         ls = [(k, v) for k, v in cmd.items() if v is not None]
         sentence = (
             (
@@ -71,18 +76,18 @@ class sqlLink:
             )
         )
 
-        self.Execute(sentence)
+        self.exec_sql(sentence)
 
-    def CreateTable(self, name: str, struct: dict) -> bool:
-        def qParser(n):
+    def create_table(self, name: str, struct: dict):
+        def parser(n):
             return {str: " TEXT", int: " INT NOT NULL"}[n]
 
         cmd = (
             f"CREATE TABLE IF NOT EXISTS {name}("
-            + ",".join([i + qParser(struct[i]) for i in struct])
+            + ",".join([i + parser(struct[i]) for i in struct])
         ) + ");"
 
-        self.Execute(cmd)
+        self.exec_sql(cmd)
 
     @staticmethod
     def __decode(s: str):
@@ -92,22 +97,22 @@ class sqlLink:
     def __encode(s: str):
         return base64.standard_b64encode(s.encode()).decode()
 
-    def __decodeb64(self, data: list):
+    def __decode_b64(self, data: sqlite3.Cursor):
         rzt = []
         for i in data:
-            rztB = [self.__decode(ii) if type(ii) == str else ii for ii in i]
-            rzt.append(rztB)
+            rzt_b = [self.__decode(ii) if type(ii) == str else ii for ii in i]
+            rzt.append(rzt_b)
         return rzt
 
     @staticmethod
-    def ToPureList(l: list):
+    def to_pure_list(ll: list | sqlite3.Cursor):
         ret = []
-        for ii in l:
+        for ii in ll:
             ret.extend(iter(ii))
         return ret
 
     @staticmethod
-    def parseDataToDict(data: list, key: list | str) -> dict:
+    def parse_data_to_dict(data: list, key: list | str) -> dict | list:
         if type(key) == str:
             return data
         ret = {}
@@ -117,33 +122,33 @@ class sqlLink:
                 ret[key[num]].append(i[num])
         return ret
 
-    def UpdateTable(self, name: str, struct: dict) -> bool:
+    def update_table(self, name: str, struct: dict):
         cmd = f"DELETE FROM {name} WHERE {struct['select'][0]} = {struct['select'][1]};"
-        self.Execute(cmd)
-        self.InsertTable(name, struct["data"])
+        self.exec_sql(cmd)
+        self.insert_table(name, struct["data"])
 
 
 if __name__ == "__main__":
-    l.warning("Created a database whose strings are all base64 encoded")
-    x = sqlLink("test1.db", b64=True)
-    x.CreateTable("furry", {"QQ": int, "圈名": str, "其他": str})
-    x.InsertTable("furry", {"QQ": 114514, "圈名": "测试圈名"})
-    x.InsertTable("furry", {"QQ": 114, "圈名": "dcfh"})
-    l.debug(x.SearchData("furry", ["QQ", "圈名", "其他"], require=dict))
-    l.debug(
-        x.ToPureList(x.SearchData("furry", {"select": "圈名", "data": {"qq": 114514}}))
+    loguru.logger.warning("Created a database whose strings are all base64 encoded")
+    x = SqlLink("test1.db", b64=True)
+    x.create_table("furry", {"QQ": int, "圈名": str, "其他": str})
+    x.insert_table("furry", {"QQ": 114514, "圈名": "测试圈名"})
+    x.insert_table("furry", {"QQ": 114, "圈名": "dcfh"})
+    loguru.logger.debug(x.search_data("furry", ["QQ", "圈名", "其他"], require=dict))
+    loguru.logger.debug(
+        x.to_pure_list(x.search_data("furry", {"select": "圈名", "data": {"qq": 114514}}))
     )
-    l.warning("Created a database whose strings are all plaintext")
-    x = sqlLink("test2.db")
-    x.CreateTable("furry", {"QQ": int, "圈名": str, "其他": str})
-    x.InsertTable("furry", {"QQ": 114514, "圈名": "测试圈名"})
-    x.UpdateTable(
+    loguru.logger.warning("Created a database whose strings are all plaintext")
+    x = SqlLink("test2.db")
+    x.create_table("furry", {"QQ": int, "圈名": str, "其他": str})
+    x.insert_table("furry", {"QQ": 114514, "圈名": "测试圈名"})
+    x.update_table(
         "furry", {"select": ["QQ", 114514], "data": {"QQ": 114514, "圈名": "阿斯奇琳"}}
     )
-    x.InsertTable("furry", {"QQ": 114514, "圈名": "测试圈名"})
-    l.debug(x.SearchData("furry", ["QQ", "圈名"], require=dict))
-    l.debug(
-        x.ToPureList(x.SearchData("furry", {"select": "圈名", "data": {"qq": 114514}}))
+    x.insert_table("furry", {"QQ": 114514, "圈名": "测试圈名"})
+    loguru.logger.debug(x.search_data("furry", ["QQ", "圈名"], require=dict))
+    loguru.logger.debug(
+        x.to_pure_list(x.search_data("furry", {"select": "圈名", "data": {"qq": 114514}}))
     )
-    sqlLink.CommitAll()
+    SqlLink.commit_all()
     x.link.close()

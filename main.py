@@ -11,7 +11,7 @@ from graia.ariadne.connection.config import (
 from graia.saya import Saya
 from loguru import logger as l
 
-import util.jsonTool as js
+import util.jsonTool as JS
 
 l.add(
     os.getcwd() + "/log/{time:YYYY-MM-DD}/bot.log",
@@ -49,7 +49,7 @@ l.add(
 
 
 saya = create(Saya)
-configJson = js.read_json("config.json5")
+configJson = JS.read_json("config.json5")
 
 enabled_plugins = [
     ii

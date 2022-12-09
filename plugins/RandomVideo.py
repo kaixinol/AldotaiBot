@@ -3,7 +3,6 @@ import os
 import sys
 from random import randint
 
-import aiohttp
 from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
@@ -21,8 +20,7 @@ from util.spider import Session
 
 sys.path.append("../")
 config_data = setting["plugin"]["RandomVideo"]
-spider = Session()
-spider.init("randomvideo")
+spider = Session("randomvideo")
 
 channel = Channel.current()
 data = asyncio.run(
@@ -41,7 +39,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     async def get_good_data():
         rt = (
             await spider.get_json(
-                f'https://api.bilibili.com/x/web-interface/archive/related?bvid={data[randint(0, len(data) - 1)]["bvid"]}'
+                f'https://api.bilibili.com/x/web-interface/archive/related?bvid={data[randint(0, len(data) - 1)]["bvid"]} '
             )
         )["data"]
         return rt or await get_good_data()

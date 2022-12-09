@@ -10,7 +10,7 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from plugins.FurName import get_name
 from arclet.alconna import Alconna
-from util.initializer import *
+from util.initializer import setting
 from util.parseTool import parse_msg_type, parse_prefix
 from util.initializer import setting
 from arclet.alconna import Alconna
@@ -32,15 +32,18 @@ alcn = {
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
 
-    def get_name(obj):
+    def get_qq_name(obj):
         return obj.nickname if hasattr(obj, "nickname") else obj.name
+
+    def get_id(obj):
+        return obj.group.id if hasattr(obj, "group") else None
 
     if (
         not message[Plain]
         or ignore(message.display, data["ignore"])
         or event.sender.id == app.account
-        or "Aldotai" in get_name(event.sender)
-        or event.sender.group.id in data["ignore_group"]
+        or "Aldotai" in get_qq_name(event.sender)
+        or get_id(event.sender) in data["ignore_group"]
     ):
         return
     ret = ""

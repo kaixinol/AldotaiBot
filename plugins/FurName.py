@@ -10,14 +10,13 @@ from graia.ariadne.model import Friend, Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 
-from util.initializer import *
 from util.parseTool import *
-from util.sqliteTool import sqlLink
+from util.sqliteTool import SqlLink
 from arclet.alconna import Alconna
 
 sys.path.append("../")
-x = sqlLink("./db/furryData.db", b64=True)
-x.CreateTable("name", {"qq": int, "name": str})
+x = SqlLink("./db/furryData.db", b64=True)
+x.create_table("name", {"qq": int, "name": str})
 
 alcn = {
     "设置圈名{name}": Alconna("设置圈名{name}", parse_prefix("FurName")),
@@ -57,8 +56,8 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
 
 def add_name(n: str, qq: int) -> str:
-    ret = x.SearchData("name", ["qq", "name"])
-    ret_dict = x.parseDataToDict(ret, ["qq", "name"])
+    ret = x.search_data("name", ["qq", "name"])
+    ret_dict = x.parse_data_to_dict(ret, ["qq", "name"])
     for i in ret:
         if i == [qq, n]:
             return f"你的圈名已经是{n}了"
@@ -66,37 +65,39 @@ def add_name(n: str, qq: int) -> str:
             i[0] == qq
             and safe_index(ret_dict, "qq", qq) == safe_index(ret_dict, "name", n) != -1
         ):
-            x.UpdateTable("name", {"select": ["qq", qq], "data": {"qq": qq, "name": n}})
+            x.update_table(
+                "name", {"select": ["qq", qq], "data": {"qq": qq, "name": n}}
+            )
             return f"你的圈名现在是{n}了"
         if i[1] == n and safe_index(ret_dict, "qq", qq) != safe_index(
             ret_dict, "name", n
         ):
             same_name = ret_dict["qq"][ret_dict["name"].index(n)]
             return f"你的圈名与{same_name}重名"
-    x.UpdateTable("name", {"select": ["qq", qq], "data": {"qq": qq, "name": n}})
+    x.update_table("name", {"select": ["qq", qq], "data": {"qq": qq, "name": n}})
     return f"你的圈名现在是{n}了"
 
 
-def safe_index(l: dict, key: str, wt) -> int:
-    if key not in l:
+def safe_index(ll: dict, key: str, wt) -> int:
+    if key not in ll:
         return -1
-    return -1 if wt not in l[key] else l[key].index(wt)
+    return -1 if wt not in ll[key] else ll[key].index(wt)
 
 
 def get_name(qq: int) -> str:
-    ret = x.SearchData("name", {"select": "name", "data": {"qq": qq}})
-    return x.ToPureList(ret)[len(ret) - 1] if len(ret) >= 1 else "[未设置圈名]"
+    ret = x.search_data("name", {"select": "name", "data": {"qq": qq}})
+    return x.to_pure_list(ret)[len(ret) - 1] if len(ret) >= 1 else "[未设置圈名]"
 
 
 if __name__ == "__main__":
-    x = sqlLink("./db/furryData.db", b64=True)
+    x = SqlLink("./db/furryData.db", b64=True)
     l.debug(add_name("阿尔多泰", 114514))
-    l.debug(x.SearchData("name", ["qq", "name"], require=list))
+    l.debug(x.search_data("name", ["qq", "name"], require=list))
     l.debug(add_name("阿尔多泰", 114))
-    l.debug(x.SearchData("name", ["qq", "name"], require=dict))
+    l.debug(x.search_data("name", ["qq", "name"], require=dict))
     l.debug(add_name("阿斯奇琳", 114))
-    l.debug(x.SearchData("name", ["qq", "name"], require=dict))
+    l.debug(x.search_data("name", ["qq", "name"], require=dict))
     l.debug(add_name("测你的码", 114))
-    l.debug(x.SearchData("name", ["qq", "name"], require=dict))
+    l.debug(x.search_data("name", ["qq", "name"], require=dict))
     l.debug(get_name(114))
     l.debug(get_name(115))

@@ -1,9 +1,8 @@
 import asyncio
 import io
 import time
-from asyncio import get_event_loop
-from typing import Coroutine, Any
 
+from filetype import guess_mime
 from PIL import Image as Img
 from aiohttp import ClientSession
 
@@ -22,29 +21,30 @@ class Session(object):
                 return await resp.json()
 
     async def download_file(self, url: str, save: str):
-        async with ClientSession() as session:
-            async with session.get(url, headers=self.header) as resp:
-                with open(save, mode="wb") as f:
-                    f.write(await resp.read())
-                    f.close()
+        result = await self.get_image(url)
+        with open(save, mode="wb") as f:
+            f.write(result["data_bytes"])
+            f.close()
 
-    async def get_image(self, url: str):
+    async def get_image(self, url: str) -> dict:
         if url.startswith("file:"):
             return {"url": url}
         async with ClientSession() as session:
             async with session.get(url, headers=self.header) as resp:
-                if resp.content_type == "image/gif":
-                    return {"url": url}
+                data_byte = await resp.content.read()
+                mime = guess_mime(data_byte[:261])
+                if mime == "image/gif":
+                    return {"data_bytes": data_byte}
                 else:
                     if round(resp.content_length / 1024) > 512:
-                        foo = Img.open(io.BytesIO(await resp.read()))
+                        foo = Img.open(io.BytesIO(data_byte))
                         foo.thumbnail((600, 600))
                         img_byte_arr = io.BytesIO()
                         foo.save(img_byte_arr, format="PNG", optimize=True, quality=60)
                         img_byte_arr = img_byte_arr.getvalue()
                         return {"data_bytes": img_byte_arr}
                     else:
-                        return {"data_bytes": await resp.read()}
+                        return {"data_bytes": data_byte}
 
 
 if __name__ == "__main__":
