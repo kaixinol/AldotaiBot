@@ -21,10 +21,11 @@ sys.path.append("../")
 channel = Channel.current()
 
 data = setting["plugin"]["KeywordAnswer"]
-alcn = dict()
-for i in data["react"]:
-    if i[0].startswith("Alconna:"):
-        alcn[i[0]] = Alconna(i[0].replace("Alconna:", ""))
+alcn = {
+    i[0]: Alconna(i[0].replace("Alconna:", ""))
+    for i in data["react"]
+    if i[0].startswith("Alconna:")
+}
 
 
 @channel.use(ListenerSchema(listening_events=parse_msg_type("KeywordAnswer")))
@@ -32,10 +33,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
 
     def get_name(obj):
-        if hasattr(obj, "nickname"):
-            return obj.nickname
-        else:
-            return obj.name
+        return obj.nickname if hasattr(obj, "nickname") else obj.name
 
     if (
         not message[Plain]

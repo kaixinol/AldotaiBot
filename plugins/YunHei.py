@@ -126,7 +126,7 @@ def chunk(lst, n):
 
 
 @listen(GroupMessage)
-@dispatch(Twilight(RegexMatch(f"^(!|！)查群云黑")))
+@dispatch(Twilight(RegexMatch("^(!|！)查群云黑")))
 @decorate(GroupInterval.require(60 * 20, 3, send_alert=True))
 async def find_in_group(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
