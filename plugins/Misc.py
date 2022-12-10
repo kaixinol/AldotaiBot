@@ -22,5 +22,5 @@ async def every_minute_speaking():
 async def rd_msg(app: Ariadne):
     rand_group = await app.get_group_list()
     send_group = rand_group[randint(0, len(rand_group) - 1)]
-    send_msg = setting["message"]
+    send_msg = data["message"]
     await app.send_group_message(send_group, send_msg[randint(0, len(send_msg) - 1)])
