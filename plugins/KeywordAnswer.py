@@ -16,6 +16,8 @@ from util.initializer import setting
 from arclet.alconna import Alconna
 from graia.ariadne.util.saya import listen
 from loguru import logger as l
+from asyncio import run, new_event_loop, set_event_loop, get_event_loop
+from util.spider import Session
 
 sys.path.append("../")
 
@@ -27,6 +29,17 @@ alcn = {
     for i in data["react"]
     if i[0].startswith("Alconna:")
 }
+spider = Session("keywordanswer", proxy=True)
+loop = get_event_loop()
+raw_json = loop.run_until_complete(
+    spider.get_json(
+        "https://raw.githubusercontent.com/FurDevsCN/furry-bot-list/main"
+        "/JSON/bot.json"
+    )
+)
+bot_list = set([i["id"] for i in raw_json])
+l.info("bot 列表初始化完毕")
+l.info(bot_list)
 
 
 @channel.use(ListenerSchema(listening_events=parse_msg_type("KeywordAnswer")))
@@ -45,6 +58,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         or event.sender.id == app.account
         or "Aldotai" in get_qq_name(event.sender)
         or get_id(event.sender) in data["ignore_group"]
+        or event.sender.id in bot_list
     ):
         return
     ret = ""

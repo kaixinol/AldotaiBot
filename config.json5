@@ -3,6 +3,7 @@
   admins: [
     3607922630,
   ],
+  proxy: 'socks5://127.0.0.1:7891',
   plugin: {
     Welcome: {},
     Logger: {},
@@ -16,21 +17,9 @@
         '呜呜呜，群友都教我画画',
       ],
     },
-    OnlineCompile: {
-      process: [
-        'Group',
-        'Friend',
-      ],
-      id: '9919ec260bc24c2c4eab4534d7df9225',
-      secret: '50419d8f128885d6ba5dc01f32f85aa9fc350e0187ffe21bb8281c5d4c40fae',
-      prefix: [
-        '！',
-        '!',
-      ],
-    },
     "E621": {
       username: 'krawini',
-      secret: 'TKbL7vLT2GCVVUFLog5PFgrY',
+      secret: '',
       default: [
         'dog+cat',
         'changed_(video_game)',

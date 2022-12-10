@@ -36,7 +36,8 @@ spider = Session(
     {
         "User-Agent": "AldotaiBot/1.0 krawini",
         "Authorization": f'Basic {base64string.decode("utf-8")}',
-    }
+    },
+    proxy=True,
 )
 
 
@@ -86,10 +87,10 @@ async def get_random_furry_img(tag: str):
             "sources": a_buffer["sources"],
             "id": a_buffer["id"],
         }
-    except Exception:
+    except Exception as e:
         return {
             "url": rf"file:///{os.getcwd()}/res/error.jpg",
-            "sources": ["发生了错误！可能由于网络错误或api配置不正确"],
+            "sources": f"发生了错误！{str(e)}",
             "id": 114514,
         }
 

@@ -172,15 +172,16 @@ async def add_desc(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 @channel.use(ListenerSchema(listening_events=parse_msg_type("Fursona")))
 async def random_fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
-    ret = alcn["随机设定"].parse(message[Plain])    message = event.message_chain
-177
     ret = alcn["随机设定"].parse(message[Plain])
     if ret.matched:
-        data = x.to_pure_list(x.exec_sql(f"SELECT * FROM fursona order by RANDOM() LIMIT 1;"))
+        data = x.to_pure_list(
+            x.exec_sql(f"SELECT * FROM fursona order by RANDOM() LIMIT 1;")
+        )
         if not data:
             await app.send_message(friend, MessageChain(Plain("设定库里还没有设定哦！")))
         else:
             await app.send_message(friend, raw_fursona_to_chain(data))
+
 
 def raw_fursona_to_chain(data, name: str | None = None):
     qq, img_json, desc = data

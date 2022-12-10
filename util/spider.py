@@ -5,20 +5,40 @@ import time
 from filetype import guess_mime
 from PIL import Image as Img
 from aiohttp import ClientSession
+from util.initializer import setting
+from aiosocksy.connector import ProxyConnector, ProxyClientRequest
 
 
 class Session(object):
-    def __init__(self, header: str | dict):
+    def __init__(self, header: str | dict, proxy: bool = False):
         self.session = None
         if isinstance(header, dict):
             self.header = header
         else:
             self.header = {"User-Agent": f"AldotaiBot/1.0 {header}"}
+        if proxy:
+            self.proxy = setting["proxy"]
+        else:
+            self.proxy = None
+
+    def pack(self):
+        return (
+            {
+                "connector": ProxyConnector(
+                    keepalive_timeout=True,
+                    enable_cleanup_closed=True,
+                    use_dns_cache=True,
+                ),
+                "request_class": ProxyClientRequest,
+            }
+            if self.proxy is not None
+            else {}
+        )
 
     async def get_json(self, url: str):
-        async with ClientSession() as session:
-            async with session.get(url, headers=self.header) as resp:
-                return await resp.json()
+        async with ClientSession(**self.pack()) as session:
+            async with session.get(url, headers=self.header, proxy=self.proxy) as resp:
+                return await resp.json(content_type=None)
 
     async def download_file(self, url: str, save: str):
         result = await self.get_image(url)
@@ -29,8 +49,8 @@ class Session(object):
     async def get_image(self, url: str) -> dict:
         if url.startswith("file:"):
             return {"url": url}
-        async with ClientSession() as session:
-            async with session.get(url, headers=self.header) as resp:
+        async with ClientSession(**self.pack()) as session:
+            async with session.get(url, headers=self.header, proxy=self.proxy) as resp:
                 data_byte = await resp.content.read()
                 mime = guess_mime(data_byte[:261])
                 if mime == "image/gif":

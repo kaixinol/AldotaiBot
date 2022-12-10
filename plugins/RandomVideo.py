@@ -23,7 +23,9 @@ config_data = setting["plugin"]["RandomVideo"]
 spider = Session("randomvideo")
 
 channel = Channel.current()
-data = asyncio.run(
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+data = loop.run_until_complete(
     spider.get_json(
         f'https://api.bilibili.com/x/v3/fav/resource/list?media_id={config_data["fav_id"]}&ps=20'
     )

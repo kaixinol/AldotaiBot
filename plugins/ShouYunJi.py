@@ -40,7 +40,6 @@ async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         data2 = await spider.get_json(
             f'https://cloud.foxtail.cn/api/function/pictures?picture={data["picture"]["id"]}&model=1'
         )
-        print(data2)
         await app.send_message(
             friend,
             MessageChain(
