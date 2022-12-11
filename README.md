@@ -3,7 +3,7 @@
 <h2>快速开始</h2>
 <ol>
 <li><code>poetry install</code></li>
-<li>配置config.json</li>
+<li>配置config.json5</li>
 <li>配置mirai和http api</li>
 <li><code>poetry run python main.py</code></li>
 </ol>
@@ -14,7 +14,6 @@
 <p><em>斜体</em>代表默认关闭</p>
 </blockquote>
 <ul>
-<li>[x] <em>在线编译</em></li>
 <li>[x] 云黑</li>
 <li>[x] 设定分享</li>
 <li>[x] Furry图片(E621)</li>
@@ -69,7 +68,7 @@
 ## 快速开始
 
 1. `poetry install`
-2.  配置config.json
+2.  配置config.json5
 3. 配置mirai和http api
 4. `poetry run python main.py`
 
@@ -79,7 +78,6 @@
 
 >*斜体*代表默认关闭
 
-- [x] *在线编译*
 - [x] 云黑
 - [x] 设定分享
 - [x] Furry图片(E621)
