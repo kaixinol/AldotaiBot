@@ -3,7 +3,7 @@
 <h2>快速开始</h2>
 <ol>
 <li><code>poetry install</code></li>
-<li>配置config.json5json</li>
+<li>配置config.json5</li>
 <li>配置mirai和http api</li>
 <li><code>poetry run python main.py</code></li>
 </ol>
