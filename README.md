@@ -68,7 +68,7 @@
 ## 快速开始
 
 1. `poetry install`
-2.  配置config.json
+2.  配置config.json5
 3. 配置mirai和http api
 4. `poetry run python main.py`
 
