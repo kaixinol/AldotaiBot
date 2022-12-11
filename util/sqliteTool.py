@@ -1,154 +1,111 @@
-import base64
-import sqlite3
+import sqlalchemy
+from sqlalchemy import create_engine, Column, Integer, String, select, update
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from os import getcwd, mkdir
+from os.path import exists
+from json import dumps
+import base64, sqlite3
 
-import loguru
+if not exists("db"):
+    mkdir("db")
+engine = create_engine(f"sqlite:///./db/furryData.db", echo=False)
+print(f"{getcwd()}/db/furryDat.db")
+Base = declarative_base()
 
-pool = {}
+
+class Fursona(Base):
+    __tablename__ = "fursona"
+    qq = Column(Integer, primary_key=True)
+    imgJson = Column(String, nullable=False)
+    desc = Column(String)
 
 
-class SqlLink:
-    def __init__(self, path: str, b64: bool = False):
-        self.b64 = b64
-        if path not in pool:
-            loguru.logger.info("新连接一个数据库")
-            self.link = sqlite3.connect(path)
-            pool[path] = self.link
-        else:
-            self.link = pool[path]
+class Name(Base):
+    __tablename__ = "name"
+    qq = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
 
-    def exec_sql(self, s: str) -> sqlite3.Cursor:
-        loguru.logger.info(f"[SQL]\t{s}")
-        return self.link.cursor().execute(s)
 
-    @staticmethod
-    def commit_all():
-        for i in pool:
-            pool[i].commit()
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
+session.autocommit = True
 
-    def search_data(
-        self, table: str, column: list | dict | str = "*", require: type = list
-    ):
-        cmd = None
-        if type(column) == list:
-            cmd = f"SELECT {', '.join(column)} FROM {table};"
-        elif type(column) == str:
-            cmd = f"SELECT {column} FROM {table};"
-        elif type(column) == dict:
-            cmd = f"SELECT {'*' if 'select' not in column else column['select']} FROM {table} WHERE {list(column['data'].keys())[0]} LIKE '{list(column['data'].values())[0]}'; "
-        if require == list:
-            return (
-                self.__decode_b64(self.exec_sql(cmd))
-                if self.b64
-                else self.exec_sql(cmd)
-            )
-        else:
-            return self.parse_data_to_dict(
-                self.__decode_b64(self.exec_sql(cmd))
-                if self.b64
-                else self.exec_sql(cmd),
-                column,
-            )
 
-    def insert_table(self, name: str, cmd: dict):
-        ls = [(k, v) for k, v in cmd.items() if v is not None]
-        sentence = (
-            (
-                f"INSERT INTO  {name} ("
-                + ",".join([i[0] for i in ls])
-                + ") VALUES ("
-                + ",".join(
-                    (
-                        repr(i[1])
-                        if type(i[1]) != str
-                        else "'" + self.__encode(i[1]) + "'"
-                    )
-                    for i in ls
-                )
-                + ");"
-            )
-            if self.b64
-            else (
-                f"INSERT INTO  {name} ("
-                + ",".join([i[0] for i in ls])
-                + ") VALUES ("
-                + ",".join(repr(i[1]) for i in ls)
-                + ");"
+def decode(s: str):
+    return base64.standard_b64decode(s.encode()).decode()
+
+
+def encode(s: str):
+    return base64.standard_b64encode(s.encode()).decode()
+
+
+def add_name(name: str, qq: int):
+    if len(name) > 12:
+        return ("TOO_LONG",)
+    temp = (
+        session.execute(f"SELECT qq FROM name WHERE name='{encode(name)}'")
+        .mappings()
+        .all()
+    )
+    temp1 = [i for i in temp]
+    if not temp1:
+        session.execute(f"DELETE FROM name WHERE qq={qq};")
+        session.execute(f"INSERT INTO name (name,qq)  VALUES('{encode(name)}',{qq});")
+        return None
+    else:
+        return "HAS_SAME_NAME", temp1[0]["qq"]
+
+
+def add_fursona(img: list, qq: int):
+    session.execute(f"DELETE FROM fursona WHERE qq = {qq};")
+    session.execute(f"INSERT INTO fursona(imgJson, qq) VALUES ('{dumps(img)}', {qq});")
+
+
+def add_desc(desc: str, qq: int):
+    session.execute(
+        f"UPDATE fursona SET desc = '{encode(desc)}' WHERE EXISTS (SELECT * FROM fursona WHERE qq={qq});"
+    )
+
+
+def get_name(qq: int):
+    ret = list(session.execute(f"SELECT name FROM name WHERE qq={qq}"))
+    if not ret:
+        return None
+    else:
+        return decode(ret[0][0])
+
+
+def get_fursona(name: int | str):
+    if isinstance(name, str):
+        ret = list(
+            session.execute(
+                f"SELECT * FROM fursona WHERE qq=(SELECT qq FROM name WHERE name='{encode(name)}');"
             )
         )
+    else:
+        ret = list(session.execute(f"SELECT * FROM fursona WHERE qq={name}"))
+    if not ret:
+        return None
+    else:
+        return ret[0]
 
-        self.exec_sql(sentence)
 
-    def create_table(self, name: str, struct: dict):
-        def parser(n):
-            return {str: " TEXT", int: " INT NOT NULL"}[n]
-
-        cmd = (
-            f"CREATE TABLE IF NOT EXISTS {name}("
-            + ",".join([i + parser(struct[i]) for i in struct])
-        ) + ");"
-
-        self.exec_sql(cmd)
-
-    @staticmethod
-    def __decode(s: str):
-        return base64.standard_b64decode(s.encode()).decode()
-
-    @staticmethod
-    def __encode(s: str):
-        return base64.standard_b64encode(s.encode()).decode()
-
-    def __decode_b64(self, data: sqlite3.Cursor):
-        rzt = []
-        for i in data:
-            rzt_b = [self.__decode(ii) if type(ii) == str else ii for ii in i]
-            rzt.append(rzt_b)
-        return rzt
-
-    @staticmethod
-    def to_pure_list(ll: list | sqlite3.Cursor):
-        ret = []
-        for ii in ll:
-            ret.extend(iter(ii))
-        return ret
-
-    @staticmethod
-    def parse_data_to_dict(data: list, key: list | str) -> dict | list:
-        if type(key) == str:
-            return data
-        ret = {}
-        for i in data:
-            for num in range(len(key)):
-                ret[key[num]] = [] if key[num] not in ret else ret[key[num]]
-                ret[key[num]].append(i[num])
-        return ret
-
-    def update_table(self, name: str, struct: dict):
-        cmd = f"DELETE FROM {name} WHERE {struct['select'][0]} = {struct['select'][1]};"
-        self.exec_sql(cmd)
-        self.insert_table(name, struct["data"])
+def get_random_fursona():
+    return list(session.execute(f"SELECT * FROM fursona order by RANDOM() LIMIT 1;"))
 
 
 if __name__ == "__main__":
-    loguru.logger.warning("Created a database whose strings are all base64 encoded")
-    x = SqlLink("test1.db", b64=True)
-    x.create_table("furry", {"QQ": int, "圈名": str, "其他": str})
-    x.insert_table("furry", {"QQ": 114514, "圈名": "测试圈名"})
-    x.insert_table("furry", {"QQ": 114, "圈名": "dcfh"})
-    loguru.logger.debug(x.search_data("furry", ["QQ", "圈名", "其他"], require=dict))
-    loguru.logger.debug(
-        x.to_pure_list(x.search_data("furry", {"select": "圈名", "data": {"qq": 114514}}))
-    )
-    loguru.logger.warning("Created a database whose strings are all plaintext")
-    x = SqlLink("test2.db")
-    x.create_table("furry", {"QQ": int, "圈名": str, "其他": str})
-    x.insert_table("furry", {"QQ": 114514, "圈名": "测试圈名"})
-    x.update_table(
-        "furry", {"select": ["QQ", 114514], "data": {"QQ": 114514, "圈名": "阿斯奇琳"}}
-    )
-    x.insert_table("furry", {"QQ": 114514, "圈名": "测试圈名"})
-    loguru.logger.debug(x.search_data("furry", ["QQ", "圈名"], require=dict))
-    loguru.logger.debug(
-        x.to_pure_list(x.search_data("furry", {"select": "圈名", "data": {"qq": 114514}}))
-    )
-    SqlLink.commit_all()
-    x.link.close()
+    print(get_random_fursona())
+    print(add_name("简简单单测个试", 114514))
+    print(f"QQ号114514的圈名为{get_name(114514)}")
+    add_fursona(["img1.png", "img2.gif"], 114514)
+    print(f"QQ号114的兽设资料为{get_fursona(114)}")
+    print(f"简简单单测个试的兽设资料为{get_fursona('简简单单测个试')}")
+    add_desc("测试", 114514)
+    print(f"简简单单测个试的兽设资料为{get_fursona('简简单单测个试')}")
+    print(add_name("简简单单测个试", 1919810))
+    print(add_name("很" + "长" * 20 + "的名字", 1145141919810))
+    add_fursona(["img1.png", "img2.gif"], 1919810)
+    print(get_random_fursona())

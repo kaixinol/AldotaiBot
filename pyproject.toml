@@ -21,6 +21,7 @@ arclet-alconna = "^1.4.2.1"
 pillow = "^9.3.0"
 filetype = "^1.2.0"
 aiosocksy = "^0.1.2"
+sqlalchemy = "^1.4.45"
 
 
 [build-system]

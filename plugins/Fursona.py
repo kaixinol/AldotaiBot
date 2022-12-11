@@ -14,17 +14,21 @@ from graia.ariadne.util.validator import CertainMember, CertainFriend
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 
-from plugins.FurName import get_name
 from util.initializer import setting
 from util.parseTool import parse_prefix, parse_msg_type
-from util.sqliteTool import SqlLink
+from util.sqliteTool import (
+    get_fursona,
+    add_desc,
+    add_fursona,
+    get_name,
+    get_random_fursona,
+    session,
+)
 from util.spider import Session
 
 
 channel = Channel.current()
 
-x = SqlLink("./db/furryData.db")
-x.create_table("fursona", {"qq": int, "imgJson": str, "desc": str})
 alcn = {
     "上传设定": Alconna("上传设定", parse_prefix("Fursona")),
     "设定": Alconna("设定", parse_prefix("Fursona")),
@@ -55,7 +59,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if not message.has(Image):
         return
     if ret.matched:
-        if get_name(event.sender.id) == "[未设置圈名]":
+        if not get_name(event.sender.id):
             await app.send_message(
                 friend,
                 MessageChain(Plain("请先设置圈名！")),
@@ -69,13 +73,7 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                         await app.send_message(friend, "警告:图片分辨率过大或图片体积过大,将会被自动压缩处理")
                     await spider.download_file(img.url, f"./db/{img.id}")
                 img_list.append(img.id)
-            x.update_table(
-                "fursona",
-                struct={
-                    "select": ["qq", event.sender.id],
-                    "data": {"qq": event.sender.id, "imgJson": json.dumps(img_list)},
-                },
-            )
+            add_fursona(img_list, event.sender.id)
 
 
 @channel.use(ListenerSchema(listening_events=parse_msg_type("Fursona")))
@@ -117,13 +115,7 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
                     await app.send_message(friend, "警告:图片分辨率过大或图片体积过大,将会被自动压缩处理")
                 await spider.download_file(i.url, f"./db/{i.id}")
             img_list.append(i.id)
-        x.update_table(
-            "fursona",
-            struct={
-                "select": ["qq", event.sender.id],
-                "data": {"qq": event.sender.id, "imgJson": json.dumps(img_list)},
-            },
-        )
+        add_fursona(img_list, event.sender.id)
 
 
 @channel.use(ListenerSchema(listening_events=parse_msg_type("Fursona")))
@@ -132,10 +124,8 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     ret = alcn["设定"].parse(message[Plain])
     if ret.matched and not message.has(At):
         original_name = get_name(event.sender.id)
-        if original_name != "[未设置圈名]":
-            data = x.to_pure_list(
-                x.search_data("fursona", {"data": {"qq": event.sender.id}})
-            )
+        if original_name:
+            data = get_fursona(event.sender.id)
             if not data:
                 await app.send_message(
                     friend,
@@ -152,14 +142,11 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
 
 @channel.use(ListenerSchema(listening_events=parse_msg_type("Fursona")))
-async def add_desc(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+async def add_fursona_desc(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     ret = alcn["添加介绍{desc}"].parse(message[Plain])
-    if ret.matched and get_name(event.sender.id) != "[未设置圈名]":
-        x.exec_sql(
-            f'UPDATE fursona SET desc = \'{encode(ret.header["desc"])}\' WHERE qq={event.sender.id};'
-        )
-
+    if ret.matched and get_name(event.sender.id):
+        add_desc(ret.header["desc"], event.sender.id)
     elif ret.matched:
         await app.send_message(
             friend,
@@ -173,20 +160,20 @@ async def random_fursona(app: Ariadne, friend: Friend | Group, event: MessageEve
     message = event.message_chain
     ret = alcn["随机设定"].parse(message[Plain])
     if ret.matched:
-        data = x.to_pure_list(
-            x.exec_sql(f"SELECT * FROM fursona order by RANDOM() LIMIT 1;")
-        )
+        data = get_random_fursona()
         if not data:
             await app.send_message(friend, MessageChain(Plain("设定库里还没有设定哦！")))
         else:
-            await app.send_message(friend, raw_fursona_to_chain(data))
+            await app.send_message(friend, raw_fursona_to_chain(data[0]))
 
 
 def raw_fursona_to_chain(data, name: str | None = None):
     qq, img_json, desc = data
     real_name = get_name(qq) if name is None else name
-    if real_name == "[未设置圈名]":
-        real_name = f"[{qq}]"
+    if not real_name:
+        real_name = f"{qq}"
+    else:
+        real_name = f"{real_name}({qq})"
     return MessageChain(
         [
             [Image(path=f"./db/{i}") for i in json.loads(img_json)]
@@ -203,19 +190,12 @@ async def specified_fursona_by_name(
     message = event.message_chain
     ret = alcn["设定{name}"].parse(message[Plain])
     if ret.matched:
-        encoded_data = encode(ret.header["name"])
-        fur_qq = x.to_pure_list(
-            x.exec_sql(f"SELECT qq FROM name WHERE name='{encoded_data}';")
-        )
+        fur_name = ret.header["name"]
+        fur_qq = get_fursona(fur_name)
         if not fur_qq:
             await app.send_message(friend, MessageChain(Plain("这只兽还没有上传设定哦")))
             return
-        fursona_data = x.to_pure_list(
-            x.exec_sql(f"SELECT * FROM fursona WHERE qq={fur_qq[0]};")
-        )
-        await app.send_message(
-            friend, raw_fursona_to_chain(fursona_data, ret.header["name"])
-        )
+        await app.send_message(friend, raw_fursona_to_chain(fur_qq, ret.header["name"]))
 
 
 @channel.use(ListenerSchema(listening_events=parse_msg_type("Fursona")))
@@ -225,9 +205,7 @@ async def specified_fursona_by_at(
     message = event.message_chain
     ret = alcn["设定"].parse(message[Plain])
     if ret.matched and message.has(At):
-        fursona_data = x.to_pure_list(
-            x.exec_sql(f"SELECT * FROM fursona WHERE QQ={message[At][0].target};")
-        )
+        fursona_data = get_fursona(message[At][0].target)
         if not fursona_data:
             await app.send_message(friend, MessageChain(Plain("这只兽还没有上传设定哦")))
         else:
@@ -239,7 +217,7 @@ async def commit(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
     ret = alcn["COMMIT"].parse(message[Plain])
     if ret.matched and event.sender.id in setting["admins"]:
-        x.commit_all()
+        session.commit()
     if ret.matched and event.sender.id not in setting["admins"]:
         await app.send_message(friend, "你没有管理员权限")
         return
