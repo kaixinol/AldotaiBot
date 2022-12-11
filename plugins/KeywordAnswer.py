@@ -19,7 +19,6 @@ from loguru import logger as l
 from asyncio import run, new_event_loop, set_event_loop, get_event_loop
 from util.spider import Session
 
-sys.path.append("../")
 
 channel = Channel.current()
 

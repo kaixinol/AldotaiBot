@@ -16,7 +16,6 @@ from graia.saya.builtins.broadcast.schema import ListenerSchema
 from util.parseTool import *
 from util.spider import Session
 
-sys.path.append("../")
 
 saya = Saya.current()
 channel = Channel.current()

@@ -20,7 +20,6 @@ from util.parseTool import parse_prefix, parse_msg_type
 from util.sqliteTool import SqlLink
 from util.spider import Session
 
-sys.path.append("../")
 
 channel = Channel.current()
 

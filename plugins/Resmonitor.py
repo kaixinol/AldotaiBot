@@ -16,7 +16,6 @@ from graia.saya import Channel, Saya
 from util.parseTool import *
 from arclet.alconna import Alconna
 
-sys.path.append("../")
 
 saya = Saya.current()
 channel = Channel.current()

@@ -11,8 +11,6 @@ from graia.ariadne.util.saya import decorate, listen
 import asyncio
 from util.interval import GroupInterval
 
-sys.path.append("../")
-
 
 saya = Saya.current()
 channel = Channel.current()

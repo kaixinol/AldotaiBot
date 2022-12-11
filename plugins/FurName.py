@@ -15,7 +15,6 @@ from util.sqliteTool import SqlLink
 from arclet.alconna import Alconna
 import loguru
 
-sys.path.append("../")
 x = SqlLink("./db/furryData.db", b64=True)
 x.create_table("name", {"qq": int, "name": str})
 

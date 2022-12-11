@@ -18,7 +18,6 @@ from loguru import logger
 from util.parseTool import *
 from util.spider import Session
 
-sys.path.append("../")
 config_data = setting["plugin"]["RandomVideo"]
 spider = Session("randomvideo")
 

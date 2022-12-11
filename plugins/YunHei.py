@@ -26,7 +26,6 @@ from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from util.parseTool import *
 from loguru import logger as l
 
-sys.path.append("../")
 
 channel = Channel.current()
 

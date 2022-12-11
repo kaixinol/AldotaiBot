@@ -59,8 +59,6 @@ enabled_plugins = [
 ]
 l.debug(f"共加载{len(enabled_plugins)}个插件。{enabled_plugins}")
 
-sys.path.append("plugins")
-
 with saya.module_context():
     for i in enabled_plugins:
         saya.require(f"plugins.{i}")
