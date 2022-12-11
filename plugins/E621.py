@@ -1,4 +1,5 @@
 import base64
+import json
 import os
 import random
 import re
@@ -14,6 +15,7 @@ from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel, Saya
 
+from json.decoder import JSONDecodeError
 from util.initializer import setting
 from util.interval import GroupInterval
 from util.parseTool import *
@@ -87,10 +89,16 @@ async def get_random_furry_img(tag: str):
             "sources": a_buffer["sources"],
             "id": a_buffer["id"],
         }
-    except Exception as e:
+    except JSONDecodeError:
         return {
             "url": rf"file:///{os.getcwd()}/res/error.jpg",
-            "sources": f"发生了错误！{str(e)}",
+            "sources": [f"e621暂时处于cf保护中"],
+            "id": 114514,
+        }
+    except:
+        return {
+            "url": rf"file:///{os.getcwd()}/res/error.jpg",
+            "sources": [f"API key 不正确"],
             "id": 114514,
         }
 
