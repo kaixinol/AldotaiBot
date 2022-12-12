@@ -1,7 +1,6 @@
 import base64
 import json
 import os
-import sys
 
 from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
@@ -16,6 +15,7 @@ from graia.saya.builtins.broadcast.schema import ListenerSchema
 
 from util.initializer import setting
 from util.parseTool import parse_prefix, parse_msg_type
+from util.spider import Session
 from util.sqliteTool import (
     get_fursona,
     add_desc,
@@ -24,8 +24,6 @@ from util.sqliteTool import (
     get_random_fursona,
     session,
 )
-from util.spider import Session
-
 
 channel = Channel.current()
 

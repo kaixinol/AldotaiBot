@@ -1,9 +1,8 @@
 import base64
-import json
 import os
 import random
 import re
-import sys
+from json.decoder import JSONDecodeError
 
 from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
@@ -15,12 +14,9 @@ from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel, Saya
 
-from json.decoder import JSONDecodeError
-from util.initializer import setting
 from util.interval import GroupInterval
 from util.parseTool import *
 from util.spider import Session
-
 
 saya = Saya.current()
 channel = Channel.current()

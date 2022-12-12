@@ -1,6 +1,5 @@
 import asyncio
 import os
-import sys
 from random import randint
 
 from arclet.alconna import Alconna

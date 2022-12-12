@@ -6,11 +6,11 @@ from graia.ariadne.event.mirai import (
     BotMuteEvent,
 )
 from graia.ariadne.model import Group
-from graia.saya import Channel
-from graia.saya.builtins.broadcast.schema import ListenerSchema
-import loguru
 from graia.ariadne.util.saya import listen
 from graia.broadcast.builtin.event import ExceptionThrowed
+from graia.saya import Channel
+from graia.saya.builtins.broadcast.schema import ListenerSchema
+from loguru import logger
 
 channel = Channel.current()
 
@@ -20,7 +20,7 @@ async def kick_group(event: BotLeaveEventKick):
     """
     被踢出群
     """
-    loguru.logger.info(f"收到被踢出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}"),
+    logger.info(f"收到被踢出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}"),
 
 
 @listen(BotLeaveEventActive)
@@ -29,7 +29,7 @@ async def leave_group(event: BotLeaveEventActive):
     主动退群
     """
 
-    loguru.logger.info(f"收到主动退出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}")
+    logger.info(f"收到主动退出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}")
 
 
 @listen(BotGroupPermissionChangeEvent)
@@ -37,14 +37,14 @@ async def permission_change(event: BotGroupPermissionChangeEvent):
     """
     群内权限变动
     """
-    loguru.logger.info(
+    logger.info(
         f"收到权限变动事件\n群号：{event.group.id}\n群名：{event.group.name}\n权限变更为：{event.current}"
     )
 
 
 @channel.use(ListenerSchema(listening_events=[BotMuteEvent]))
 async def main(app: Ariadne, group: Group, mute: BotMuteEvent):
-    loguru.logger.info(
+    logger.info(
         f"""
 收到禁言事件，已退出该群
 群号：{group.id}
@@ -59,7 +59,7 @@ async def main(app: Ariadne, group: Group, mute: BotMuteEvent):
 async def except_handle(event: ExceptionThrowed):
     if isinstance(event.event, ExceptionThrowed):
         return
-    loguru.logger.error(
+    logger.error(
         f"""\
 # 异常事件：
 {str(event.event.__repr__())}

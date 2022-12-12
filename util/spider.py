@@ -2,11 +2,12 @@ import asyncio
 import io
 import time
 
-from filetype import guess_mime
 from PIL import Image as Img
 from aiohttp import ClientSession
-from util.initializer import setting
 from aiosocksy.connector import ProxyConnector, ProxyClientRequest
+from filetype import guess_mime
+
+from util.initializer import setting
 
 
 class Session(object):
@@ -70,7 +71,7 @@ class Session(object):
 if __name__ == "__main__":
 
     async def main():
-        print(f"started main at {time.strftime('%X')}")
+        # print(f"started main at {time.strftime('%X')}")
         obj = Session("test")
         await asyncio.gather(
             await asyncio.to_thread(
@@ -78,6 +79,6 @@ if __name__ == "__main__":
             ),
             asyncio.sleep(1),
         )
-        print(f"finished main at {time.strftime('%X')}")
+        # print(f"finished main at {time.strftime('%X')}")
 
     asyncio.run(main())

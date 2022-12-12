@@ -2,9 +2,9 @@ import os
 import platform
 import re
 import subprocess
-import sys
 
 import psutil
+from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
@@ -14,8 +14,6 @@ from graia.ariadne.util.saya import listen
 from graia.saya import Channel, Saya
 
 from util.parseTool import *
-from arclet.alconna import Alconna
-
 
 saya = Saya.current()
 channel = Channel.current()

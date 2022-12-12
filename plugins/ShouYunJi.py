@@ -1,6 +1,8 @@
-from random import randint
-import aiohttp
 import os
+from random import randint
+from urllib.parse import quote_plus
+
+import aiohttp
 from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
@@ -9,16 +11,15 @@ from graia.ariadne.message.element import (
     Image,
     Plain,
 )
-from graia.ariadne.model import Friend, Group
-from util.interval import GroupInterval
-
 from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
-from util.parseTool import *
-from util.spider import Session
+from graia.ariadne.model import Friend, Group
+from graia.ariadne.util.interrupt import FunctionWaiter
 from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.ariadne.util.validator import CertainMember
-from graia.ariadne.util.interrupt import FunctionWaiter
-from urllib.parse import quote_plus
+
+from util.interval import GroupInterval
+from util.parseTool import *
+from util.spider import Session
 
 alcn = {
     "兽兽": Alconna("兽兽", parse_prefix("ShouYunJi")),
@@ -140,5 +141,5 @@ async def upload_shouyunji(app: Ariadne, friend: Friend | Group, event: MessageE
     async with aiohttp.ClientSession() as session:
         url = "https://cloud.foxtail.cn/api/function/upload"
         s = await session.post(url, data=p)
-        print(await s.json())
+        # print(await s.json())
         os.remove(result.id)

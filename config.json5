@@ -4,6 +4,12 @@
     3607922630,
   ],
   proxy: 'socks5://127.0.0.1:7891',
+  verifykey: 'ServiceVerifyKey',
+  qq: 2634732881,
+  client:{
+    HttpClientConfig: 'http://127.0.0.1:8088/',
+    WebsocketClientConfig: 'http://127.0.0.1:8087'
+  },
   plugin: {
     Welcome: {},
     Logger: {},
@@ -131,7 +137,7 @@
       'sqliteTool',
       'initializer',
       'parseTool',
-      'interval.py',
+      'interval',
     ],
   },
 }

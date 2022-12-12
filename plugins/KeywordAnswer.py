@@ -1,24 +1,20 @@
 import re
-import sys
+from asyncio import get_event_loop
 
+from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent, GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
 from graia.ariadne.model import Friend, Group, MemberPerm
+from graia.ariadne.util.saya import listen
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from plugins.FurName import get_name
-from arclet.alconna import Alconna
+from loguru import logger as l
+
 from util.initializer import setting
 from util.parseTool import parse_msg_type, parse_prefix
-from util.initializer import setting
-from arclet.alconna import Alconna
-from graia.ariadne.util.saya import listen
-from loguru import logger as l
-from asyncio import run, new_event_loop, set_event_loop, get_event_loop
 from util.spider import Session
-
 
 channel = Channel.current()
 

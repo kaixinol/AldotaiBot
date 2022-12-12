@@ -1,4 +1,3 @@
-import sys
 import time
 
 from arclet.alconna import Alconna
@@ -15,7 +14,6 @@ from graia.saya.builtins.broadcast.schema import ListenerSchema
 
 from util.parseTool import *
 from util.spider import Session
-
 
 saya = Saya.current()
 channel = Channel.current()

@@ -1,10 +1,8 @@
 import datetime
 import re
-import sys
 
 import aiohttp
 import html2text
-import loguru
 from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
@@ -15,17 +13,15 @@ from graia.ariadne.message.element import (
     ForwardNode,
     Plain,
 )
+from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Friend, Group
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
+from loguru import logger
 
-from graia.ariadne.util.saya import decorate, dispatch, listen
 from util.interval import GroupInterval
-from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
-
 from util.parseTool import *
-from loguru import logger as l
-
 
 channel = Channel.current()
 
@@ -71,7 +67,7 @@ async def is_blacklisted(qq: int):
 
 
 async def is_member_blacklisted(qq: list):
-    l.debug(f"共{len(qq)}条数据")
+    logger.debug(f"共{len(qq)}条数据")
     if len(qq) <= 200:
         keywords = {"qq": "\n".join([str(i) for i in qq])}
         url = "https://yunhei.qimeng.fun/Piliang.php"

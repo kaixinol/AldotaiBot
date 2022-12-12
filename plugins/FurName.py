@@ -1,5 +1,4 @@
-import sys
-
+from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
@@ -12,7 +11,6 @@ from graia.saya.builtins.broadcast.schema import ListenerSchema
 
 from util.parseTool import *
 from util.sqliteTool import get_name, add_name
-from arclet.alconna import Alconna
 
 alcn = {
     "设置圈名{name}": Alconna("设置圈名{name}", parse_prefix("FurName")),

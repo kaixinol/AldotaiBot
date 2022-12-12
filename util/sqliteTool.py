@@ -5,12 +5,13 @@ from sqlalchemy.orm import sessionmaker
 from os import getcwd, mkdir
 from os.path import exists
 from json import dumps
+from loguru import logger
 import base64, sqlite3
 
 if not exists("db"):
     mkdir("db")
 engine = create_engine(f"sqlite:///./db/furryData.db", echo=False)
-print(f"{getcwd()}/db/furryDat.db")
+logger.info(f"{getcwd()}/db/furryDat.db")
 Base = declarative_base()
 
 
@@ -97,6 +98,7 @@ def get_random_fursona():
 
 
 if __name__ == "__main__":
+    # test
     print(get_random_fursona())
     print(add_name("简简单单测个试", 114514))
     print(f"QQ号114514的圈名为{get_name(114514)}")
