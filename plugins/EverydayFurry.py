@@ -1,16 +1,14 @@
 import time
 
-from arclet.alconna import Alconna
 from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
-from arclet.alconna import Alconna, Args, Arparma
+from arclet.alconna import Alconna, Arparma
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.element import (
     Image,
     Plain,
 )
-from graia.ariadne.model import Friend, Group
+from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
 
 from util.parseTool import *
@@ -22,9 +20,9 @@ spider = Session("EverydayFurry")
 
 
 @alcommand(Alconna("每日一兽{name}", parse_prefix("EverydayFurry")), private=False)
-async def today_furry(app: Ariadne, group: Group, result: Arparma, event: MessageEvent):
-    msg = await get_furry_img(result.header["name"])
+async def today_furry(app: Ariadne, group: Group, result: Arparma):
     try:
+        msg = await get_furry_img(result.header["name"])
         if msg is not None:
             await app.send_message(group, await get_chain(msg))
         else:
@@ -36,7 +34,7 @@ async def today_furry(app: Ariadne, group: Group, result: Arparma, event: Messag
 
 
 @alcommand(Alconna("每日一兽", parse_prefix("EverydayFurry")), private=False)
-async def today_furry(app: Ariadne, group: Group, result: Arparma, event: MessageEvent):
+async def today_furry(app: Ariadne, group: Group):
     msg = await get_furry_img()
     try:
         if msg is not None:
@@ -44,7 +42,6 @@ async def today_furry(app: Ariadne, group: Group, result: Arparma, event: Messag
         else:
             await app.send_message(group, MessageChain(Plain(f"今日无兽兽推送捏")))
     except Exception as e:
-        raise e
         await app.send_message(group, str(e))
 
 

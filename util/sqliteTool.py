@@ -51,7 +51,7 @@ def add_name(name: str, qq: int):
         .all()
     )
     temp1 = [i for i in temp]
-    if not temp1:
+    if not temp1 or temp1[0]["qq"] == qq:
         session.execute(f"DELETE FROM name WHERE qq={qq};")
         session.execute(f"INSERT INTO name (name,qq)  VALUES('{encode(name)}',{qq});")
         return None

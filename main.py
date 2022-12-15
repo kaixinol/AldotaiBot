@@ -1,7 +1,7 @@
 import os
 import sys
 
-from asyncio import get_event_loop
+from asyncio import new_event_loop
 from creart import create
 from graia.broadcast import Broadcast
 from graia.ariadne.app import Ariadne
@@ -50,7 +50,7 @@ l.add(
     encoding="utf-8",
     filter=lambda rec: rec["name"] == "plugins.Logger",
 )
-loop = get_event_loop()
+loop = new_event_loop()
 bcc = Broadcast(loop=loop)
 saya = create(Saya)
 create(AlconnaBehaviour)

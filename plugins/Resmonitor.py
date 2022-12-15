@@ -52,13 +52,10 @@ Python 版本：{platform.python_version()}
 """
 
 
-alcn = Alconna("获取配置", parse_prefix("Resmonitor"))
-
-
 @alcommand(Alconna("获取配置", parse_prefix("Resmonitor")), private=False)
 async def setu(app: Ariadne, friend: Friend | Group):
     data = await msg()
     await app.send_message(
         friend,
-        MessageChain(Plain(data)),
+        MessageChain(Plain(data.strip())),
     )

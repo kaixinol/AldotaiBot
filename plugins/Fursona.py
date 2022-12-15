@@ -1,8 +1,8 @@
 import base64
 import json
-import os
+from os import getcwd
+from os.path import exists
 
-from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent, GroupMessage, FriendMessage
 from graia.ariadne.message.chain import MessageChain
@@ -11,11 +11,8 @@ from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.interrupt import FunctionWaiter
 from graia.ariadne.util.validator import CertainMember, CertainFriend
 from graia.saya import Channel
-from graia.saya.builtins.broadcast.schema import ListenerSchema
-from arclet.alconna import Alconna
 from arclet.alconna.graia import alcommand
 from arclet.alconna import Alconna, Args, Arparma, MultiVar
-
 from util.initializer import setting
 from util.parseTool import parse_prefix
 from util.spider import Session
@@ -30,14 +27,6 @@ from util.sqliteTool import (
 
 channel = Channel.current()
 
-alcn = {
-    "上传设定": Alconna("上传设定", parse_prefix("Fursona")),
-    "设定": Alconna("设定", parse_prefix("Fursona")),
-    "添加介绍{desc}": Alconna("添加介绍{desc}", parse_prefix("Fursona")),
-    "随机设定": Alconna("随机设定", parse_prefix("Fursona")),
-    "COMMIT": Alconna("COMMIT", parse_prefix("Fursona")),
-    "设定{name}": Alconna("设定{name}", parse_prefix("Fursona")),
-}
 spider = Session("fursona")
 
 
@@ -50,6 +39,7 @@ def encode(s: str):
 
 
 def imgcmp(img: Image):
+    img: Image
     return img.width > 4096 or img.height > 2160 or img.size / (1024**2) > 4
 
 
@@ -68,7 +58,7 @@ async def setu(
         return
     img_list = []
     for img in result.main_args["img"]:
-        if not os.path.exists(f"./db/{img.id}"):
+        if not exists(f"./db/{img.id}"):
             if imgcmp(img):
                 await app.send_message(friend, "警告:图片分辨率过大或图片体积过大,将会被自动压缩处理")
             await spider.download_file(img.url, f"./db/{img.id}")
@@ -103,8 +93,9 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         await app.send_message(friend, Plain("超时或类型不对，取消操作"))
     else:
         img_list = []
+        i: Image
         for i in result[Image]:
-            if not os.path.exists(f"./db/{i.id}"):
+            if not exists(f"./db/{i.id}"):
                 if imgcmp(i):
                     await app.send_message(friend, "警告:图片分辨率过大或图片体积过大,将会被自动压缩处理")
                 await spider.download_file(i.url, f"./db/{i.id}")
@@ -112,7 +103,7 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         add_fursona(img_list, event.sender.id)
 
 
-@alcommand(Alconna("上传设定", parse_prefix("Fursona")), private=True)
+@alcommand(Alconna("设定", parse_prefix("Fursona")), private=True)
 async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     original_name = get_name(event.sender.id)
     if original_name:
@@ -156,6 +147,12 @@ async def random_fursona(app: Ariadne, friend: Friend | Group):
 
 
 def raw_fursona_to_chain(data, name: str | None = None):
+    def get_image(imgs: str):
+        if not exists(imgs):
+            return Plain("\n(图片被屏蔽)")
+        else:
+            return Image(path=imgs)
+
     qq, img_json, desc = data
     real_name = get_name(qq) if name is None else name
     if not real_name:
@@ -164,7 +161,7 @@ def raw_fursona_to_chain(data, name: str | None = None):
         real_name = f"{real_name}({qq})"
     return MessageChain(
         [
-            [Image(path=f"./db/{i}") for i in json.loads(img_json)]
+            [get_image(f"{getcwd()}/db/{i}") for i in json.loads(img_json)]
             + [[] if desc is None else Plain(decode(desc))]
             + Plain(f"主人：🐾{real_name}🐾")
         ]
@@ -187,7 +184,7 @@ async def specified_fursona_by_name(
 async def specified_fursona_by_at(
     app: Ariadne, friend: Friend | Group, result: Arparma
 ):
-    fursona_data = get_fursona(result.main_args["at"][0].target)
+    fursona_data = get_fursona(result.main_args["at"].target)
     if not fursona_data:
         await app.send_message(friend, MessageChain(Plain("这只兽还没有上传设定哦")))
     else:
@@ -196,8 +193,8 @@ async def specified_fursona_by_at(
 
 @alcommand(Alconna("COMMIT", parse_prefix("Fursona")), private=True)
 async def commit(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    if event.sender.id in setting["admins"]:
+    if event.sender in setting["admins"]:
         session.commit()
-    if event.sender.id not in setting["admins"]:
+    if event.sender not in setting["admins"]:
         await app.send_message(friend, "你没有管理员权限")
         return

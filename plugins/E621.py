@@ -4,7 +4,7 @@ import random
 import re
 from json.decoder import JSONDecodeError
 
-from arclet.alconna import Alconna, Args, Arparma
+from arclet.alconna import Arparma
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
@@ -13,9 +13,7 @@ from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel, Saya
-from arclet.alconna.graia import Alc, Match, AlconnaProperty, AlconnaSchema
-from arclet.alconna.graia import Match, alcommand, from_command, startswith, endswith
-from loguru import logger
+from arclet.alconna.graia import alcommand
 from arclet.alconna import Alconna
 from util.interval import GroupInterval
 from util.parseTool import *
@@ -42,7 +40,6 @@ spider = Session(
 @decorate(GroupInterval.require(5, 10, send_alert=True))
 async def get_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     ret = await get_random_furry_img(random.choice(config["default"]))
-    # ret = await get_random_furry_img(ret2.header["name"].replace(",", "+"))
     await app.send_message(
         friend,
         MessageChain(
@@ -95,12 +92,9 @@ async def get_random_furry_img(tag: str):
             "sources": [f"e621暂时处于cf保护中"],
             "id": 114514,
         }
-    except:
+    except KeyError:
         return {
             "url": rf"file:///{os.getcwd()}/res/error.jpg",
             "sources": [f"API key 不正确"],
             "id": 114514,
         }
-
-
-# print(asyncio.run(get_random_furry_img("dog+cat")))

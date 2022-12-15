@@ -47,7 +47,7 @@ async def at_somebody(
 ):
     await app.send_message(
         friend,
-        MessageChain(await is_blacklisted(result.main_args["at"][0].target)),
+        MessageChain(await is_blacklisted(result.main_args["at"].target)),
     )
 
 
@@ -115,8 +115,8 @@ def chunk(lst, n):
         yield lst[i : i + n]
 
 
-# @alcommand(Alconna("查群云黑", parse_prefix("YunHei")), private=False)
-# @decorate(GroupInterval.require(60 * 20, 3, send_alert=True))
+@alcommand(Alconna("查群云黑", parse_prefix("YunHei")), private=False)
+@decorate(GroupInterval.require(60 * 20, 3, send_alert=True))
 async def find_in_group(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     qq_member = await app.get_member_list(event.sender.group)
     if len(qq_member) > 200:

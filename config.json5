@@ -6,6 +6,7 @@
   proxy: 'socks5://127.0.0.1:7891',
   verifykey: 'ServiceVerifyKey',
   qq: 2634732881,
+  keyword_ignore: [],
   client:{
     HttpClientConfig: 'http://127.0.0.1:8088/',
     WebsocketClientConfig: 'http://127.0.0.1:8087'
@@ -25,7 +26,7 @@
     },
     "E621": {
       username: 'krawini',
-      secret: 'TKbL7vLT2GCVVUFLog5PFgrY',
+      secret: 'TKbL7vLT2GCVVUFLog5PFgrY_',
       default: [
         'dog+cat',
         'changed_(video_game)',
@@ -41,6 +42,10 @@
       ],
     },
     FurName: {
+      alconna: [
+        '我是谁',
+        '我是傻逼',
+      ],
       prefix: [
         '！',
         '!',
@@ -48,17 +53,6 @@
     },
     KeywordAnswer: {
       ignore_group: [],
-      ignore: [
-        'Reg:^((?=\\!|！).)*',
-      ],
-      alconna: [
-        '我是谁',
-        '我是傻逼',
-      ],
-      process: [
-        'Group',
-        'Friend',
-      ],
       react: [
         [
           "我是傻逼",
@@ -78,12 +72,16 @@
         ],
         [
           "教我画画",
-          "你也教我画画！！'",
+          "你也教我画画！！",
         ],
         [
           "你是谁",
           "我是阿尔多泰！",
         ],
+        [
+          "我是傻逼",
+          "你好，我也是傻逼！",
+        ]
       ],
     },
     Fursona: {
