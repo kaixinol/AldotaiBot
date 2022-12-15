@@ -55,8 +55,7 @@ def add_name(name: str, qq: int):
         session.execute(f"DELETE FROM name WHERE qq={qq};")
         session.execute(f"INSERT INTO name (name,qq)  VALUES('{encode(name)}',{qq});")
         return None
-    else:
-        return "HAS_SAME_NAME", temp1[0]["qq"]
+    return "HAS_SAME_NAME", temp1[0]["qq"]
 
 
 def add_fursona(img: list, qq: int):
@@ -74,8 +73,7 @@ def get_name(qq: int):
     ret = list(session.execute(f"SELECT name FROM name WHERE qq={qq}"))
     if not ret:
         return None
-    else:
-        return decode(ret[0][0])
+    return decode(ret[0][0])
 
 
 def get_fursona(name: int | str):
@@ -89,8 +87,7 @@ def get_fursona(name: int | str):
         ret = list(session.execute(f"SELECT * FROM fursona WHERE qq={name}"))
     if not ret:
         return None
-    else:
-        return ret[0]
+    return ret[0]
 
 
 def get_random_fursona():

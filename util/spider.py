@@ -56,16 +56,14 @@ class Session(object):
                 mime = guess_mime(data_byte[:261])
                 if mime == "image/gif":
                     return {"data_bytes": data_byte}
-                else:
-                    if round(resp.content_length / 1024) > 512:
-                        foo = Img.open(io.BytesIO(data_byte))
-                        foo.thumbnail((600, 600))
-                        img_byte_arr = io.BytesIO()
-                        foo.save(img_byte_arr, format="PNG", optimize=True, quality=60)
-                        img_byte_arr = img_byte_arr.getvalue()
-                        return {"data_bytes": img_byte_arr}
-                    else:
-                        return {"data_bytes": data_byte}
+                if round(resp.content_length / 1024) > 512:
+                    foo = Img.open(io.BytesIO(data_byte))
+                    foo.thumbnail((600, 600))
+                    img_byte_arr = io.BytesIO()
+                    foo.save(img_byte_arr, format="PNG", optimize=True, quality=60)
+                    img_byte_arr = img_byte_arr.getvalue()
+                    return {"data_bytes": img_byte_arr}
+                return {"data_bytes": data_byte}
 
 
 if __name__ == "__main__":

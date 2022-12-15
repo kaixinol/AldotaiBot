@@ -52,7 +52,7 @@ class GroupInterval:
                     if group.id in cls.sent_alert:
                         cls.sent_alert.remove(group.id)
                     return
-                elif last[0] < max_exec:
+                if last[0] < max_exec:
                     cls.last_exec[group.id] = (last[0] + 1, current)
                     if group.id in cls.sent_alert:
                         cls.sent_alert.remove(group.id)
@@ -118,7 +118,7 @@ class MemberInterval:
                     if name in cls.sent_alert:
                         cls.sent_alert.remove(name)
                     return
-                elif last[0] < max_exec:
+                if last[0] < max_exec:
                     cls.last_exec[name] = (last[0] + 1, current)
                     if member.id in cls.sent_alert:
                         cls.sent_alert.remove(name)
@@ -166,7 +166,7 @@ class ManualInterval:
         if current - cls.last_exec[name][1] >= suspend_time:
             cls.last_exec[name] = (1, current)
             return True, None
-        elif last[0] < max_exec:
+        if last[0] < max_exec:
             cls.last_exec[name] = (last[0] + 1, current)
             return True, None
         return False, round(last[1] + suspend_time - current, 2)
