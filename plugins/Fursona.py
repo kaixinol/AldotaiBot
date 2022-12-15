@@ -66,15 +66,14 @@ async def setu(
             MessageChain(Plain("请先设置圈名！")),
         )
         return
-    else:
-        img_list = []
-        for img in result.main_args["img"]:
-            if not os.path.exists(f"./db/{img.id}"):
-                if imgcmp(img):
-                    await app.send_message(friend, "警告:图片分辨率过大或图片体积过大,将会被自动压缩处理")
-                await spider.download_file(img.url, f"./db/{img.id}")
-            img_list.append(img.id)
-        add_fursona(img_list, event.sender.id)
+    img_list = []
+    for img in result.main_args["img"]:
+        if not os.path.exists(f"./db/{img.id}"):
+            if imgcmp(img):
+                await app.send_message(friend, "警告:图片分辨率过大或图片体积过大,将会被自动压缩处理")
+            await spider.download_file(img.url, f"./db/{img.id}")
+        img_list.append(img.id)
+    add_fursona(img_list, event.sender.id)
 
 
 @alcommand(Alconna("上传设定", parse_prefix("Fursona")), private=False)

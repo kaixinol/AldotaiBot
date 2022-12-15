@@ -31,7 +31,7 @@ async def set_name(app: Ariadne, group: Group, result: Arparma, event: MessageEv
             MessageChain(Plain("更新圈名成功！(＞x＜) ")),
         )
         return
-    elif ret_data[0] == "TOO_LONG":
+    if ret_data[0] == "TOO_LONG":
         await app.send_message(group, MessageChain(Plain("你的名字太长了，阿尔多泰记不住！")))
     elif ret_data[0] == "HAS_SAME_NAME":
         await app.send_message(group, MessageChain(Plain(f"你的名字与{ret_data[1]}重名")))

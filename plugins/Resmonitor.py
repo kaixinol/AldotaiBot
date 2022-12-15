@@ -26,11 +26,11 @@ channel = Channel.current()
 async def get_processor_name():
     if platform.system() == "Windows":
         return subprocess.check_output("wmic CPU get NAME")[4:].decode().strip()
-    elif platform.system() == "Darwin":
+    if platform.system() == "Darwin":
         os.environ["PATH"] = os.environ["PATH"] + os.pathsep + "/usr/sbin"
         command = "sysctl -n machdep.cpu.brand_string"
         return subprocess.check_output(command).strip()
-    elif platform.system() == "Linux":
+    if platform.system() == "Linux":
         command = "cat /proc/cpuinfo"
         all_info = subprocess.check_output(command, shell=True).decode().strip()
         for line in all_info.split("\n"):

@@ -83,31 +83,30 @@ async def is_member_blacklisted(qq: list):
             .strip()
             .replace("×", "⚠️ ")
         )
-    else:
-        data = ""
-        qq_list = chunk(qq, 200)
-        for i in qq_list:
-            keywords = {"qq": "\n".join([str(j) for j in i])}
-            url = "https://yunhei.qimeng.fun/Piliang.php"
-            async with aiohttp.ClientSession() as session:
-                async with session.post(url, data=keywords) as resp:
-                    r = await resp.text()
-            txt = html2text.html2text(r)
-            data += (
-                re.sub(
-                    r"√\d{3,15}(未记录)?",
-                    "",
-                    txt[
-                        txt.find("---------查询结果---------")
-                        + 22 : txt.find("------------------------------")
-                        - 2
-                    ],
-                )
-                .strip()
-                .replace("×", "⚠️ ")
+    data = ""
+    qq_list = chunk(qq, 200)
+    for i in qq_list:
+        keywords = {"qq": "\n".join([str(j) for j in i])}
+        url = "https://yunhei.qimeng.fun/Piliang.php"
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=keywords) as resp:
+                r = await resp.text()
+        txt = html2text.html2text(r)
+        data += (
+            re.sub(
+                r"√\d{3,15}(未记录)?",
+                "",
+                txt[
+                    txt.find("---------查询结果---------")
+                    + 22 : txt.find("------------------------------")
+                    - 2
+                ],
             )
-            data += "\n"
-        return data.replace("\n\n", "\n")
+            .strip()
+            .replace("×", "⚠️ ")
+        )
+        data += "\n"
+    return data.replace("\n\n", "\n")
 
 
 def chunk(lst, n):
