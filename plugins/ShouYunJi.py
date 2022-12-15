@@ -1,104 +1,96 @@
 import os
-from random import randint
+from random import choice
 from urllib.parse import quote_plus
 
 import aiohttp
-from arclet.alconna import Alconna
+
 from graia.ariadne.app import Ariadne
+from graia.saya import Channel, Saya
+
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import (
     Image,
     Plain,
 )
-from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.interrupt import FunctionWaiter
-from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.ariadne.util.validator import CertainMember
+from graia.ariadne.util.saya import decorate
+from arclet.alconna.graia import alcommand
+from arclet.alconna import Alconna, Arparma
 
 from util.interval import GroupInterval
 from util.parseTool import *
 from util.spider import Session
+from arclet.alconna.graia import AlconnaBehaviour
 
-alcn = {
-    "兽兽": Alconna("兽兽", parse_prefix("ShouYunJi")),
-    "兽兽{name}": Alconna("兽兽{name}", parse_prefix("ShouYunJi")),
-    "上传兽云祭{name}": Alconna("上传兽云祭{name}"),
-}
+
 spider = Session("ShouYunJi")
 
 
-@listen(GroupMessage)
-@dispatch(Twilight(RegexMatch("^兽兽")))
+@alcommand(Alconna("兽兽"), private=False)
 @decorate(GroupInterval.require(10, 3, send_alert=True))
-async def rd(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    message = event.message_chain
-    if not message[Plain]:
-        return
-    if alcn["兽兽"].parse(message[Plain]).matched:
-        data = await spider.get_json("https://cloud.foxtail.cn/api/function/random")
+async def random_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+    data = await spider.get_json("https://cloud.foxtail.cn/api/function/random")
+    data2 = await spider.get_json(
+        f'https://cloud.foxtail.cn/api/function/pictures?picture={data["picture"]["id"]}&model=1'
+    )
+    await app.send_message(
+        friend,
+        MessageChain(
+            [
+                Plain(f'名字:{data2["name"]}'),
+                Image(**await spider.get_image(data2["url"])),
+                Plain(f'id:{data2["picture"]}'),
+            ]
+        ),
+        quote=event.id,
+    )
+
+
+@alcommand(Alconna("兽兽{name}"), private=False)
+@decorate(GroupInterval.require(20, 3, send_alert=True))
+async def random_furry(
+    app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
+):
+    try:
+        data = (
+            await spider.get_json(
+                f'https://cloud.foxtail.cn/api/function/pulllist?name={result.header["name"]}'
+            )
+        )["open"]
+        datat = choice(data)
         data2 = await spider.get_json(
-            f'https://cloud.foxtail.cn/api/function/pictures?picture={data["picture"]["id"]}&model=1'
+            f'https://cloud.foxtail.cn/api/function/pictures?picture={datat["id"]}&model=1'
         )
         await app.send_message(
             friend,
             MessageChain(
                 [
                     Plain(f'名字:{data2["name"]}'),
-                    Image(**await spider.get_image(data2["url"])),
+                    Image(**await spider.get_image(data2["url"]))
+                    if data2["examine"] in [0, 1]
+                    else Plain("\n" + data2["msg"]),
                     Plain(f'id:{data2["picture"]}'),
                 ]
             ),
             quote=event.id,
         )
+    except IndexError:
+        await app.send_message(
+            friend, MessageChain([Plain("可能没有此兽xvx")]), quote=event.id
+        )
 
 
-@listen(GroupMessage)
-@dispatch(Twilight(RegexMatch("^(兽兽).+")))
-@decorate(GroupInterval.require(20, 3, send_alert=True))
-async def random_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    message = event.message_chain
-    if len(message[Plain]) == 0:
-        return
-    ret = alcn["兽兽{name}"].parse(message[Plain])
-    if ret.matched:
-        try:
-            data = (
-                await spider.get_json(
-                    f'https://cloud.foxtail.cn/api/function/pulllist?name={ret.header["name"]}'
-                )
-            )["open"]
-            datat = data[randint(0, len(data) - 1)]
-            data2 = await spider.get_json(
-                f'https://cloud.foxtail.cn/api/function/pictures?picture={datat["id"]}&model=1'
-            )
-            await app.send_message(
-                friend,
-                MessageChain(
-                    [
-                        Plain(f'名字:{data2["name"]}'),
-                        Image(**await spider.get_image(data2["url"]))
-                        if data2["examine"] in [0, 1]
-                        else Plain("\n" + data2["msg"]),
-                        Plain(f'id:{data2["picture"]}'),
-                    ]
-                ),
-                quote=event.id,
-            )
-        except IndexError:
-            await app.send_message(
-                friend, MessageChain([Plain("可能没有此兽xvx")]), quote=event.id
-            )
-
-
-@listen(GroupMessage)
-@dispatch(Twilight(RegexMatch("^(上传兽云祭).+")))
+@alcommand(Alconna("上传兽云祭{name}"), private=False)
 @decorate(GroupInterval.require(10, 3, send_alert=True))
-async def upload_shouyunji(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+async def upload_shouyunji(
+    app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
+):
     # await async_download(message.url,message.id)
     message = event.message_chain
-    ret = alcn["上传兽云祭{name}"].parse(message[Plain]).header["name"]
+    ret = result.header["name"]
     p = {"name": quote_plus(ret)}
 
     # WAITER

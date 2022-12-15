@@ -1,7 +1,9 @@
 import os
 import sys
 
+from asyncio import get_event_loop
 from creart import create
+from graia.broadcast import Broadcast
 from graia.ariadne.app import Ariadne
 from graia.ariadne.connection.config import (
     HttpClientConfig,
@@ -10,6 +12,7 @@ from graia.ariadne.connection.config import (
 )
 from graia.saya import Saya
 from loguru import logger as l
+from arclet.alconna.graia import AlconnaBehaviour
 
 from util.initializer import setting
 from util.jsonTool import read_json
@@ -47,10 +50,11 @@ l.add(
     encoding="utf-8",
     filter=lambda rec: rec["name"] == "plugins.Logger",
 )
-
-
+loop = get_event_loop()
+bcc = Broadcast(loop=loop)
 saya = create(Saya)
-
+create(AlconnaBehaviour)
+saya.install_behaviours(AlconnaBehaviour(bcc, manager=None))
 enabled_plugins = [
     ii
     for ii in list(setting["plugin"].keys())[:-1]
@@ -65,7 +69,7 @@ with saya.module_context():
 app = Ariadne(
     config(
         setting["qq"],  # 你的机器人的 qq 号
-        setting["ServiceVerifyKey"],  # 填入 VerifyKey
+        setting["verifykey"],  # 填入 VerifyKey
         HttpClientConfig(setting["client"]["HttpClientConfig"]),
         WebsocketClientConfig(setting["client"]["WebsocketClientConfig"]),
     ),

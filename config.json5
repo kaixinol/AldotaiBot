@@ -32,26 +32,15 @@
       ],
     },
     RandomVideo: {
-      process: [
-        'Group',
-      ],
       fav_id: '1723509882',
     },
     Resmonitor: {
-      process: [
-        'Group',
-        'Friend',
-      ],
       prefix: [
         '！',
         '!',
       ],
     },
     FurName: {
-      process: [
-        'Group',
-        'Friend',
-      ],
       prefix: [
         '！',
         '!',
@@ -72,66 +61,48 @@
       ],
       react: [
         [
-          "message.display=='我是傻逼'",
-          "'你好!!我也是傻逼'",
+          "我是傻逼",
+          "你好!!我也是傻逼",
         ],
         [
-          "re.search('(设置|圈名)(.{0,3})(设置|圈名)',message.display)!=None",
-          "'发送\\n！设置圈名[你的圈名]\\n不需要带空格'",
+          "regex:(.{0,3})(设置|圈名)(.{0,3})(设置|圈名)(.{0,3})",
+          "发送\n！设置圈名[你的圈名]\n不需要带空格",
         ],
         [
-          "re.search('(设定|上传)(.{0,3})(设定|上传)',message.display)!=None",
-          "'发送\\n！上传设定\\n不需要带空格'",
+          "regex:(.{0,3})(设置|圈名)(.{0,3})(设置|圈名)(.{0,3})",
+          "发送\n！上传设定\n不需要带空格",
         ],
         [
-          "'不会画画' in message.display",
-          "'你好，我也不会！！'",
+          "不会画画",
+          "你好，我也不会！！",
         ],
         [
-          "'教我画画' in message.display or 'jwhh' in message.display",
-          "f'{get_name(event.sender.id)}教我画画！！'",
+          "教我画画",
+          "你也教我画画！！'",
         ],
         [
-          "message.display=='你是谁'",
-          "'我是阿尔多泰！'",
-        ],
-        [
-          "Exec:def f(s: str):\n\ttp=re.search('(?<![a-z|\\.])([t-z]|0|[m-q]|a)(v|w|a|u|x)([t-z]|0|[m-q]|a)(?![a-z|\\.])',s, re.IGNORECASE)\n\tverify=tp!=None and abs(ord(tp.group()[0])-ord(tp.group()[2])) in [0,1]\n\treturn verify",
-          "re.search('(?<![a-z|\\.])([t-z]|0|[m-q]|a)(v|w|a|u|x)([t-z]|0|[m-q]|a)(?![a-z|\\.])',message.display.lower(), re.IGNORECASE).group()",
-        ],
-        [
-          'Alconna:我是{name}',
-          '你好{name}',
+          "你是谁",
+          "我是阿尔多泰！",
         ],
       ],
     },
     Fursona: {
-      process: [
-        'Group',
-        'Friend',
-      ],
       prefix: [
         '!',
         '！',
       ],
     },
     YunHei: {
-      process: [
-        'Group',
-        'Friend',
-      ],
       prefix: [
         '!',
         '！',
       ],
     },
     EverydayFurry: {
-      process: [
-        'Group',
-        'Friend',
-      ],
     },
-    ShouYunJi: {},
+    ShouYunJi: {
+    },
+    OwO: {},
     _: [
       'jsonTool',
       'sqliteTool',

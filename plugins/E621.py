@@ -4,7 +4,7 @@ import random
 import re
 from json.decoder import JSONDecodeError
 
-from arclet.alconna import Alconna
+from arclet.alconna import Alconna, Args, Arparma
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
@@ -13,7 +13,10 @@ from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel, Saya
-
+from arclet.alconna.graia import Alc, Match, AlconnaProperty, AlconnaSchema
+from arclet.alconna.graia import Match, alcommand, from_command, startswith, endswith
+from loguru import logger
+from arclet.alconna import Alconna
 from util.interval import GroupInterval
 from util.parseTool import *
 from util.spider import Session
@@ -21,10 +24,6 @@ from util.spider import Session
 saya = Saya.current()
 channel = Channel.current()
 config = setting["plugin"]["E621"]
-alcn = {
-    "来只兽": Alconna("来只兽", parse_prefix("E621")),
-    "来只兽{name}": Alconna("来只兽{name}", parse_prefix("E621")),
-}
 
 base64string = base64.b64encode(
     bytes(f'{config["username"]}:{config["secret"]}', "ascii")
@@ -39,24 +38,30 @@ spider = Session(
 
 
 @listen(GroupMessage)
-@dispatch(Twilight(RegexMatch(f"^(来只兽).{{0,}}")))
+@dispatch(Twilight(RegexMatch(f"^(来只兽)")))
 @decorate(GroupInterval.require(5, 10, send_alert=True))
-async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    message = event.message_chain
-    if not message[Plain]:
-        return
-    ret = alcn["来只兽"].parse(message[Plain])
-    ret2 = alcn["来只兽{name}"].parse(message[Plain])
-    if not ret.matched and not ret2.matched:
-        return
-    if ret.matched:
-        ret = await get_random_furry_img(
-            config["default"][random.randint(0, len(config["default"]) - 1)]
-        )
-    if ret2.matched:
-        ret = await get_random_furry_img(ret2.header["name"].replace(",", "+"))
+async def get_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+    ret = await get_random_furry_img(random.choice(config["default"]))
+    # ret = await get_random_furry_img(ret2.header["name"].replace(",", "+"))
     await app.send_message(
         friend,
+        MessageChain(
+            [
+                Image(**await spider.get_image(ret["url"])),
+                Plain(f'\nsources:{ret["sources"][-2:]}\nid:{ret["id"]}'),
+            ]
+        ),
+        quote=event.id,
+    )
+
+
+@alcommand(Alconna("来只兽{name}", parse_prefix("E621")), private=False)
+async def get_furry_by_name(
+    app: Ariadne, group: Group, result: Arparma, event: MessageEvent
+):
+    ret = await get_random_furry_img(result.header["name"].replace(",", "+"))
+    await app.send_message(
+        group,
         MessageChain(
             [
                 Image(**await spider.get_image(ret["url"])),

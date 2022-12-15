@@ -32,22 +32,18 @@ async def get_help_doc(app: Ariadne, friend: Friend | Group, event: MessageEvent
         "帮助",
         "!帮助",
         "！帮助",
-        "get_help_doc",
-        ".get_help_doc",
+        "help",
+        ".help",
         ".帮助",
     ]:
         await app.send_message(
             friend,
-            MessageChain("本bot文档地址：https://reset.forcecat.cn/（复制到浏览器后访问）"),
+            MessageChain("本bot文档地址：reset.forcecat.cn（复制到浏览器后访问）"),
         )
 
 
 @listen(NewFriendRequestEvent)
 async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
-    """
-    收到好友申请
-    """
     await event.accept()
     await asyncio.sleep(10)
     await app.send_friend_message(event.supplicant, MessageChain(Plain("已通过你的好友申请")))
-    return

@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, choice
 
 from graia.ariadne.app import Ariadne
 from graia.saya import Channel
@@ -22,6 +22,6 @@ async def every_minute_speaking():
 @channel.use(SchedulerSchema(timers.every_custom_hours(randint(1, 4))))
 async def rd_msg(app: Ariadne):
     rand_group = await app.get_group_list()
-    send_group = rand_group[randint(0, len(rand_group) - 1)]
+    send_group = choice(rand_group)
     send_msg = data["message"]
-    await app.send_group_message(send_group, send_msg[randint(0, len(send_msg) - 1)])
+    await app.send_group_message(send_group, choice(send_msg))

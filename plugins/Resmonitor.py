@@ -12,6 +12,10 @@ from graia.ariadne.message.element import Plain
 from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.saya import listen
 from graia.saya import Channel, Saya
+from arclet.alconna.graia import alcommand
+from arclet.alconna import Alconna, Args, Arparma, MultiVar
+from graia.ariadne.util.saya import decorate, dispatch, listen
+from util.interval import GroupInterval
 
 from util.parseTool import *
 
@@ -51,14 +55,10 @@ Python 版本：{platform.python_version()}
 alcn = Alconna("获取配置", parse_prefix("Resmonitor"))
 
 
-@listen(GroupMessage)
-async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    message = event.message_chain
-    if len(message[Plain]) == 0:
-        return
-    if alcn.parse(message[Plain]).matched:
-        data = await msg()
-        await app.send_message(
-            friend,
-            MessageChain(Plain(data)),
-        )
+@alcommand(Alconna("获取配置", parse_prefix("Resmonitor")), private=False)
+async def setu(app: Ariadne, friend: Friend | Group):
+    data = await msg()
+    await app.send_message(
+        friend,
+        MessageChain(Plain(data)),
+    )

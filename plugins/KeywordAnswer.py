@@ -1,9 +1,9 @@
-import re
+from re import match
 from asyncio import get_event_loop
 
 from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import MessageEvent, GroupMessage
+from graia.ariadne.event.message import MessageEvent, GroupMessage, FriendMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
 from graia.ariadne.model import Friend, Group, MemberPerm
@@ -13,8 +13,13 @@ from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger as l
 
 from util.initializer import setting
-from util.parseTool import parse_msg_type, parse_prefix
+from util.parseTool import parse_prefix
 from util.spider import Session
+from arclet.alconna.graia import alcommand
+from arclet.alconna import Alconna, Args, Arparma, MultiVar
+from graia.ariadne.util.saya import decorate, dispatch, listen
+from util.interval import GroupInterval
+
 
 channel = Channel.current()
 
@@ -37,8 +42,9 @@ l.info("bot 列表初始化完毕")
 l.info(bot_list)
 
 
-@channel.use(ListenerSchema(listening_events=parse_msg_type("KeywordAnswer")))
-async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+@listen(GroupMessage, FriendMessage)
+@decorate(GroupInterval.require(5, 6, send_alert=True))
+async def answer(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
 
     def get_qq_name(obj):
@@ -55,63 +61,28 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         or get_id(event.sender) in data["ignore_group"]
         or event.sender.id in bot_list
     ):
-        return
-    ret = ""
-    for ii in data["react"]:
-        if ii[0].startswith("Alconna:") and not ignore(
-            message.display, data["alconna"]
-        ):
-            ret = alcn[ii[0]].parse(message.display)
-            if ret.matched:
-                await app.send_message(
-                    friend,
-                    MessageChain(Plain(replace_msg(ii[1], ret.header))),
-                )
-        if ii[0].find(":") == -1 and eval(ii[0], globals(), locals()):
-            msg = eval(ii[1], globals(), locals())
-            await app.send_message(
-                friend,
-                MessageChain(Plain(msg)),
-            )
-        if ii[0].startswith("Exec:"):
-            exec(ii[0].replace("Exec:", ""), globals(), globals())
-            if f(message.display.lower()):
-                msg = eval(ii[1], globals(), locals())
-                await app.send_message(
-                    friend,
-                    MessageChain(Plain(msg)),
-                )
+        for i in data["react"]:
+            if i[0].startswith("regex:"):
+                print(i[0].replace("regex:", ""))
+                if (
+                    match(i[0].replace("regex:", ""), event.message_chain.display)
+                    is not None
+                ):
+                    await app.send_message(friend, i[1])
+                    return
+            if i[0].find(":") == -1 and i[0] in event.message_chain.display:
+                await app.send_message(friend, i[1])
+                return
 
 
 def ignore(s: str, db: list):
     for ii in db:
-        if (
-            "Reg:" in ii
-            and re.search(ii.replace("Reg:", ""), s).span() != (0, 0)
-            or s.find(ii) == 0
-        ):
-            l.debug(
-                "Reg:{}\t{},Find:{}".format(
-                    "Reg:" in ii
-                    and re.search(ii.replace("Reg:", ""), s).span() != (0, 0),
-                    ii.replace("Reg:", ""),
-                    s.find(ii),
-                )
-            )
+        if "Reg:" in ii and match(ii.replace("Reg:", ""), s) or ii == s:
             return True
     return False
 
 
-def replace_msg(s: str, d: dict):
-    for ii in d:
-        s = s.replace("{" + ii + "}", d[ii])
-    return s
-
-
-alcn2 = Alconna("关键字开关", parse_prefix("KeywordAnswer"))
-
-
-@listen(GroupMessage)
+@alcommand(Alconna("关键字开关", parse_prefix("KeywordAnswer")), private=True)
 async def configure(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     global data
     message = event.message_chain
@@ -123,21 +94,17 @@ async def configure(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             or event.sender.id in setting["admins"]
         ):
             if event.sender.group.id in data["ignore_group"]:
-                setting["plugin"]["KeywordAnswer"]["ignore_group"].pop(
-                    setting["plugin"]["KeywordAnswer"]["ignore_group"].index(
-                        event.sender.group.id
-                    )
+                data["ignore_group"].pop(
+                    data["ignore_group"].index(event.sender.group.id)
                 )
                 send = "已开启关键字回复"
             else:
-                setting["plugin"]["KeywordAnswer"]["ignore_group"].append(
-                    event.sender.group.id
-                )
+                data["ignore_group"].append(event.sender.group.id)
                 send = "已关闭关键字回复"
             data = setting["plugin"]["KeywordAnswer"]
         else:
             send = "你非管理员"
         await app.send_message(
             friend,
-            MessageChain(Plain(send)),
+            MessageChain(send),
         )

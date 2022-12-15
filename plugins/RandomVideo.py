@@ -13,6 +13,10 @@ from graia.ariadne.model import Friend, Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
+from arclet.alconna.graia import alcommand
+from arclet.alconna import Alconna, Args, Arparma, MultiVar
+from graia.ariadne.util.saya import decorate, dispatch, listen
+from util.interval import GroupInterval
 
 from util.parseTool import *
 from util.spider import Session
@@ -29,10 +33,9 @@ data = loop.run_until_complete(
     )
 )["data"]["medias"]
 logger.info(f"缓存了{len(data)}条数据")
-alcn = {"来个meme": Alconna("来个meme", parse_prefix("RandomVideo"))}
 
 
-@channel.use(ListenerSchema(listening_events=parse_msg_type("RandomVideo")))
+@alcommand(Alconna("来个meme", parse_prefix("RandomVideo")), private=False)
 async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     message = event.message_chain
 
@@ -44,23 +47,22 @@ async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         )["data"]
         return rt or await get_good_data()
 
-    if alcn["来个meme"].parse(message[Plain]).matched:
-        datat = await get_good_data()
-        data2 = datat[randint(0, len(datat) - 1)]
-        try:
-            await app.send_message(
-                friend,
-                [
-                    Plain(data2["title"] + "\n")
-                    + Image(**await spider.get_image(data2["pic"] + "@400w.png"))
-                    + Plain("https://www.bilibili.com/video/" + data2["bvid"])
-                ],
-            )
-        except Exception as e:
-            await app.send_message(
-                friend,
-                [
-                    Image(url=f"file:///{os.getcwd()}/res/error.jpg")
-                    + Plain(f"发生了错误，{str(e)}")
-                ],
-            )
+    datat = await get_good_data()
+    data2 = datat[randint(0, len(datat) - 1)]
+    try:
+        await app.send_message(
+            friend,
+            [
+                Plain(data2["title"] + "\n")
+                + Image(**await spider.get_image(data2["pic"] + "@400w.png"))
+                + Plain("https://www.bilibili.com/video/" + data2["bvid"])
+            ],
+        )
+    except Exception as e:
+        await app.send_message(
+            friend,
+            [
+                Image(url=f"file:///{os.getcwd()}/res/error.jpg")
+                + Plain(f"发生了错误，{str(e)}")
+            ],
+        )

@@ -10,7 +10,7 @@ import base64, sqlite3
 
 if not exists("db"):
     mkdir("db")
-engine = create_engine(f"sqlite:///./db/furryData.db", echo=False)
+engine = create_engine(f"sqlite:///./db/furryData.db", echo=True)
 logger.info(f"{getcwd()}/db/furryDat.db")
 Base = declarative_base()
 

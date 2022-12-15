@@ -3,7 +3,6 @@ import re
 
 import aiohttp
 import html2text
-from arclet.alconna import Alconna
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
@@ -19,40 +18,36 @@ from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
+from graia.ariadne.util.saya import decorate, dispatch, listen
+from graia.saya import Channel, Saya
+from arclet.alconna.graia import Alc, Match, AlconnaProperty, AlconnaSchema
+from arclet.alconna.graia import Match, alcommand, from_command, startswith, endswith
+from arclet.alconna import Alconna, Args, Arparma, MultiVar
 
 from util.interval import GroupInterval
 from util.parseTool import *
 
+saya = Saya.current()
 channel = Channel.current()
 
-alcn = {
-    "查云黑": Alconna("查云黑", parse_prefix("YunHei")),
-    "查云黑{qq}": Alconna("查云黑{qq}", parse_prefix("YunHei")),
-    "查群云黑": Alconna("查群云黑", parse_prefix("YunHei")),
-}
 
-
-@channel.use(ListenerSchema(listening_events=parse_msg_type("YunHei")))
-async def single_find(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    message = event.message_chain
-    qq = alcn["查云黑{qq}"].parse(message[Plain])
-    if not qq.matched:
-        return
+@alcommand(Alconna("查云黑{qq}", parse_prefix("YunHei")), private=False)
+async def single_find(
+    app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
+):
     await app.send_message(
         friend,
-        MessageChain(await is_blacklisted(qq.header["qq"])),
+        MessageChain(await is_blacklisted(result.header["qq"])),
     )
 
 
-@channel.use(ListenerSchema(listening_events=parse_msg_type("YunHei")))
-async def at_somebody(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    message = event.message_chain
-    qq = alcn["查云黑"].parse(message[Plain])
-    if not qq.matched:
-        return
+@alcommand(Alconna("查云黑", Args["at", At], parse_prefix("YunHei")), private=False)
+async def at_somebody(
+    app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
+):
     await app.send_message(
         friend,
-        MessageChain(await is_blacklisted(message[At][0].target)),
+        MessageChain(await is_blacklisted(result.main_args["at"][0].target)),
     )
 
 
@@ -121,14 +116,9 @@ def chunk(lst, n):
         yield lst[i : i + n]
 
 
-@listen(GroupMessage)
-@dispatch(Twilight(RegexMatch("^(!|！)查群云黑")))
-@decorate(GroupInterval.require(60 * 20, 3, send_alert=True))
+# @alcommand(Alconna("查群云黑", parse_prefix("YunHei")), private=False)
+# @decorate(GroupInterval.require(60 * 20, 3, send_alert=True))
 async def find_in_group(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    message = event.message_chain
-    qq = alcn["查群云黑"].parse(message.display)
-    if not qq.matched:
-        return
     qq_member = await app.get_member_list(event.sender.group)
     if len(qq_member) > 200:
         await app.send_message(
