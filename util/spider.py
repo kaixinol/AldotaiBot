@@ -15,7 +15,7 @@ class Session(object):
         if isinstance(header, dict):
             self.header = header
         else:
-            self.header = {"User-Agent": f"AldotaiBot/1.0 {header}"}
+            self.header = {"User-Agent": f"{setting['name']}/1.0 {header}"}
         if proxy:
             self.proxy = setting["proxy"]
         else:

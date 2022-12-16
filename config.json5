@@ -1,13 +1,13 @@
 {
   name: 'AldotaiBot',
   admins: [
-    3607922630,
+    1919810
   ],
   proxy: 'socks5://127.0.0.1:7891',
-  verifykey: 'ServiceVerifyKey',
-  qq: 2634732881,
+  verifykey: 'YOUR KEY',
+  qq: 114514,
   keyword_ignore: [],
-  client:{
+  client: {
     HttpClientConfig: 'http://127.0.0.1:8088/',
     WebsocketClientConfig: 'http://127.0.0.1:8087'
   },
@@ -21,80 +21,80 @@
         'o(´^｀)o',
         '你好！我是机器兽',
         '你知道我的主人是谁吗owo',
-        '呜呜呜，群友都教我画画',
-      ],
+        '呜呜呜，群友都教我画画'
+      ]
     },
     "E621": {
-      username: 'krawini',
-      secret: 'TKbL7vLT2GCVVUFLog5PFgrY',
+      username: 'YOUR USERNAME HERE',
+      secret: 'YOUR KEY HERE',
       default: [
         'dog+cat',
         'changed_(video_game)'
       ]
     },
     RandomVideo: {
-      fav_id: '1723509882',
+      fav_id: '1723509882'
     },
     Resmonitor: {
       prefix: [
         '！',
-        '!',
-      ],
+        '!'
+      ]
     },
     FurName: {
       alconna: [
         '我是谁',
-        '我是傻逼',
+        '我是傻逼'
       ],
       prefix: [
         '！',
-        '!',
-      ],
+        '!'
+      ]
     },
     KeywordAnswer: {
       ignore_group: [],
       react: [
         [
           "我是傻逼",
-          "你好!!我也是傻逼",
+          "你好!!我也是傻逼"
         ],
         [
           "regex:(.{0,3})(设置|圈名)(.{0,3})(设置|圈名)(.{0,3})",
-          "发送\n！设置圈名[你的圈名]\n不需要带空格",
+          "发送\n！设置圈名[你的圈名]\n不需要带空格"
         ],
         [
           "regex:(.{0,3})(设置|圈名)(.{0,3})(设置|圈名)(.{0,3})",
-          "发送\n！上传设定\n不需要带空格",
+          "发送\n！上传设定\n不需要带空格"
         ],
         [
           "不会画画",
-          "你好，我也不会！！",
+          "你好，我也不会！！"
         ],
         [
           "教我画画",
-          "你也教我画画！！",
+          "你也教我画画！！"
         ],
         [
           "你是谁",
-          "我是阿尔多泰！",
+          "我是阿尔多泰！"
         ],
         [
           "我是傻逼",
-          "你好，我也是傻逼！",
+          "你好，我也是傻逼！"
         ]
-      ],
+      ]
     },
     Fursona: {
       prefix: [
         '!',
-        '！',
-      ],
+        '！'
+      ]
     },
     YunHei: {
       prefix: [
         '!',
-        '！',
-      ],
+        '！'
+      ]
     },
     EverydayFurry: {
     },
@@ -106,7 +106,7 @@
       'sqliteTool',
       'initializer',
       'parseTool',
-      'interval',
-    ],
-  },
+      'interval'
+    ]
+  }
 }
