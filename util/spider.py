@@ -36,9 +36,8 @@ class Session(object):
         )
 
     async def get_json(self, url: str):
-        async with ClientSession(**self.pack()) as session:
-            async with session.get(url, headers=self.header, proxy=self.proxy) as resp:
-                return await resp.json(content_type=None)
+        async with ClientSession(**self.pack()) as session, session.get(url, headers=self.header, proxy=self.proxy) as resp:
+            return await resp.json(content_type=None)
 
     async def download_file(self, url: str, save: str):
         result = await self.get_image(url)
@@ -49,28 +48,27 @@ class Session(object):
     async def get_image(self, url: str) -> dict:
         if url.startswith("file:"):
             return {"url": url}
-        async with ClientSession(**self.pack()) as session:
-            async with session.get(url, headers=self.header, proxy=self.proxy) as resp:
-                data_byte = await resp.content.read()
-                mime = guess_mime(data_byte[:261])
-                if mime == "image/gif":
-                    return {"data_bytes": data_byte}
-                if round(resp.content_length / 1024) > 512:
-                    foo = Img.open(io.BytesIO(data_byte))
-                    if foo.width > 2000 or foo.height > 2000:
-                        foo.thumbnail((600, 600))
-                    else:
-                        if foo.width > foo.height:
-                            foo.thumbnail((round(foo.width / 2), round(foo.width / 2)))
-                        else:
-                            foo.thumbnail(
-                                (round(foo.height / 2), round(foo.height / 2))
-                            )
-                    img_byte_arr = io.BytesIO()
-                    foo.save(img_byte_arr, format="PNG", optimize=True, quality=85)
-                    img_byte_arr = img_byte_arr.getvalue()
-                    return {"data_bytes": img_byte_arr}
+        async with ClientSession(**self.pack()) as session, session.get(url, headers=self.header, proxy=self.proxy) as resp:
+            data_byte = await resp.content.read()
+            mime = guess_mime(data_byte[:261])
+            if mime == "image/gif":
                 return {"data_bytes": data_byte}
+            if round(resp.content_length / 1024) > 512:
+                foo = Img.open(io.BytesIO(data_byte))
+                if foo.width > 2000 or foo.height > 2000:
+                    foo.thumbnail((600, 600))
+                else:
+                    if foo.width > foo.height:
+                        foo.thumbnail((round(foo.width / 2), round(foo.width / 2)))
+                    else:
+                        foo.thumbnail(
+                            (round(foo.height / 2), round(foo.height / 2))
+                        )
+                img_byte_arr = io.BytesIO()
+                foo.save(img_byte_arr, format="PNG", optimize=True, quality=85)
+                img_byte_arr = img_byte_arr.getvalue()
+                return {"data_bytes": img_byte_arr}
+            return {"data_bytes": data_byte}
 
 
 if __name__ == "__main__":
