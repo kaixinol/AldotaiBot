@@ -33,7 +33,7 @@ raw_json = loop.run_until_complete(
         "/JSON/bot.json"
     )
 )
-bot_list = set([i["id"] for i in raw_json])
+bot_list = {i["id"] for i in raw_json}
 logger.info("bot 列表初始化完毕")
 logger.info(bot_list)
 
