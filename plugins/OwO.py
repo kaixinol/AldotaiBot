@@ -1,21 +1,25 @@
-from graia.ariadne.message.parser.base import MatchRegex, RegexGroup
+from re import MULTILINE, IGNORECASE
+
 from graia.ariadne.app import Ariadne
+from graia.ariadne.event.message import MessageEvent, GroupMessage, FriendMessage
 from graia.ariadne.message.chain import MessageChain
+from graia.ariadne.message.parser.base import MatchRegex, RegexGroup
 from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.saya import decorate, dispatch, listen
+
+from util.initializer import keyword
 from util.interval import GroupInterval
 from util.parseTool import get_id
-from util.initializer import keyword
-from graia.ariadne.event.message import MessageEvent, GroupMessage, FriendMessage
 
 
 @listen(GroupMessage, FriendMessage)
 @dispatch(
     MatchRegex(
-        regex=r"(?<![a-z|.])(?P<owo>([t-z]|0|[m-q]|a)(v|w|a|u|x)([t-z]|0|[m-q]|a))(?![a-z|.])"
+        regex=r"(.*)(?<![a-z|.])(?P<owo>([t-z]|0|[m-q]|a)(v|w|a|u|x)([t-z]|0|[m-q]|a))(?![a-z|.])(.*)",
+        flags=MULTILINE | IGNORECASE,
     )
 )
-@decorate(GroupInterval.require(18, 4, send_alert=False))
+@decorate(GroupInterval.require(60 * 3, 5, send_alert=True, alert_time_interval=60))
 async def owo(
     app: Ariadne,
     friend: Friend | Group,

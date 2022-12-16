@@ -1,6 +1,5 @@
 import asyncio
 import io
-import time
 
 from PIL import Image as Img
 from aiohttp import ClientSession
@@ -58,9 +57,16 @@ class Session(object):
                     return {"data_bytes": data_byte}
                 if round(resp.content_length / 1024) > 512:
                     foo = Img.open(io.BytesIO(data_byte))
-                    foo.thumbnail((600, 600))
+                    if foo.width > foo.height:
+                        foo.thumbnail(
+                            (round(foo.width / 5 * 3), round(foo.width / 5 * 3))
+                        )
+                    else:
+                        foo.thumbnail(
+                            (round(foo.height / 5 * 3), round(foo.height / 5 * 3))
+                        )
                     img_byte_arr = io.BytesIO()
-                    foo.save(img_byte_arr, format="PNG", optimize=True, quality=60)
+                    foo.save(img_byte_arr, format="PNG", optimize=True, quality=85)
                     img_byte_arr = img_byte_arr.getvalue()
                     return {"data_bytes": img_byte_arr}
                 return {"data_bytes": data_byte}

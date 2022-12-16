@@ -5,22 +5,20 @@ import subprocess
 
 import psutil
 from arclet.alconna import Alconna
+from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
 from graia.ariadne.model import Friend, Group
-from graia.ariadne.util.saya import listen
 from graia.saya import Channel, Saya
-from arclet.alconna.graia import alcommand
-from arclet.alconna import Alconna, Args, Arparma, MultiVar
-from graia.ariadne.util.saya import decorate, dispatch, listen
-from util.interval import GroupInterval
 
 from util.parseTool import *
 
 saya = Saya.current()
 channel = Channel.current()
+import tracemalloc
+
+tracemalloc.start()
 
 
 async def get_processor_name():
@@ -55,6 +53,11 @@ Python 版本：{platform.python_version()}
 @alcommand(Alconna("获取配置", parse_prefix("Resmonitor")), private=False)
 async def setu(app: Ariadne, friend: Friend | Group):
     data = await msg()
+    snapshot = tracemalloc.take_snapshot()
+    top_stats = snapshot.statistics("lineno")
+    print("[ Top 10 ]")
+    for stat in top_stats[:10]:
+        print(stat)
     await app.send_message(
         friend,
         MessageChain(Plain(data.strip())),

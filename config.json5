@@ -26,11 +26,11 @@
     },
     "E621": {
       username: 'krawini',
-      secret: 'TKbL7vLT2GCVVUFLog5PFgrY_',
+      secret: 'TKbL7vLT2GCVVUFLog5PFgrY',
       default: [
         'dog+cat',
-        'changed_(video_game)',
-      ],
+        'changed_(video_game)'
+      ]
     },
     RandomVideo: {
       fav_id: '1723509882',

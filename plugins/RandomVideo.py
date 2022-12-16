@@ -3,20 +3,15 @@ import os
 from random import randint
 
 from arclet.alconna import Alconna
+from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.element import (
     Image,
     Plain,
 )
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel
-from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
-from arclet.alconna.graia import alcommand
-from arclet.alconna import Alconna, Args, Arparma, MultiVar
-from graia.ariadne.util.saya import decorate, dispatch, listen
-from util.interval import GroupInterval
 
 from util.parseTool import *
 from util.spider import Session
@@ -36,9 +31,7 @@ logger.info(f"缓存了{len(data)}条数据")
 
 
 @alcommand(Alconna("来个meme", parse_prefix("RandomVideo")), private=False)
-async def setu(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    message = event.message_chain
-
+async def setu(app: Ariadne, friend: Friend | Group):
     async def get_good_data():
         rt = (
             await spider.get_json(

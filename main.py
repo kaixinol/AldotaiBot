@@ -1,21 +1,20 @@
 import os
-import sys
-
 from asyncio import new_event_loop
+
+from arclet.alconna.graia import AlconnaBehaviour
+from arclet.alconna.manager import command_manager
 from creart import create
-from graia.broadcast import Broadcast
 from graia.ariadne.app import Ariadne
 from graia.ariadne.connection.config import (
     HttpClientConfig,
     WebsocketClientConfig,
     config,
 )
+from graia.broadcast import Broadcast
 from graia.saya import Saya
 from loguru import logger as l
-from arclet.alconna.graia import AlconnaBehaviour
 
 from util.initializer import setting
-from util.jsonTool import read_json
 
 l.add(
     os.getcwd() + "/log/{time:YYYY-MM-DD}/bot.log",
@@ -54,7 +53,7 @@ loop = new_event_loop()
 bcc = Broadcast(loop=loop)
 saya = create(Saya)
 create(AlconnaBehaviour)
-saya.install_behaviours(AlconnaBehaviour(bcc, manager=None))
+saya.install_behaviours(AlconnaBehaviour(bcc, manager=command_manager))
 enabled_plugins = [
     ii
     for ii in list(setting["plugin"].keys())[:-1]

@@ -3,6 +3,8 @@ import re
 
 import aiohttp
 import html2text
+from arclet.alconna import Alconna, Args, Arparma
+from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
@@ -10,19 +12,11 @@ from graia.ariadne.message.element import (
     At,
     Forward,
     ForwardNode,
-    Plain,
 )
-from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Friend, Group
-from graia.ariadne.util.saya import decorate, dispatch, listen
-from graia.saya import Channel
-from graia.saya.builtins.broadcast.schema import ListenerSchema
-from loguru import logger
-from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel, Saya
-from arclet.alconna.graia import Alc, Match, AlconnaProperty, AlconnaSchema
-from arclet.alconna.graia import Match, alcommand, from_command, startswith, endswith
-from arclet.alconna import Alconna, Args, Arparma, MultiVar
+from graiax.shortcut.saya import decorate
+from loguru import logger
 
 from util.interval import GroupInterval
 from util.parseTool import *
@@ -32,9 +26,7 @@ channel = Channel.current()
 
 
 @alcommand(Alconna("查云黑{qq}", parse_prefix("YunHei")), private=False)
-async def single_find(
-    app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
-):
+async def single_find(app: Ariadne, friend: Friend | Group, result: Arparma):
     await app.send_message(
         friend,
         MessageChain(await is_blacklisted(result.header["qq"])),
@@ -42,9 +34,7 @@ async def single_find(
 
 
 @alcommand(Alconna("查云黑", Args["at", At], parse_prefix("YunHei")), private=False)
-async def at_somebody(
-    app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
-):
+async def at_somebody(app: Ariadne, friend: Friend | Group, result: Arparma):
     await app.send_message(
         friend,
         MessageChain(await is_blacklisted(result.main_args["at"].target)),
@@ -74,11 +64,7 @@ async def is_member_blacklisted(qq: list):
             re.sub(
                 r"√\d{3,15}(未记录)?",
                 "",
-                txt[
-                    txt.find("---------查询结果---------")
-                    + 22 : txt.find("------------------------------")
-                    - 2
-                ],
+                txt[txt.find("查询结果".center(22, "-")) + 22 : txt.find("-" * 30) - 2],
             )
             .strip()
             .replace("×", "⚠️ ")
@@ -96,11 +82,7 @@ async def is_member_blacklisted(qq: list):
             re.sub(
                 r"√\d{3,15}(未记录)?",
                 "",
-                txt[
-                    txt.find("---------查询结果---------")
-                    + 22 : txt.find("------------------------------")
-                    - 2
-                ],
+                txt[txt.find("查询结果".center(22, "-")) + 22 : txt.find("-" * 30) - 2],
             )
             .strip()
             .replace("×", "⚠️ ")

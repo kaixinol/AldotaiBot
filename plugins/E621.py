@@ -4,17 +4,17 @@ import random
 import re
 from json.decoder import JSONDecodeError
 
+from arclet.alconna import Alconna
 from arclet.alconna import Arparma
+from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
-from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Friend, Group
-from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel, Saya
-from arclet.alconna.graia import alcommand
-from arclet.alconna import Alconna
+from graiax.shortcut.saya import decorate
+
 from util.interval import GroupInterval
 from util.parseTool import *
 from util.spider import Session
@@ -35,9 +35,8 @@ spider = Session(
 )
 
 
-@listen(GroupMessage)
-@dispatch(Twilight(RegexMatch(f"^(来只兽)")))
-@decorate(GroupInterval.require(5, 10, send_alert=True))
+@alcommand(Alconna("来只兽", parse_prefix("E621")), private=False)
+@decorate(GroupInterval.require(10, 5, send_alert=True))
 async def get_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     ret = await get_random_furry_img(random.choice(config["default"]))
     await app.send_message(
@@ -53,6 +52,7 @@ async def get_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
 
 @alcommand(Alconna("来只兽{name}", parse_prefix("E621")), private=False)
+@decorate(GroupInterval.require(10, 5, send_alert=True))
 async def get_furry_by_name(
     app: Ariadne, group: Group, result: Arparma, event: MessageEvent
 ):
