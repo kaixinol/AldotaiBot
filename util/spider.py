@@ -57,14 +57,15 @@ class Session(object):
                     return {"data_bytes": data_byte}
                 if round(resp.content_length / 1024) > 512:
                     foo = Img.open(io.BytesIO(data_byte))
-                    if foo.width > foo.height:
-                        foo.thumbnail(
-                            (round(foo.width / 5 * 3), round(foo.width / 5 * 3))
-                        )
+                    if foo.width > 2000 or foo.height > 2000:
+                        foo.thumbnail((600, 600))
                     else:
-                        foo.thumbnail(
-                            (round(foo.height / 5 * 3), round(foo.height / 5 * 3))
-                        )
+                        if foo.width > foo.height:
+                            foo.thumbnail((round(foo.width / 2), round(foo.width / 2)))
+                        else:
+                            foo.thumbnail(
+                                (round(foo.height / 2), round(foo.height / 2))
+                            )
                     img_byte_arr = io.BytesIO()
                     foo.save(img_byte_arr, format="PNG", optimize=True, quality=85)
                     img_byte_arr = img_byte_arr.getvalue()

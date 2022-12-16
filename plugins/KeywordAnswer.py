@@ -10,6 +10,7 @@ from graia.ariadne.message.element import Plain
 from graia.ariadne.model import Friend, Group, MemberPerm
 from graia.ariadne.util.saya import listen
 from graia.saya import Channel
+from loguru import logger
 
 from util.initializer import setting, keyword
 from util.parseTool import get_id
@@ -33,8 +34,8 @@ raw_json = loop.run_until_complete(
     )
 )
 bot_list = set([i["id"] for i in raw_json])
-l.info("bot 列表初始化完毕")
-l.info(bot_list)
+logger.info("bot 列表初始化完毕")
+logger.info(bot_list)
 
 
 @listen(GroupMessage, FriendMessage)
@@ -47,7 +48,7 @@ async def answer(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if (
         not message[Plain]
         or message.display[:1] in ["!", "！"]
-        or event.sender.id == app.account
+        or get_id(event.sender) == app.account
         or "Aldotai" in get_qq_name(event.sender)
         or get_id(event.sender) in keyword
         or get_id(event.sender) in bot_list
@@ -66,7 +67,7 @@ async def answer(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             return
 
 
-@alcommand(Alconna("关键字开关", parse_prefix("KeywordAnswer")), private=True)
+@alcommand(Alconna("关键字开关", parse_prefix("KeywordAnswer")), private=False)
 async def configure(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if (
         event.sender.permission != MemberPerm.Member

@@ -1,5 +1,6 @@
 import os
 from random import choice
+from re import match
 from urllib.parse import quote_plus
 
 import aiohttp
@@ -25,7 +26,7 @@ spider = Session("ShouYunJi")
 
 
 @alcommand(Alconna("兽兽"), private=False)
-@decorate(GroupInterval.require(10, 3, send_alert=True))
+@decorate(GroupInterval.require(20, 3, send_alert=True))
 async def random_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     data = await spider.get_json("https://cloud.foxtail.cn/api/function/random")
     data2 = await spider.get_json(
@@ -46,7 +47,7 @@ async def random_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent
 
 @alcommand(Alconna("兽兽{name}"), private=False)
 @decorate(GroupInterval.require(20, 3, send_alert=True))
-async def random_furry(
+async def get_furry_by_name(
     app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
 ):
     try:
@@ -67,7 +68,39 @@ async def random_furry(
                     Image(**await spider.get_image(data2["url"]))
                     if data2["examine"] in [0, 1]
                     else Plain("\n" + data2["msg"]),
-                    Plain(f'id:{data2["picture"]}'),
+                    Plain(f'\nid:{data2["picture"]}'),
+                ]
+            ),
+            quote=event.id,
+        )
+    except IndexError:
+        await app.send_message(
+            friend, MessageChain([Plain("可能没有此兽xvx")]), quote=event.id
+        )
+
+
+@alcommand(Alconna("id为{id}的兽"), private=False)
+@decorate(GroupInterval.require(10, 3, send_alert=True))
+async def get_furry_by_id(
+    app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
+):
+    if match(r"\d+", result.header["id"]) is not None:
+        model = "1"
+    else:
+        model = "0"
+    try:
+        data = await spider.get_json(
+            f'https://cloud.foxtail.cn/api/function/pictures?picture={result.header["id"]}&model={model}'
+        )
+        await app.send_message(
+            friend,
+            MessageChain(
+                [
+                    Plain(f'名字:{data["name"]}'),
+                    Image(**await spider.get_image(data["url"]))
+                    if data["examine"] in [0, 1]
+                    else Plain("\n" + data["msg"]),
+                    Plain(f'\nid:{data["picture"]}'),
                 ]
             ),
             quote=event.id,

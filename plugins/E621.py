@@ -15,7 +15,7 @@ from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from graiax.shortcut.saya import decorate
 
-from util.interval import GroupInterval
+from util.interval import MemberInterval
 from util.parseTool import *
 from util.spider import Session
 
@@ -36,7 +36,7 @@ spider = Session(
 
 
 @alcommand(Alconna("来只兽", parse_prefix("E621")), private=False)
-@decorate(GroupInterval.require(10, 5, send_alert=True))
+@decorate(MemberInterval.require(20, 5, send_alert=True))
 async def get_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     ret = await get_random_furry_img(random.choice(config["default"]))
     await app.send_message(
@@ -52,7 +52,7 @@ async def get_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
 
 @alcommand(Alconna("来只兽{name}", parse_prefix("E621")), private=False)
-@decorate(GroupInterval.require(10, 5, send_alert=True))
+@decorate(MemberInterval.require(20, 5, send_alert=True))
 async def get_furry_by_name(
     app: Ariadne, group: Group, result: Arparma, event: MessageEvent
 ):

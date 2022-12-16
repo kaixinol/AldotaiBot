@@ -3,6 +3,8 @@ import json
 from os import getcwd
 from os.path import exists
 
+from arclet.alconna import Alconna, Args, Arparma, MultiVar
+from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent, GroupMessage, FriendMessage
 from graia.ariadne.message.chain import MessageChain
@@ -11,8 +13,7 @@ from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.interrupt import FunctionWaiter
 from graia.ariadne.util.validator import CertainMember, CertainFriend
 from graia.saya import Channel
-from arclet.alconna.graia import alcommand
-from arclet.alconna import Alconna, Args, Arparma, MultiVar
+
 from util.initializer import setting
 from util.parseTool import parse_prefix
 from util.spider import Session
@@ -45,7 +46,7 @@ def imgcmp(img: Image):
 
 @alcommand(
     Alconna("上传设定", Args["img", MultiVar(Image)], parse_prefix("Fursona")),
-    private=False,
+    private=True,
 )
 async def setu(
     app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
@@ -66,7 +67,7 @@ async def setu(
     add_fursona(img_list, event.sender.id)
 
 
-@alcommand(Alconna("上传设定", parse_prefix("Fursona")), private=False)
+@alcommand(Alconna("上传设定", parse_prefix("Fursona")), private=True)
 async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     await app.send_message(friend, Plain("请发送图片"))
 
@@ -123,7 +124,7 @@ async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
         return
 
 
-@alcommand(Alconna("添加介绍{desc}", parse_prefix("Fursona")), private=False)
+@alcommand(Alconna("添加介绍{desc}", parse_prefix("Fursona")), private=True)
 async def add_fursona_desc(
     app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
 ):
@@ -180,7 +181,7 @@ async def specified_fursona_by_name(
     await app.send_message(friend, raw_fursona_to_chain(fur_qq, result.header["name"]))
 
 
-@alcommand(Alconna("设定", Args["at", At], parse_prefix("Fursona")), private=True)
+@alcommand(Alconna("设定", Args["at", At], parse_prefix("Fursona")), private=False)
 async def specified_fursona_by_at(
     app: Ariadne, friend: Friend | Group, result: Arparma
 ):

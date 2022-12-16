@@ -8,7 +8,7 @@ from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.saya import decorate, dispatch, listen
 
 from util.initializer import keyword
-from util.interval import GroupInterval
+from util.interval import MemberInterval
 from util.parseTool import get_id
 
 
@@ -19,7 +19,7 @@ from util.parseTool import get_id
         flags=MULTILINE | IGNORECASE,
     )
 )
-@decorate(GroupInterval.require(60 * 3, 5, send_alert=True, alert_time_interval=60))
+@decorate(MemberInterval.require(10, 3, send_alert=True, alert_time_interval=30))
 async def owo(
     app: Ariadne,
     friend: Friend | Group,

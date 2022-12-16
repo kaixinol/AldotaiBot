@@ -64,7 +64,7 @@ class GroupInterval:
                             group,
                             MessageChain(
                                 Plain(
-                                    f'功能冷却中...\n还有{f"{str(m)}分" if m else ""}{"%d" % s}秒结束'
+                                    f'功能冷却中...\n还有{f"{str(round(m))}分" if m else ""}{"%d" % s}秒结束'
                                 )
                             ),
                         )
@@ -101,7 +101,6 @@ class MemberInterval:
     ) -> Depend:
         """
         指示用户每执行 `max_exec` 次后需要至少相隔 `suspend_time` 秒才能再次触发功能
-        等级在 `override_level` 以上的可以无视限制
         :param suspend_time: 冷却时间
         :param max_exec: 使用n次后进入冷却
         :param send_alert: 是否发送冷却提示
@@ -129,7 +128,7 @@ class MemberInterval:
                         await app.send_message(
                             group,
                             MessageChain(
-                                At(member.id),
+                                At(target=member),
                                 Plain(
                                     f' 你在本群暂时不可调用bot，正在冷却中...\n还有{f"{m}分" if m else ""}{"%d" % s}秒结束'
                                 ),

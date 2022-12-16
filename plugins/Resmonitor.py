@@ -2,6 +2,7 @@ import os
 import platform
 import re
 import subprocess
+import tracemalloc
 
 import psutil
 from arclet.alconna import Alconna
@@ -11,12 +12,12 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
+from loguru import logger
 
 from util.parseTool import *
 
 saya = Saya.current()
 channel = Channel.current()
-import tracemalloc
 
 tracemalloc.start()
 
@@ -55,9 +56,9 @@ async def setu(app: Ariadne, friend: Friend | Group):
     data = await msg()
     snapshot = tracemalloc.take_snapshot()
     top_stats = snapshot.statistics("lineno")
-    print("[ Top 10 ]")
+    logger.debug("[ Top 10 ]")
     for stat in top_stats[:10]:
-        print(stat)
+        logger.debug(stat)
     await app.send_message(
         friend,
         MessageChain(Plain(data.strip())),
