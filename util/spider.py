@@ -9,7 +9,7 @@ from filetype import guess_mime
 from util.initializer import setting
 
 
-class Session(object):
+class Session:
     def __init__(self, header: str | dict, proxy: bool = False):
         self.session = None
         if isinstance(header, dict):
