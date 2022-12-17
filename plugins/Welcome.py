@@ -1,7 +1,7 @@
 import asyncio
 
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import MessageEvent
+from graia.ariadne.event.message import MessageEvent, GroupMessage, FriendMessage
 from graia.ariadne.event.mirai import MemberJoinEvent, NewFriendRequestEvent
 from graia.ariadne.message.chain import MessageChain, Plain
 from graia.ariadne.model import Friend, Group
