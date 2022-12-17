@@ -6,7 +6,7 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.parser.base import MatchRegex, RegexGroup
 from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.saya import decorate, dispatch, listen
-
+from plugins.KeywordAnswer import bot_list
 from util.initializer import keyword
 from util.interval import MemberInterval
 
@@ -29,6 +29,7 @@ async def owo(
     if (
         abs(ord(msg[0]) - ord(msg[2])) in [0, 1]
         and event.sender.group.id not in keyword
+        and event.sender.id not in bot_list
     ):
         await app.send_message(friend, count)
 
