@@ -4,7 +4,7 @@
     1919810
   ],
   proxy: 'socks5://127.0.0.1:7891',
-  verifykey: 'YOUR KEY',
+  verifykey: '',
   qq: 114514,
   keyword_ignore: [],
   client: {
@@ -52,7 +52,6 @@
       ]
     },
     KeywordAnswer: {
-      ignore_group: [],
       react: [
         [
           "我是傻逼",
@@ -99,6 +98,13 @@
     EverydayFurry: {
     },
     ShouYunJi: {
+      prefix: [
+        '!',
+        '！'
+      ],
+      account: '',
+      password: '',
+      token: ''
     },
     OwO: {},
     _: [

@@ -1,5 +1,3 @@
-from graia.ariadne.event.message import FriendMessage, GroupMessage
-
 from util.initializer import setting
 
 

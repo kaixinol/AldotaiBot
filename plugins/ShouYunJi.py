@@ -1,13 +1,12 @@
-import os
+import io
+from asyncio import get_event_loop
 from random import choice
 from re import match
-from urllib.parse import quote_plus
 
-import aiohttp
 from arclet.alconna import Alconna, Arparma
 from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import MessageEvent
+from graia.ariadne.event.message import MessageEvent, GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import (
     Image,
@@ -17,12 +16,35 @@ from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.interrupt import FunctionWaiter
 from graia.ariadne.util.validator import CertainMember
 from graiax.shortcut.saya import decorate
+from loguru import logger
 
 from util.interval import GroupInterval
 from util.parseTool import *
 from util.spider import Session
 
 spider = Session("ShouYunJi")
+sdata = setting["plugin"]["ShouYunJi"]
+loop = get_event_loop()
+setting["plugin"]["ShouYunJi"]["cookie"] = loop.run_until_complete(
+    spider.get_cookie(
+        "https://cloud.foxtail.cn/api/account/login",
+        kw={
+            "account": sdata["account"],
+            "password": sdata["password"],
+            "model": "1",
+            "token": sdata["token"],
+        },
+    )
+)
+assert (
+    loop.run_until_complete(
+        spider.get_json(
+            "https://cloud.foxtail.cn/api/account/state",
+            setting["plugin"]["ShouYunJi"]["cookie"],
+        )
+    )["code"]
+    == "11100"
+), "cookie获取失败"
 
 
 @alcommand(Alconna("兽兽"), private=False)
@@ -90,16 +112,20 @@ async def get_furry_by_id(
         model = "0"
     try:
         data = await spider.get_json(
-            f'https://cloud.foxtail.cn/api/function/pictures?picture={result.header["id"]}&model={model}'
+            f'https://cloud.foxtail.cn/api/function/pictures?picture={result.header["id"]}&model={model}',
+            sdata["cookie"],
         )
+        print(data)
         await app.send_message(
             friend,
             MessageChain(
                 [
                     Plain(f'名字:{data["name"]}'),
-                    Image(**await spider.get_image(data["url"]))
-                    if data["examine"] in [0, 1]
-                    else Plain("\n" + data["msg"]),
+                    (
+                        Image(**await spider.get_image(data["url"]))
+                        if data["examine"] == 1 or data["url"] or data["url2"]
+                        else Plain("\n" + data["msg"])
+                    ),
                     Plain(f'\nid:{data["picture"]}'),
                 ]
             ),
@@ -111,15 +137,13 @@ async def get_furry_by_id(
         )
 
 
-@alcommand(Alconna("上传兽云祭{name}"), private=False)
+@alcommand(Alconna("上传兽云祭{name}", parse_prefix("ShouYunJi")), private=False)
 @decorate(GroupInterval.require(10, 3, send_alert=True))
 async def upload_shouyunji(
     app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
 ):
-    # await async_download(message.url,message.id)
-    message = event.message_chain
     ret = result.header["name"]
-    p = {"name": quote_plus(ret)}
+    p = {"name": ret}
 
     # WAITER
 
@@ -133,9 +157,16 @@ async def upload_shouyunji(
     ):
         return waiter_message if waiter_message.display in ["0", "1", "2"] else "ERROR"
 
-    await app.send_message(friend, Plain("请发送图片"))
+    def waiter3(
+        waiter_message: MessageChain,
+    ):
+        if not waiter_message[Plain]:
+            return "ERROR"
+        return "EMPTY" if waiter_message.display == "无" else waiter_message.display
+
+    await app.send_message(friend, Plain("[1/3]请发送一张图片"))
     # INIT IMG
-    result = await FunctionWaiter(
+    result_img = await FunctionWaiter(
         waiter,
         [GroupMessage],
         decorators=[CertainMember(event.sender.id, event.sender.group)],
@@ -143,23 +174,47 @@ async def upload_shouyunji(
     ).wait(timeout=30, default="ERROR")
     if result == "ERROR":
         await app.send_message(friend, Plain("超时或类型不对，取消操作"))
+        return
     else:
-        # await async_download(result.url, result.id)
-        p["file"] = open(result.id, mode="r+b")
-    await app.send_message(friend, Plain("请发送类型数字\n0.设定 1.毛图  2.插画"))
+        p["file"] = io.BytesIO((await spider.get_image(result_img.url))["data_bytes"])
+    await app.send_message(friend, Plain("[2/3]请发送类型数字\n0.设定 1.毛图  2.插画"))
     # INIT TYPE
-    result2 = await FunctionWaiter(
+    result_type = await FunctionWaiter(
         waiter2,
         [GroupMessage],
         decorators=[CertainMember(event.sender.id, event.sender.group)],
         block_propagation=True,
     ).wait(timeout=30, default="ERROR")
-    if result2 == "ERROR":
+    if result_type == "ERROR":
         await app.send_message(friend, Plain("超时或类型不对，取消操作"))
+        return
     else:
-        p["type"] = result2.display
-    async with aiohttp.ClientSession() as session:
-        url = "https://cloud.foxtail.cn/api/function/upload"
-        s = await session.post(url, data=p)
-        # print(await s.json())
-        os.remove(result.id)
+        p["type"] = result_type.display
+    # INIT TEXT
+    await app.send_message(friend, Plain("[3/3]请发送介绍，不需要请发送无"))
+    result_text = await FunctionWaiter(
+        waiter3,
+        [GroupMessage],
+        decorators=[CertainMember(event.sender.id, event.sender.group)],
+        block_propagation=True,
+    ).wait(timeout=30, default="ERROR")
+    if result_text == "ERROR":
+        await app.send_message(friend, Plain("超时或类型不对，取消操作"))
+        return
+    elif result_text != "EMPTY":
+        p["suggest"] = result_text.display
+    p["rem"] = f"由阿尔多泰上传。群：{event.sender.group.id},上传者：{event.sender.id}"
+    logger.info(p)
+    rzt = await spider.post(
+        "https://cloud.foxtail.cn/api/function/upload",
+        kw=p,
+        cookie=setting["plugin"]["ShouYunJi"]["cookie"],
+    )
+    await app.send_message(
+        friend, rzt["msg"] + "\nuid:" + rzt["picture"] + "\nsid:" + rzt["id"]
+    )
+
+
+@alcommand(Alconna("上传兽云祭", parse_prefix("ShouYunJi")), private=False)
+async def upload_shouyunji(app: Ariadne, friend: Friend | Group):
+    await app.send_message(friend, "请发送！上传兽云祭<兽名称>")

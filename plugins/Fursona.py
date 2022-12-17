@@ -151,8 +151,7 @@ def raw_fursona_to_chain(data, name: str | None = None):
     def get_image(imgs: str):
         if not exists(imgs):
             return Plain("\n(图片被屏蔽)")
-        else:
-            return Image(path=imgs)
+        return Image(path=imgs)
 
     qq, img_json, desc = data
     real_name = get_name(qq) if name is None else name

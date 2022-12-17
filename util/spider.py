@@ -35,8 +35,10 @@ class Session(object):
             else {}
         )
 
-    async def get_json(self, url: str):
-        async with ClientSession(**self.pack()) as session:
+    async def get_json(self, url: str, cookie=None):
+        pk = self.pack()
+        pk["cookies"] = cookie
+        async with ClientSession(**pk) as session:
             async with session.get(url, headers=self.header, proxy=self.proxy) as resp:
                 return await resp.json(content_type=None)
 
@@ -55,10 +57,10 @@ class Session(object):
                 mime = guess_mime(data_byte[:261])
                 if mime == "image/gif":
                     return {"data_bytes": data_byte}
-                if round(resp.content_length / 1024) > 512:
+                if round(resp.content_length / 1024) > 1024:
                     foo = Img.open(io.BytesIO(data_byte))
                     if foo.width > 2000 or foo.height > 2000:
-                        foo.thumbnail((600, 600))
+                        foo.thumbnail((1000, 1000))
                     else:
                         if foo.width > foo.height:
                             foo.thumbnail((round(foo.width / 2), round(foo.width / 2)))
@@ -72,18 +74,12 @@ class Session(object):
                     return {"data_bytes": img_byte_arr}
                 return {"data_bytes": data_byte}
 
+    async def get_cookie(self, url, kw: dict = None):
+        async with ClientSession(headers=self.header) as session:
+            async with session.post(url, data=kw) as resp:
+                return resp.cookies
 
-if __name__ == "__main__":
-
-    async def main():
-        # print(f"started main at {time.strftime('%X')}")
-        obj = Session("test")
-        await asyncio.gather(
-            await asyncio.to_thread(
-                obj.get_image, "https://img-home.csdnimg.cn/images/20201124032511.png"
-            ),
-            asyncio.sleep(1),
-        )
-        # print(f"finished main at {time.strftime('%X')}")
-
-    asyncio.run(main())
+    async def post(self, url, kw: dict = None, cookie=None):
+        async with ClientSession(headers=self.header, cookies=cookie) as session:
+            async with session.post(url, data=kw) as resp:
+                return await resp.json()

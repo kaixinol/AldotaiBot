@@ -1,12 +1,11 @@
-import sqlalchemy
-from sqlalchemy import create_engine, Column, Integer, String, select, update
+from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from os import getcwd, mkdir
 from os.path import exists
 from json import dumps
 from loguru import logger
-import base64, sqlite3
+import base64
 
 if not exists("db"):
     mkdir("db")
