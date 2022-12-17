@@ -4,7 +4,7 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import (
     Plain,
 )
-from graia.ariadne.model import Group
+from graia.ariadne.model import Group, Friend
 from graia.saya import Channel
 from arclet.alconna.graia import alcommand
 from arclet.alconna import Alconna, Arparma
@@ -34,7 +34,7 @@ async def set_name(app: Ariadne, group: Group, result: Arparma, event: MessageEv
 
 
 @alcommand(Alconna("我是谁"), private=True)
-async def set_name(app: Ariadne, group: Group, event: MessageEvent):
+async def set_name(app: Ariadne, group: Group | Friend, event: MessageEvent):
     name = get_name(event.sender.id)
     if not name:
         await app.send_message(group, MessageChain(Plain("你是……咦，我不知道你是谁")))
@@ -47,7 +47,9 @@ async def set_name(app: Ariadne, group: Group, event: MessageEvent):
 
 
 @alcommand(Alconna("我是{name}"), private=True)
-async def repeat(app: Ariadne, group: Group, result: Arparma, event: MessageEvent):
+async def repeat(
+    app: Ariadne, group: Group | Friend, result: Arparma, event: MessageEvent
+):
     if (
         not any([i in event.message_chain.display for i in data["alconna"]])
         and get_id(event.sender) not in keyword

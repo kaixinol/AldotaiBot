@@ -8,7 +8,7 @@ from graia.ariadne.event.message import MessageEvent, GroupMessage, FriendMessag
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
 from graia.ariadne.model import Friend, Group, MemberPerm
-from graia.ariadne.util.saya import listen
+from graia.ariadne.util.saya import decorate, listen
 from graia.saya import Channel
 from loguru import logger
 
@@ -38,20 +38,41 @@ logger.info("bot 列表初始化完毕")
 logger.info(bot_list)
 
 
-@listen(GroupMessage, FriendMessage)
-async def answer(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+def get_qq_name(obj):
+    return obj.nickname if hasattr(obj, "nickname") else obj.name
+
+
+@listen(GroupMessage)
+async def answer_group(app: Ariadne, friend: Group, event: MessageEvent):
     message = event.message_chain
-
-    def get_qq_name(obj):
-        return obj.nickname if hasattr(obj, "nickname") else obj.name
-
     if (
         not message[Plain]
         or message.display[:1] in ["!", "！"]
-        or get_id(event.sender) == app.account
         or "Aldotai" in get_qq_name(event.sender)
-        or get_id(event.sender) in keyword
-        or get_id(event.sender) in bot_list
+        or event.sender.group.id in keyword
+        or event.sender.id in bot_list
+    ):
+        return
+    for i in data["react"]:
+        if i[0].startswith("regex:"):
+            if (
+                match(i[0].replace("regex:", ""), event.message_chain.display)
+                is not None
+            ):
+                await app.send_message(friend, i[1])
+                return
+        if i[0].find(":") == -1 and i[0] in event.message_chain.display:
+            await app.send_message(friend, i[1])
+            return
+
+
+@listen(FriendMessage)
+async def answer(app: Ariadne, friend: Friend | Group, event: MessageEvent):
+    message = event.message_chain
+    if (
+        not message[Plain]
+        or message.display[:1] in ["!", "！"]
+        or event.sender.id == app.account
     ):
         return
     for i in data["react"]:
@@ -70,14 +91,14 @@ async def answer(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 @alcommand(Alconna("关键字开关", parse_prefix("KeywordAnswer")), private=False)
 async def configure(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     if (
-        event.sender.permission != MemberPerm.Member
-        or get_id(event.sender) in setting["admins"]
+        event.sender.id in setting["admins"]
+        or event.sender.permission != MemberPerm.Member
     ):
-        if get_id(event.sender) in keyword:
-            keyword.pop(keyword.index(get_id(event.sender)))
+        if event.sender.group.id in keyword:
+            keyword.pop(keyword.index(event.sender.group.id))
             send = "已开启关键字回复"
         else:
-            keyword.append(get_id(event.sender))
+            keyword.append(event.sender.group.id)
             send = "已关闭关键字回复"
     else:
         send = "你非管理员"
