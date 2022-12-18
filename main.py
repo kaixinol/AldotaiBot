@@ -36,13 +36,6 @@ l.add(
 )
 
 l.add(
-    os.getcwd() + "/log/{time:YYYY-MM-DD}/sql.log",
-    rotation="00:00",
-    level="INFO",
-    encoding="utf-8",
-    filter=lambda rec: rec["name"] == "util.sqliteTool",
-)
-l.add(
     f"{os.getcwd()}/log/groupEvent.log",
     rotation="00:00",
     level="INFO",
@@ -73,5 +66,6 @@ app = Ariadne(
         WebsocketClientConfig(setting["client"]["WebsocketClientConfig"]),
     ),
 )
+
 
 app.launch_blocking()
