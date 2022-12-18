@@ -115,7 +115,6 @@ async def get_furry_by_id(
             f'https://cloud.foxtail.cn/api/function/pictures?picture={result.header["id"]}&model={model}',
             sdata["cookie"],
         )
-        print(data)
         await app.send_message(
             friend,
             MessageChain(
@@ -202,7 +201,7 @@ async def upload_shouyunji(
         await app.send_message(friend, Plain("超时或类型不对，取消操作"), quote=event.id)
         return
     elif result_text != "EMPTY":
-        p["suggest"] = result_text.display
+        p["suggest"] = result_text
     p["rem"] = f"由阿尔多泰上传。群：{event.sender.group.id},上传者：{event.sender.id}"
     logger.info(p)
     rzt = await spider.post(
