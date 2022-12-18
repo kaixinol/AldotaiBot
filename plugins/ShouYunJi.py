@@ -186,7 +186,7 @@ async def upload_shouyunji(
         block_propagation=True,
     ).wait(timeout=30, default="ERROR")
     if result_type == "ERROR":
-        await app.send_message(friend, Plain("超时或类型不对，取消操作"))
+        await app.send_message(friend, Plain("超时或类型不对，取消操作"), quote=event.id)
         return
     else:
         p["type"] = result_type.display
@@ -199,7 +199,7 @@ async def upload_shouyunji(
         block_propagation=True,
     ).wait(timeout=30, default="ERROR")
     if result_text == "ERROR":
-        await app.send_message(friend, Plain("超时或类型不对，取消操作"))
+        await app.send_message(friend, Plain("超时或类型不对，取消操作"), quote=event.id)
         return
     elif result_text != "EMPTY":
         p["suggest"] = result_text.display

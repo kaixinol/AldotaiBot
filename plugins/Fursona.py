@@ -69,7 +69,7 @@ async def setu(
 
 @alcommand(Alconna("上传设定", parse_prefix("Fursona")), private=True)
 async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    await app.send_message(friend, Plain("请发送图片"))
+    await app.send_message(friend, Plain("请发送图片"), quote=event.id)
 
     async def waiter(
         waiter_message: MessageChain,
@@ -91,7 +91,7 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
             block_propagation=True,
         ).wait(timeout=30, default="ERROR")
     if result == "ERROR":
-        await app.send_message(friend, Plain("超时或类型不对，取消操作"))
+        await app.send_message(friend, Plain("超时或类型不对，取消操作"), quote=event.id)
     else:
         img_list = []
         i: Image
@@ -189,12 +189,3 @@ async def specified_fursona_by_at(
         await app.send_message(friend, MessageChain(Plain("这只兽还没有上传设定哦")))
     else:
         await app.send_message(friend, raw_fursona_to_chain(fursona_data))
-
-
-@alcommand(Alconna("COMMIT", parse_prefix("Fursona")), private=True)
-async def commit(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    if event.sender in setting["admins"]:
-        session.commit()
-    if event.sender not in setting["admins"]:
-        await app.send_message(friend, "你没有管理员权限")
-        return

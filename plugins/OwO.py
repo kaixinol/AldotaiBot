@@ -18,7 +18,7 @@ from util.interval import MemberInterval
         flags=MULTILINE | IGNORECASE,
     )
 )
-@decorate(MemberInterval.require(20, 3, send_alert=True, alert_time_interval=10))
+@decorate(MemberInterval.require(20, 3, send_alert=False))
 async def owo(
     app: Ariadne,
     friend: Friend | Group,
