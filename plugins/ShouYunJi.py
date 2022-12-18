@@ -171,7 +171,7 @@ async def upload_shouyunji(
         decorators=[CertainMember(event.sender.id, event.sender.group)],
         block_propagation=True,
     ).wait(timeout=30, default="ERROR")
-    if result == "ERROR":
+    if result_img == "ERROR":
         await app.send_message(friend, Plain("超时或类型不对，取消操作"))
         return
     else:
