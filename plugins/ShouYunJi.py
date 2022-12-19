@@ -175,7 +175,7 @@ async def upload_shouyunji(
         await app.send_message(friend, Plain("超时或类型不对，取消操作"))
         return
     else:
-        p["file"] = io.BytesIO((await spider.get_image(result_img.url))["data_bytes"])
+        p["file"] = (await spider.get_image(result_img.url))["data_bytes"]
     await app.send_message(friend, Plain("[2/3]请发送类型数字\n0.设定 1.毛图  2.插画"))
     # INIT TYPE
     result_type = await FunctionWaiter(
@@ -203,6 +203,7 @@ async def upload_shouyunji(
     elif result_text != "EMPTY":
         p["suggest"] = result_text
     p["rem"] = f"由阿尔多泰上传。群：{event.sender.group.id},上传者：{event.sender.id}"
+    p["power"] = "1"
     logger.info(p)
     rzt = await spider.post(
         "https://cloud.foxtail.cn/api/function/upload",
