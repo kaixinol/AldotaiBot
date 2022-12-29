@@ -14,7 +14,7 @@ html2text = "^2020.1.16"
 loguru = "^0.6.0"
 psutil = "^5.9.4"
 pyjson5 = "^1.6.2"
-graia-ariadne = "0.9.8"
+graia-ariadne = "^0.10.2"
 graia-saya = "^0.0.17"
 graia-scheduler = "^0.0.10"
 arclet-alconna = "^1.4.2.1"
@@ -23,6 +23,7 @@ filetype = "^1.2.0"
 aiosocksy = "^0.1.2"
 sqlalchemy = "^1.4.45"
 arclet-alconna-graia = "^0.10.1"
+graiax-shortcut = "^0.2.1"
 
 
 [build-system]
