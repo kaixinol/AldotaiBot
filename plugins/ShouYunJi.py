@@ -60,7 +60,7 @@ async def random_furry(app: Ariadne, friend: Friend | Group, event: MessageEvent
             [
                 Plain(f'名字:{data2["name"]}'),
                 Image(**await spider.get_image(data2["url"]))
-                if data["examine"] == 1 or data["url"] or data["url2"]
+                if data2["examine"] == 1 or data2["url"] or data2["url2"]
                 else Plain("\n" + data2["msg"]),
                 Plain(f'\nid:{data2["picture"]}'),
             ]
@@ -90,7 +90,7 @@ async def get_furry_by_name(
                 [
                     Plain(f'名字:{data2["name"]}'),
                     Image(**await spider.get_image(data2["url"]))
-                    if data["examine"] == 1 or data["url"] or data["url2"]
+                    if datat["examine"] == "1" or data2["url"] or data2["url2"]
                     else Plain("\n" + data2["msg"]),
                     Plain(f'\nid:{data2["picture"]}'),
                 ]
