@@ -45,7 +45,7 @@ async def get_help_doc(app: Ariadne, friend: Friend | Group, event: MessageEvent
 
 @listen(NewFriendRequestEvent)
 async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
-    if "暂无云黑" in is_blacklisted(event.supplicant):
+    if "暂无云黑" in (await is_blacklisted(event.supplicant)):
         await event.accept()
         await asyncio.sleep(10)
         await app.send_friend_message(
