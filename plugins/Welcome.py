@@ -8,6 +8,7 @@ from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.saya import decorate, listen
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
+from plugins.YunHei import is_blacklisted
 
 from util.interval import GroupInterval
 from util.parseTool import *
@@ -44,6 +45,9 @@ async def get_help_doc(app: Ariadne, friend: Friend | Group, event: MessageEvent
 
 @listen(NewFriendRequestEvent)
 async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
-    await event.accept()
-    await asyncio.sleep(10)
-    await app.send_friend_message(event.supplicant, MessageChain(Plain("已通过你的好友申请")))
+    if "暂无云黑" in is_blacklisted(event.supplicant):
+        await event.accept()
+        await asyncio.sleep(10)
+        await app.send_friend_message(
+            event.supplicant, MessageChain(Plain("已通过你的好友申请"))
+        )

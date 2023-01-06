@@ -49,7 +49,11 @@ async def is_blacklisted(qq: int):
     ) as resp:
         r = await resp.text()
     txt = html2text.html2text(r)
-    return txt[txt.find("请输入账号或群号查询:") + 13 : txt.find("[举报上黑]") - 3]
+    return re.sub(
+        r"!?\[.*\]\(.*\)",
+        "",
+        txt[txt.find("请输入账号或群号查询:") + 13 : txt.find("[举报上黑]") - 3],
+    ).strip()
 
 
 async def is_member_blacklisted(qq: list):
