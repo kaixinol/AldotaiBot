@@ -1,20 +1,19 @@
 from asyncio import get_event_loop
+from random import choice
 from re import match
 
-from random import choice
 from arclet.alconna import Alconna
 from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import MessageEvent, GroupMessage, FriendMessage
+from graia.ariadne.event.message import FriendMessage, GroupMessage, MessageEvent
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
 from graia.ariadne.model import Friend, Group, MemberPerm
-from graia.ariadne.util.saya import decorate, listen
+from graia.ariadne.util.saya import listen
 from graia.saya import Channel
 from loguru import logger
 
-from util.initializer import setting, keyword
-from util.parseTool import get_id
+from util.initializer import keyword, setting
 from util.parseTool import parse_prefix
 from util.spider import Session
 
@@ -55,13 +54,16 @@ async def answer_group(app: Ariadne, friend: Group, event: MessageEvent):
     ):
         return
     for i, msg in data["react"]:
-        if i.startswith("regex:"):
-            if match(i.replace("regex:", ""), event.message_chain.display) is not None:
-                if not isinstance(msg, list):
-                    await app.send_message(friend, msg)
-                else:
-                    await app.send_message(friend, choice(msg))
-                return
+        if (
+            i.startswith("regex:")
+            and match(i.replace("regex:", ""), event.message_chain.display)
+            is not None
+        ):
+            if not isinstance(msg, list):
+                await app.send_message(friend, msg)
+            else:
+                await app.send_message(friend, choice(msg))
+            return
         if i.find(":") == -1 and i in event.message_chain.display:
             if not isinstance(msg, list):
                 await app.send_message(friend, msg)
@@ -80,13 +82,16 @@ async def answer(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     ):
         return
     for i, msg in data["react"]:
-        if i.startswith("regex:"):
-            if match(i.replace("regex:", ""), event.message_chain.display) is not None:
-                if not isinstance(msg, list):
-                    await app.send_message(friend, msg)
-                else:
-                    await app.send_message(friend, choice(msg))
-                return
+        if (
+            i.startswith("regex:")
+            and match(i.replace("regex:", ""), event.message_chain.display)
+            is not None
+        ):
+            if not isinstance(msg, list):
+                await app.send_message(friend, msg)
+            else:
+                await app.send_message(friend, choice(msg))
+            return
         if i.find(":") == -1 and i in event.message_chain.display:
             if not isinstance(msg, list):
                 await app.send_message(friend, msg)

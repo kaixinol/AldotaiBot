@@ -130,6 +130,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# IDE related
+/.idea/
+/.vscode/
+
+# Generated files
 util/*.db
 *.db
 db/*.mirai

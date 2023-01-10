@@ -1,15 +1,16 @@
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+import base64
+from json import dumps
 from os import getcwd, mkdir
 from os.path import exists
-from json import dumps
+
 from loguru import logger
-import base64
+from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 if not exists("db"):
     mkdir("db")
-engine = create_engine(f"sqlite:///./db/furryData.db", echo=True)
+engine = create_engine("sqlite:///./db/furryData.db", echo=True)
 logger.info(f"{getcwd()}/db/furryDat.db")
 Base = declarative_base()
 
@@ -49,7 +50,7 @@ def add_name(name: str, qq: int):
         .mappings()
         .all()
     )
-    temp1 = [i for i in temp]
+    temp1 = list(temp)
     if not temp1 or temp1[0]["qq"] == qq:
         session.execute(f"DELETE FROM name WHERE qq={qq};")
         session.execute(f"INSERT INTO name (name,qq)  VALUES('{encode(name)}',{qq});")
@@ -70,9 +71,7 @@ def add_desc(desc: str, qq: int):
 
 def get_name(qq: int):
     ret = list(session.execute(f"SELECT name FROM name WHERE qq={qq}"))
-    if not ret:
-        return None
-    return decode(ret[0][0])
+    return decode(ret[0][0]) if ret else None
 
 
 def get_fursona(name: int | str):
@@ -84,13 +83,11 @@ def get_fursona(name: int | str):
         )
     else:
         ret = list(session.execute(f"SELECT * FROM fursona WHERE qq={name}"))
-    if not ret:
-        return None
-    return ret[0]
+    return ret[0] if ret else None
 
 
 def get_random_fursona():
-    return list(session.execute(f"SELECT * FROM fursona order by RANDOM() LIMIT 1;"))
+    return list(session.execute("SELECT * FROM fursona order by RANDOM() LIMIT 1;"))
 
 
 if __name__ == "__main__":

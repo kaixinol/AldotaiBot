@@ -4,8 +4,7 @@ import random
 import re
 from json.decoder import JSONDecodeError
 
-from arclet.alconna import Alconna
-from arclet.alconna import Arparma
+from arclet.alconna import Alconna, Arparma
 from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
@@ -15,8 +14,9 @@ from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from graiax.shortcut.saya import decorate
 
+from util.initializer import setting
 from util.interval import MemberInterval
-from util.parseTool import *
+from util.parseTool import parse_prefix
 from util.spider import Session
 
 saya = Saya.current()
@@ -89,12 +89,12 @@ async def get_random_furry_img(tag: str):
     except JSONDecodeError:
         return {
             "url": rf"file:///{os.getcwd()}/res/error.jpg",
-            "sources": [f"e621暂时处于cf保护中"],
+            "sources": ["e621暂时处于cf保护中"],
             "id": 114514,
         }
     except KeyError:
         return {
             "url": rf"file:///{os.getcwd()}/res/error.jpg",
-            "sources": [f"API key 不正确"],
+            "sources": ["API key 不正确"],
             "id": 114514,
         }
