@@ -24,6 +24,7 @@ aiosocksy = "^0.1.2"
 sqlalchemy = "^1.4.46"
 arclet-alconna-graia = "^0.10.6"
 graiax-shortcut = "^0.2.1"
+kayaku = "^0.5.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"

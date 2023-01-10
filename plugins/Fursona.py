@@ -6,24 +6,22 @@ from os.path import exists
 from arclet.alconna import Alconna, Args, Arparma, MultiVar
 from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import MessageEvent, GroupMessage, FriendMessage
+from graia.ariadne.event.message import FriendMessage, GroupMessage, MessageEvent
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import Image, Plain, At
+from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.interrupt import FunctionWaiter
-from graia.ariadne.util.validator import CertainMember, CertainFriend
+from graia.ariadne.util.validator import CertainFriend, CertainMember
 from graia.saya import Channel
 
-from util.initializer import setting
 from util.parseTool import parse_prefix
 from util.spider import Session
 from util.sqliteTool import (
-    get_fursona,
     add_desc,
     add_fursona,
+    get_fursona,
     get_name,
     get_random_fursona,
-    session,
 )
 
 channel = Channel.current()

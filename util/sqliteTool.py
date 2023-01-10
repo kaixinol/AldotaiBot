@@ -1,15 +1,16 @@
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+import base64
+from json import dumps
 from os import getcwd, mkdir
 from os.path import exists
-from json import dumps
+
 from loguru import logger
-import base64
+from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 if not exists("db"):
     mkdir("db")
-engine = create_engine(f"sqlite:///./db/furryData.db", echo=True)
+engine = create_engine("sqlite:///./db/furryData.db", echo=True)
 logger.info(f"{getcwd()}/db/furryDat.db")
 Base = declarative_base()
 
@@ -90,7 +91,7 @@ def get_fursona(name: int | str):
 
 
 def get_random_fursona():
-    return list(session.execute(f"SELECT * FROM fursona order by RANDOM() LIMIT 1;"))
+    return list(session.execute("SELECT * FROM fursona order by RANDOM() LIMIT 1;"))
 
 
 if __name__ == "__main__":

@@ -8,18 +8,14 @@ from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import (
-    At,
-    Forward,
-    ForwardNode,
-)
+from graia.ariadne.message.element import At, Forward, ForwardNode
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from graiax.shortcut.saya import decorate
 from loguru import logger
 
 from util.interval import GroupInterval
-from util.parseTool import *
+from util.parseTool import parse_prefix
 
 saya = Saya.current()
 channel = Channel.current()
