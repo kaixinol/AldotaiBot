@@ -104,8 +104,7 @@ async def upload_img(app: Ariadne, friend: Friend | Group, event: MessageEvent):
 
 @alcommand(Alconna("设定", parse_prefix("Fursona")), private=True)
 async def fursona(app: Ariadne, friend: Friend | Group, event: MessageEvent):
-    original_name = get_name(event.sender.id)
-    if original_name:
+    if original_name := get_name(event.sender.id):
         data = get_fursona(event.sender.id)
         if not data:
             await app.send_message(
@@ -138,25 +137,19 @@ async def add_fursona_desc(
 
 @alcommand(Alconna("随机设定", parse_prefix("Fursona")), private=False)
 async def random_fursona(app: Ariadne, friend: Friend | Group):
-    data = get_random_fursona()
-    if not data:
-        await app.send_message(friend, MessageChain(Plain("设定库里还没有设定哦！")))
-    else:
+    if data := get_random_fursona():
         await app.send_message(friend, raw_fursona_to_chain(data[0]))
+    else:
+        await app.send_message(friend, MessageChain(Plain("设定库里还没有设定哦！")))
 
 
 def raw_fursona_to_chain(data, name: str | None = None):
     def get_image(imgs: str):
-        if not exists(imgs):
-            return Plain("\n(图片被屏蔽)")
-        return Image(path=imgs)
+        return Image(path=imgs) if exists(imgs) else Plain("\n(图片被屏蔽)")
 
     qq, img_json, desc = data
     real_name = get_name(qq) if name is None else name
-    if not real_name:
-        real_name = f"{qq}"
-    else:
-        real_name = f"{real_name}({qq})"
+    real_name = f"{real_name}({qq})" if real_name else f"{qq}"
     return MessageChain(
         [
             [get_image(f"{getcwd()}/db/{i}") for i in json.loads(img_json)]
@@ -182,8 +175,7 @@ async def specified_fursona_by_name(
 async def specified_fursona_by_at(
     app: Ariadne, friend: Friend | Group, result: Arparma
 ):
-    fursona_data = get_fursona(result.main_args["at"].target)
-    if not fursona_data:
-        await app.send_message(friend, MessageChain(Plain("这只兽还没有上传设定哦")))
-    else:
+    if fursona_data := get_fursona(result.main_args["at"].target):
         await app.send_message(friend, raw_fursona_to_chain(fursona_data))
+    else:
+        await app.send_message(friend, MessageChain(Plain("这只兽还没有上传设定哦")))

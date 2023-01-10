@@ -50,7 +50,7 @@ def add_name(name: str, qq: int):
         .mappings()
         .all()
     )
-    temp1 = [i for i in temp]
+    temp1 = list(temp)
     if not temp1 or temp1[0]["qq"] == qq:
         session.execute(f"DELETE FROM name WHERE qq={qq};")
         session.execute(f"INSERT INTO name (name,qq)  VALUES('{encode(name)}',{qq});")
@@ -71,9 +71,7 @@ def add_desc(desc: str, qq: int):
 
 def get_name(qq: int):
     ret = list(session.execute(f"SELECT name FROM name WHERE qq={qq}"))
-    if not ret:
-        return None
-    return decode(ret[0][0])
+    return decode(ret[0][0]) if ret else None
 
 
 def get_fursona(name: int | str):
@@ -85,9 +83,7 @@ def get_fursona(name: int | str):
         )
     else:
         ret = list(session.execute(f"SELECT * FROM fursona WHERE qq={name}"))
-    if not ret:
-        return None
-    return ret[0]
+    return ret[0] if ret else None
 
 
 def get_random_fursona():

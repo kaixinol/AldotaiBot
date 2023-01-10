@@ -48,7 +48,7 @@ async def repeat(
     app: Ariadne, group: Group | Friend, result: Arparma, event: MessageEvent
 ):
     if (
-        not any([i in event.message_chain.display for i in data["alconna"]])
+        all(i not in event.message_chain.display for i in data["alconna"])
         and get_id(event.sender) not in keyword
     ):
         await app.send_message(

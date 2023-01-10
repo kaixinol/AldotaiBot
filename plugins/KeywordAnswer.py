@@ -54,13 +54,16 @@ async def answer_group(app: Ariadne, friend: Group, event: MessageEvent):
     ):
         return
     for i, msg in data["react"]:
-        if i.startswith("regex:"):
-            if match(i.replace("regex:", ""), event.message_chain.display) is not None:
-                if not isinstance(msg, list):
-                    await app.send_message(friend, msg)
-                else:
-                    await app.send_message(friend, choice(msg))
-                return
+        if (
+            i.startswith("regex:")
+            and match(i.replace("regex:", ""), event.message_chain.display)
+            is not None
+        ):
+            if not isinstance(msg, list):
+                await app.send_message(friend, msg)
+            else:
+                await app.send_message(friend, choice(msg))
+            return
         if i.find(":") == -1 and i in event.message_chain.display:
             if not isinstance(msg, list):
                 await app.send_message(friend, msg)
@@ -79,13 +82,16 @@ async def answer(app: Ariadne, friend: Friend | Group, event: MessageEvent):
     ):
         return
     for i, msg in data["react"]:
-        if i.startswith("regex:"):
-            if match(i.replace("regex:", ""), event.message_chain.display) is not None:
-                if not isinstance(msg, list):
-                    await app.send_message(friend, msg)
-                else:
-                    await app.send_message(friend, choice(msg))
-                return
+        if (
+            i.startswith("regex:")
+            and match(i.replace("regex:", ""), event.message_chain.display)
+            is not None
+        ):
+            if not isinstance(msg, list):
+                await app.send_message(friend, msg)
+            else:
+                await app.send_message(friend, choice(msg))
+            return
         if i.find(":") == -1 and i in event.message_chain.display:
             if not isinstance(msg, list):
                 await app.send_message(friend, msg)

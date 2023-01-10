@@ -15,10 +15,7 @@ class Session(object):
             self.header = header
         else:
             self.header = {"User-Agent": f"{setting['name']}/1.0 {header}"}
-        if proxy:
-            self.proxy = setting["proxy"]
-        else:
-            self.proxy = None
+        self.proxy = setting["proxy"] if proxy else None
 
     def pack(self):
         return (
@@ -60,13 +57,12 @@ class Session(object):
                     foo = Img.open(io.BytesIO(data_byte))
                     if foo.width > 2000 or foo.height > 2000:
                         foo.thumbnail((1000, 1000))
+                    elif foo.width > foo.height:
+                        foo.thumbnail((round(foo.width / 2), round(foo.width / 2)))
                     else:
-                        if foo.width > foo.height:
-                            foo.thumbnail((round(foo.width / 2), round(foo.width / 2)))
-                        else:
-                            foo.thumbnail(
-                                (round(foo.height / 2), round(foo.height / 2))
-                            )
+                        foo.thumbnail(
+                            (round(foo.height / 2), round(foo.height / 2))
+                        )
                     img_byte_arr = io.BytesIO()
                     foo.save(img_byte_arr, format="PNG", optimize=True, quality=85)
                     img_byte_arr = img_byte_arr.getvalue()

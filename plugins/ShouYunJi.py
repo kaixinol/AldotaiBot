@@ -105,10 +105,7 @@ async def get_furry_by_name(
 async def get_furry_by_id(
     app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
 ):
-    if match(r"\d+", result.header["id"]) is not None:
-        model = "1"
-    else:
-        model = "0"
+    model = "1" if match(r"\d+", result.header["id"]) is not None else "0"
     try:
         data = await spider.get_json(
             f'https://cloud.foxtail.cn/api/function/pictures?picture={result.header["id"]}&model={model}',
