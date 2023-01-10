@@ -5,15 +5,13 @@ from random import randint
 from arclet.alconna import Alconna
 from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
-from graia.ariadne.message.element import (
-    Image,
-    Plain,
-)
+from graia.ariadne.message.element import Image, Plain
 from graia.ariadne.model import Friend, Group
 from graia.saya import Channel
 from loguru import logger
 
-from util.parseTool import *
+from util.initializer import setting
+from util.parseTool import parse_prefix
 from util.spider import Session
 
 config_data = setting["plugin"]["RandomVideo"]
@@ -35,7 +33,8 @@ async def setu(app: Ariadne, friend: Friend | Group):
     async def get_good_data():
         rt = (
             await spider.get_json(
-                f'https://api.bilibili.com/x/web-interface/archive/related?bvid={data[randint(0, len(data) - 1)]["bvid"]}'
+                f"https://api.bilibili.com/x/web-interface/archive/related?bvid="
+                f'{data[randint(0, len(data) - 1)]["bvid"]}'
             )
         )["data"]
         return rt or await get_good_data()

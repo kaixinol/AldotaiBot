@@ -1,11 +1,11 @@
-from random import randint, choice
+from random import choice, randint
 
 from graia.ariadne.app import Ariadne
 from graia.saya import Channel
 from graia.scheduler import timers
 from graia.scheduler.saya import SchedulerSchema
-
 from loguru import logger
+
 from util.initializer import setting
 from util.spider import Session
 

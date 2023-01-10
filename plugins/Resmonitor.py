@@ -14,7 +14,7 @@ from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from loguru import logger
 
-from util.parseTool import *
+from util.parseTool import parse_prefix
 
 saya = Saya.current()
 channel = Channel.current()

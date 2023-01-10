@@ -1,10 +1,9 @@
-import asyncio
 import io
 
-from PIL import Image as Img
 from aiohttp import ClientSession
-from aiosocksy.connector import ProxyConnector, ProxyClientRequest
+from aiosocksy.connector import ProxyClientRequest, ProxyConnector
 from filetype import guess_mime
+from PIL import Image as Img
 
 from util.initializer import setting
 

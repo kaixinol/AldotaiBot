@@ -1,4 +1,3 @@
-import io
 from asyncio import get_event_loop
 from random import choice
 from re import match
@@ -6,20 +5,18 @@ from re import match
 from arclet.alconna import Alconna, Arparma
 from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import MessageEvent, GroupMessage
+from graia.ariadne.event.message import GroupMessage, MessageEvent
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import (
-    Image,
-    Plain,
-)
+from graia.ariadne.message.element import Image, Plain
 from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.interrupt import FunctionWaiter
 from graia.ariadne.util.validator import CertainMember
 from graiax.shortcut.saya import decorate
 from loguru import logger
 
+from util.initializer import setting
 from util.interval import GroupInterval
-from util.parseTool import *
+from util.parseTool import parse_prefix
 from util.spider import Session
 
 spider = Session("ShouYunJi")
@@ -218,5 +215,5 @@ async def upload_shouyunji(
 
 
 @alcommand(Alconna("上传兽云祭", parse_prefix("ShouYunJi")), private=False)
-async def upload_shouyunji(app: Ariadne, friend: Friend | Group):
+async def upload_shouyunji_fallback(app: Ariadne, friend: Friend | Group):
     await app.send_message(friend, "请发送！上传兽云祭<兽名称>")
