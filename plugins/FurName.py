@@ -1,18 +1,15 @@
+from arclet.alconna import Alconna, Arparma
+from arclet.alconna.graia import alcommand
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import (
-    Plain,
-)
-from graia.ariadne.model import Group, Friend
+from graia.ariadne.message.element import Plain
+from graia.ariadne.model import Friend, Group
 from graia.saya import Channel
-from arclet.alconna.graia import alcommand
-from arclet.alconna import Alconna, Arparma
 
-from util.parseTool import *
-from util.sqliteTool import get_name, add_name
-from util.initializer import setting, keyword
-from util.parseTool import get_id
+from util.initializer import keyword, setting
+from util.parseTool import get_id, parse_prefix
+from util.sqliteTool import add_name, get_name
 
 channel = Channel.current()
 data = setting["plugin"]["FurName"]
@@ -34,7 +31,7 @@ async def set_name(app: Ariadne, group: Group, result: Arparma, event: MessageEv
 
 
 @alcommand(Alconna("我是谁"), private=True)
-async def set_name(app: Ariadne, group: Group | Friend, event: MessageEvent):
+async def who_am_i(app: Ariadne, group: Group | Friend, event: MessageEvent):
     name = get_name(event.sender.id)
     if not name:
         await app.send_message(group, MessageChain(Plain("你是……咦，我不知道你是谁")))

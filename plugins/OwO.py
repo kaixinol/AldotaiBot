@@ -1,11 +1,12 @@
-from re import MULTILINE, IGNORECASE
+from re import IGNORECASE, MULTILINE
 
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import MessageEvent, GroupMessage, FriendMessage
+from graia.ariadne.event.message import FriendMessage, GroupMessage, MessageEvent
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.parser.base import MatchRegex, RegexGroup
 from graia.ariadne.model import Friend, Group
 from graia.ariadne.util.saya import decorate, dispatch, listen
+
 from plugins.KeywordAnswer import bot_list
 from util.initializer import keyword
 from util.interval import MemberInterval
@@ -41,7 +42,7 @@ async def owo(
         flags=MULTILINE | IGNORECASE,
     )
 )
-async def owo(
+async def friend_owo(
     app: Ariadne,
     friend: Friend,
     event: MessageEvent,

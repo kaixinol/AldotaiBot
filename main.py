@@ -12,11 +12,11 @@ from graia.ariadne.connection.config import (
 )
 from graia.broadcast import Broadcast
 from graia.saya import Saya
-from loguru import logger as l
+from loguru import logger
 
 from util.initializer import setting
 
-l.add(
+logger.add(
     os.getcwd() + "/log/{time:YYYY-MM-DD}/bot.log",
     rotation="00:00",
     level="INFO",
@@ -26,7 +26,7 @@ l.add(
     and rec["name"] not in ["util.sqliteTool", "plugins.Logger"],
 )
 
-l.add(
+logger.add(
     os.getcwd() + "/log/{time:YYYY-MM-DD}/graia.log",
     rotation="00:00",
     level="INFO",
@@ -35,7 +35,7 @@ l.add(
     filter=lambda rec: "graia" in rec["name"] or "launart" in rec["name"],
 )
 
-l.add(
+logger.add(
     f"{os.getcwd()}/log/groupEvent.log",
     rotation="00:00",
     level="INFO",
@@ -52,7 +52,7 @@ enabled_plugins = [
     for ii in list(setting["plugin"].keys())[:-1]
     if "disabled" not in setting["plugin"][ii] or not setting["plugin"][ii]["disabled"]
 ]
-l.debug(f"共加载{len(enabled_plugins)}个插件。{enabled_plugins}")
+logger.debug(f"共加载{len(enabled_plugins)}个插件。{enabled_plugins}")
 
 with saya.module_context():
     for i in enabled_plugins:
