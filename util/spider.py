@@ -29,15 +29,14 @@ class Session(object):
                     use_dns_cache=True,
                 ),
                 "request_class": ProxyClientRequest,
+                "cookies": None
             }
             if self.proxy is not None
-            else {}
+            else {"cookies": None}
         )
 
     async def get_json(self, url: str, cookie=None):
-        pk = self.pack()
-        pk["cookies"] = cookie
-        async with ClientSession(**pk) as session:
+        async with ClientSession(**{**self.pack(), "cookies": cookie}) as session:
             async with session.get(url, headers=self.header, proxy=self.proxy) as resp:
                 return await resp.json(content_type=None)
 

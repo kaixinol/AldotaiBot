@@ -1,6 +1,6 @@
 import asyncio
 import os
-from random import randint
+from random import choice
 
 from arclet.alconna import Alconna
 from arclet.alconna.graia import alcommand
@@ -20,27 +20,29 @@ spider = Session("randomvideo")
 channel = Channel.current()
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
-data = loop.run_until_complete(
-    spider.get_json(
-        f'https://api.bilibili.com/x/v3/fav/resource/list?media_id={config_data["fav_id"]}&ps=20'
-    )
-)["data"]["medias"]
-logger.info(f"缓存了{len(data)}条数据")
+data = {}
 
 
 @alcommand(Alconna("来个meme", parse_prefix("RandomVideo")), private=False)
 async def setu(app: Ariadne, friend: Friend | Group):
+    global data
+    if not data:
+        data = (await spider.get_json(
+            f'https://api.bilibili.com/x/v3/fav/resource/list?media_id={config_data["fav_id"]}&ps=20'))["data"][
+            "medias"]
+        logger.info(f"缓存了{len(data)}条数据")
+
     async def get_good_data():
         rt = (
             await spider.get_json(
                 f"https://api.bilibili.com/x/web-interface/archive/related?bvid="
-                f'{data[randint(0, len(data) - 1)]["bvid"]}'
+                f'{choice(data)["bvid"]}'
             )
         )["data"]
         return rt or await get_good_data()
 
     datat = await get_good_data()
-    data2 = datat[randint(0, len(datat) - 1)]
+    data2 = choice(datat)
     try:
         await app.send_message(
             friend,

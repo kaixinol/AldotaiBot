@@ -80,7 +80,7 @@ async def get_furry_json(tag: str, context: str = "Safe") -> dict | None:
 async def get_random_furry_img(tag: str):
     try:
         buffer = (await get_furry_json(tag))["posts"]
-        a_buffer = buffer[random.randint(0, len(buffer) - 1)]
+        a_buffer = random.choice(buffer)
         return {
             "url": a_buffer["sample"]["url"],
             "sources": a_buffer["sources"],

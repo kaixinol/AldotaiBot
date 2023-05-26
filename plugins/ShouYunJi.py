@@ -105,7 +105,7 @@ async def get_furry_by_name(
 async def get_furry_by_id(
     app: Ariadne, friend: Friend | Group, result: Arparma, event: MessageEvent
 ):
-    if match(r"\d+", result.header["id"]) is not None:
+    if result.header["id"].isdigit():
         model = "1"
     else:
         model = "0"
