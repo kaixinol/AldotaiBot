@@ -15,11 +15,10 @@ class Session(object):
             self.header = header
         else:
             self.header = {"User-Agent": f"{setting['name']}/1.0 {header}"}
-        if proxy:
-            self.proxy = setting["proxy"]
-        else:
+        if not proxy or setting["proxy"] is None:
             self.proxy = None
-
+        else:
+            self.proxy = setting["proxy"]
     def pack(self):
         return (
             {
