@@ -38,7 +38,7 @@ async def get_help_doc(app: Ariadne, friend: Friend | Group, event: MessageEvent
     ]:
         await app.send_message(
             friend,
-            MessageChain("本bot文档地址：reset.forcecat.cn（复制到浏览器后访问）"),
+            MessageChain("本bot文档地址：aldotai.doc.forcecat.site（复制到浏览器后访问）"),
         )
 
 

@@ -31,6 +31,7 @@ async def owo(
         abs(ord(msg[0]) - ord(msg[2])) in [0, 1]
         and event.sender.group.id not in keyword
         and event.sender.id not in bot_list
+        and not (lambda s:all(s[i]==s[i+1] for i in range(0,len(s)-1)))(msg)
     ):
         await app.send_message(friend, count)
 

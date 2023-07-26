@@ -13,7 +13,7 @@ from graia.ariadne.model import Friend, Group
 from graia.saya import Channel, Saya
 from graiax.shortcut.saya import decorate
 from loguru import logger
-
+from bs4 import BeautifulSoup
 from util.interval import GroupInterval
 from util.parseTool import parse_prefix
 
@@ -39,24 +39,21 @@ async def at_somebody(app: Ariadne, friend: Friend | Group, result: Arparma):
 
 async def is_blacklisted(qq: int):
     keywords = {"qq": qq}
-    url = "https://yunhei.qimeng.fun/"
+    url = "https://yunhei.furrynet.top/"
     async with aiohttp.ClientSession() as session, session.post(
         url, data=keywords
     ) as resp:
         r = await resp.text()
-    txt = html2text.html2text(r)
-    return re.sub(
-        r"!?\[.*\]\(.*\)",
-        "",
-        txt[txt.find("请输入账号或群号查询:") + 13 : txt.find("[举报上黑]") - 3],
-    ).strip()
+    soup=BeautifulSoup(r,features="html.parser")
+    result=soup.select_one("#CheckText > center").get_text()
+    return result.strip().replace("\n\n","\n")
 
 
 async def is_member_blacklisted(qq: list):
     logger.debug(f"共{len(qq)}条数据")
     if len(qq) <= 200:
         keywords = {"qq": "\n".join([str(i) for i in qq])}
-        url = "https://yunhei.qimeng.fun/Piliang.php"
+        url = "https://yunhei.furrynet.top/Piliang.php"
         async with aiohttp.ClientSession() as session, session.post(
             url, data=keywords
         ) as resp:
@@ -75,7 +72,7 @@ async def is_member_blacklisted(qq: list):
     qq_list = chunk(qq, 200)
     for i in qq_list:
         keywords = {"qq": "\n".join([str(j) for j in i])}
-        url = "https://yunhei.qimeng.fun/Piliang.php"
+        url = "https://yunhei.furrynet.top/Piliang.php"
         async with aiohttp.ClientSession() as session, session.post(
             url, data=keywords
         ) as resp:
