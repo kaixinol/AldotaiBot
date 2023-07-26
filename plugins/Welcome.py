@@ -41,7 +41,6 @@ async def get_help_doc(app: Ariadne, friend: Friend | Group, event: MessageEvent
             MessageChain("本bot文档地址：aldotai.doc.forcecat.site（复制到浏览器后访问）"),
         )
 
-
 @listen(NewFriendRequestEvent)
 async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
     if "暂无云黑" in (await is_blacklisted(event.supplicant)):
