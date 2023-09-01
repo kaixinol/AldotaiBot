@@ -36,7 +36,7 @@ async def auto_get_cookie(app: Ariadne):
         logger.info(setting["plugin"]["ShouYunJi"]["cookie"])
 
 
-@channel.use(SchedulerSchema(timers.every_custom_hours(randint(1, 4))))
+@channel.use(SchedulerSchema(timers.every_custom_hours(12)))
 async def rd_msg(app: Ariadne):
     rand_group = await app.get_group_list()
     send_group = choice(rand_group)
