@@ -40,11 +40,13 @@ INIT_MSG = {"role": "system", "content": f"""
 
 async def chat(msg: str, usr_id: int) -> str:
     token: int = 0
+    if not msg:
+        return "艾特我什么事呀🤔"
     if usr_id in data_set:
         for i in data_set[usr_id]:
             token += round(len(i["content"]) * 2)
         if token > 8000:
-            data_set[usr_id] = {}
+            data_set[usr_id] = []
     if usr_id in usage_limit and usage_limit[usr_id] > 32 and usr_id != setting['admin']:
         return "您的每日使用次数已用尽（32次）"
     logger.info(f"<ID:{usr_id}>: {msg}")
@@ -70,7 +72,6 @@ async def answer(app: Ariadne, friend: Friend, event: MessageEvent):
 
 
 @listen(GroupMessage)
-@decorate(MemberInterval.require(20, 5))
 async def answer_via_group(app: Ariadne, friend: Group, event: MessageEvent):
     if event.quote is not None and event.quote.sender_id == app.account:
         if event.sender.id not in data_set:
@@ -85,7 +86,6 @@ async def answer_via_group(app: Ariadne, friend: Group, event: MessageEvent):
 
 
 @listen(GroupMessage)
-@decorate(MemberInterval.require(20, 5))
 async def answer_by_at(app: Ariadne, friend: Group, event: MessageEvent):
     if At(app.account) in event.message_chain and not event.quote:
         if event.sender.id not in data_set:
@@ -94,14 +94,14 @@ async def answer_by_at(app: Ariadne, friend: Group, event: MessageEvent):
                                (await chat(event.message_chain.display, event.sender.id)).replace(
                                    f'@{event.sender.name}', ''),
                                quote=event.id)
-    print(dumps(data_set, ensure_ascii=False, indent=2))
+    #print(dumps(data_set, ensure_ascii=False, indent=2))
 
 
 @listen(GroupMessage)
-@decorate(MemberInterval.require(20, 5))
 async def debug(app: Ariadne, friend: Group, event: MessageEvent):
     if event.sender.id == setting['admin'] and event.message_chain.display == "/debug":
         await app.send_message(friend, dumps(data_set, ensure_ascii=False, indent=2))
 
 
 schedule.every().day.do(update_usage_limit)
+
