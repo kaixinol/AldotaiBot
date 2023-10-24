@@ -39,6 +39,7 @@ INIT_MSG = {"role": "system", "content": f"""
 
 
 async def chat(msg: str, usr_id: int) -> str:
+    print(msg)
     token: int = 0
     if not msg:
         return "艾特我什么事呀🤔"
@@ -80,8 +81,8 @@ async def answer_via_group(app: Ariadne, friend: Group, event: MessageEvent):
         if msg['content'] not in [i['content'] for i in data_set[event.sender.id]]:
             data_set[event.sender.id].append(msg)
         await app.send_message(friend,
-                               (await chat(event.message_chain.display, event.sender.id)).replace(
-                                   f'@{event.sender.name}', ''),
+                               (await chat(event.message_chain.display.replace(
+                                   f'@{app.account}', '').strip(), event.sender.id)),
                                quote=event.id)
 
 
@@ -91,8 +92,8 @@ async def answer_by_at(app: Ariadne, friend: Group, event: MessageEvent):
         if event.sender.id not in data_set:
             data_set[event.sender.id] = [INIT_MSG]
         await app.send_message(friend,
-                               (await chat(event.message_chain.display, event.sender.id)).replace(
-                                   f'@{event.sender.name}', ''),
+                               (await chat(event.message_chain.display.replace(
+                                   f'@{app.account}', '').strip(), event.sender.id)),
                                quote=event.id)
     #print(dumps(data_set, ensure_ascii=False, indent=2))
 
@@ -104,4 +105,3 @@ async def debug(app: Ariadne, friend: Group, event: MessageEvent):
 
 
 schedule.every().day.do(update_usage_limit)
-
