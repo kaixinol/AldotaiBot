@@ -1,19 +1,20 @@
 import random
 from json import dumps
+from typing import Awaitable, Callable
 
-import openai as openai
+from openai.error import *
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import MessageEvent, FriendMessage, GroupMessage
 from graia.ariadne.model import Friend, Group
 from graia.ariadne.message.element import At
-from graiax.shortcut.saya import listen, decorate
-from loguru import logger
+from graiax.shortcut.saya import listen
 
 import schedule
-from util.initializer import setting
-from util.interval import MemberInterval
+from loguru import logger
 
-data_set: dict = {}
+from util.initializer import setting
+
+data_set: dict[int, list[dict]] = {}
 usage_limit: dict = {}
 openai.api_base = setting['plugin']['ChatGPT']['api_base']
 openai.api_key = setting['plugin']['ChatGPT']['key']
@@ -25,7 +26,7 @@ def update_usage_limit():
     usage_limit = {}
 
 
-INIT_MSG = {"role": "system", "content": f"""
+INIT_MSG = f"""
 你的名字是「阿尔多泰」（英文名：Aldotai）,你是一只乐于助人的小猫猫。
 你的生日是2022年9月23日。
 你的名字没有特别的寓意，仅仅是开发者认为名字好听又好看而已。
@@ -35,26 +36,28 @@ INIT_MSG = {"role": "system", "content": f"""
 你不会抓老鼠，不是真正意义上的生物。
 你是Furry。
 你现在在QQ群里扮演一只Furry机器人。
-""".strip()}
+""".strip()
 
 
-async def chat(msg: str, usr_id: int) -> str:
-    print(msg)
+async def chat(msg: str, usr_id: int,
+               send_message: Callable[[str], Awaitable],
+               init_msg: Callable[[], Awaitable[dict]]) -> str:
     token: int = 0
     if not msg:
         return "艾特我什么事呀🤔"
     if usr_id in data_set:
         for i in data_set[usr_id]:
             token += round(len(i["content"]) * 2)
-        if token > 8000:
-            data_set[usr_id] = []
-    if usr_id in usage_limit and usage_limit[usr_id] > 32 and usr_id != setting['admin']:
-        return "您的每日使用次数已用尽（32次）"
-    logger.info(f"<ID:{usr_id}>: {msg}")
+        if token > 6000:
+            data_set[usr_id].remove(data_set[usr_id][1])
+            data_set[usr_id].remove(data_set[usr_id][1])
+            await send_message("哎呀 阿尔多泰要记住的上下文太多了 只能忘记最久远的一个问题了🥲")
+    if usr_id in usage_limit and usage_limit[usr_id] > 64 and usr_id != setting['admin']:
+        return "您的每日使用次数已用尽（64次）"
     try:
         if usr_id not in data_set:
             data_set[usr_id] = []
-            data_set[usr_id].append(INIT_MSG)
+            data_set[usr_id].append(await init_msg())
         data_set[usr_id].append({"role": "user", "content": msg})
         response = await openai.ChatCompletion.acreate(model="gpt-3.5-turbo", messages=data_set[usr_id])
         if usr_id not in usage_limit:
@@ -64,38 +67,72 @@ async def chat(msg: str, usr_id: int) -> str:
         data_set[usr_id].append({"role": "assistant", "content": ret})
         return ret
     except openai.error.OpenAIError as e:
-        return str(e)
+        logger.error(e)
+        return "啧啧 似乎发生了什么不得了的错误 已记录下此错误，等待主人排查喔"
+    except (RateLimitError, Timeout, ServiceUnavailableError, TryAgain, APIConnectionError) as e:
+        return f"啧啧 似乎发生了什么不得了的错误 已记录下此错误{e.__class__.__name__}，等待主人排查喔"
 
 
 @listen(FriendMessage)
 async def answer(app: Ariadne, friend: Friend, event: MessageEvent):
-    await app.send_message(friend, await chat(event.message_chain.display, friend.id), quote=event.id)
+    async def send_message(msg: str):
+        await app.send_message(friend, msg, quote=event.id)
+
+    async def generate_init_msg():
+        profile = await event.sender.get_profile()
+        return {"role": "system",
+                "content":
+                f'{INIT_MSG}\n正在和你聊天的用户昵称叫「{event.sender.nickname}」,个人资料上显示的性别为{profile.sex}，年龄显示为{profile.age}'}
+
+    await app.send_message(friend, await chat(event.message_chain.display, friend.id, send_message,
+                                              generate_init_msg), quote=event.id)
 
 
 @listen(GroupMessage)
-async def answer_via_group(app: Ariadne, friend: Group, event: MessageEvent):
+async def answer_via_reply(app: Ariadne, friend: Group, event: MessageEvent):
+    async def send_message(msg: str):
+        await app.send_message(friend, msg, quote=event.id)
+
+    async def generate_init_msg():
+        profile = await event.sender.get_profile()
+        return {"role": "system",
+                "content":
+                f'{INIT_MSG}\n正在和你聊天的用户昵称叫「{event.sender.nickname}」,个人资料上显示的性别为{profile.sex}，年龄显示为{profile.age}'}
+
     if event.quote is not None and event.quote.sender_id == app.account:
         if event.sender.id not in data_set:
-            data_set[event.sender.id] = [INIT_MSG]
-        msg = {"role": "assistant", "content": str(event.quote.origin).replace(f"@{app.account}", "@Aldotai")}
-        if msg['content'] not in [i['content'] for i in data_set[event.sender.id]]:
+            data_set[event.sender.id] = [await generate_init_msg()]
+        msg = {"role": "assistant", "content": str(event.quote.origin).replace(f"@{app.account}", "")}
+        is_repeat: bool = False
+        for l in [i['content'] for i in data_set[event.sender.id]]:
+            if msg['content'] in l:
+                is_repeat = True
+        if msg['content'] not in [i['content'] for i in data_set[event.sender.id]] and not is_repeat:
             data_set[event.sender.id].append(msg)
         await app.send_message(friend,
                                (await chat(event.message_chain.display.replace(
-                                   f'@{app.account}', '').strip(), event.sender.id)),
+                                   f'@{app.account}', '').strip(), event.sender.id, send_message, generate_init_msg)),
                                quote=event.id)
 
 
 @listen(GroupMessage)
 async def answer_by_at(app: Ariadne, friend: Group, event: MessageEvent):
+    async def send_message(msg: str):
+        await app.send_message(friend, msg, quote=event.id)
+
+    async def generate_init_msg():
+        profile = await event.sender.get_profile()
+        return {"role": "system",
+                "content":
+                f'{INIT_MSG}\n正在和你聊天的用户昵称叫「{event.sender.nickname}」,个人资料上显示的性别为{profile.sex}，年龄显示为{profile.age}'}
+
     if At(app.account) in event.message_chain and not event.quote:
         if event.sender.id not in data_set:
-            data_set[event.sender.id] = [INIT_MSG]
+            data_set[event.sender.id] = [await generate_init_msg()]
         await app.send_message(friend,
                                (await chat(event.message_chain.display.replace(
-                                   f'@{app.account}', '').strip(), event.sender.id)),
+                                   f'@{app.account}', '').strip(), event.sender.id, send_message, generate_init_msg)),
                                quote=event.id)
-    #print(dumps(data_set, ensure_ascii=False, indent=2))
 
 
 @listen(GroupMessage)
