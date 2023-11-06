@@ -82,7 +82,8 @@ async def answer(app: Ariadne, friend: Friend, event: MessageEvent):
         profile = await event.sender.get_profile()
         return {"role": "system",
                 "content":
-                f'{INIT_MSG}\n正在和你聊天的用户昵称叫「{event.sender.nickname}」,个人资料上显示的性别为{profile.sex}，年龄显示为{profile.age}'}
+                f'{INIT_MSG}\n正在和你聊天的用户昵称叫「{event.sender.nickname}」,'
+                f'个人资料上显示的性别为{profile.sex}，年龄显示为{profile.age if 8 < profile.age < 40 else "未知"}'}
 
     await app.send_message(friend, await chat(event.message_chain.display, friend.id, send_message,
                                               generate_init_msg), quote=event.id)
@@ -97,7 +98,8 @@ async def answer_via_reply(app: Ariadne, friend: Group, event: MessageEvent):
         profile = await event.sender.get_profile()
         return {"role": "system",
                 "content":
-                f'{INIT_MSG}\n正在和你聊天的用户昵称叫「{event.sender.nickname}」,个人资料上显示的性别为{profile.sex}，年龄显示为{profile.age}'}
+                f'{INIT_MSG}\n正在和你聊天的用户昵称叫「{event.sender.name}」,'
+                f'个人资料上显示的性别为{profile.sex}，年龄显示为{profile.age if 8 < profile.age < 40 else "未知"}'}
 
     if event.quote is not None and event.quote.sender_id == app.account:
         if event.sender.id not in data_set:
@@ -124,7 +126,8 @@ async def answer_by_at(app: Ariadne, friend: Group, event: MessageEvent):
         profile = await event.sender.get_profile()
         return {"role": "system",
                 "content":
-                f'{INIT_MSG}\n正在和你聊天的用户昵称叫「{event.sender.nickname}」,个人资料上显示的性别为{profile.sex}，年龄显示为{profile.age}'}
+                f'{INIT_MSG}\n正在和你聊天的用户昵称叫「{event.sender.name}」,'
+                f'个人资料上显示的性别为{profile.sex}，年龄显示为{profile.age if 8 < profile.age < 40 else "未知"}'}
 
     if At(app.account) in event.message_chain and not event.quote:
         if event.sender.id not in data_set:
