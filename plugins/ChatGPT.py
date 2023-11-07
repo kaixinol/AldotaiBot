@@ -144,4 +144,11 @@ async def debug(app: Ariadne, friend: Group, event: MessageEvent):
         await app.send_message(friend, dumps(data_set, ensure_ascii=False, indent=2))
 
 
+@listen(GroupMessage)
+async def detect_bad_msg(app: Ariadne, friend: Group, event: MessageEvent):
+    if '@Aldotai' in event.message_chain.display:
+        await app.send_message(friend, "没艾特到喔")
+
+
+
 schedule.every().day.do(update_usage_limit)
