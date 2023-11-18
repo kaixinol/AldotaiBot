@@ -3,7 +3,8 @@
   admins: [
     1919810
   ],
-  proxy: 'socks5://127.0.0.1:7891',
+  port: [8088,8087],
+  proxy: 'socks5://127.0.0.1:7890',
   verifykey: '',
   qq: 114514,
   keyword_ignore: [],
@@ -13,7 +14,8 @@
   },
   plugin: {
     ChatGPT: {
-      key: ''
+      key: '',
+      api_base: ''
     },
     Welcome: {},
     Logger: {},
@@ -108,6 +110,7 @@
     EverydayFurry: {
     },
     ShouYunJi: {
+      disabled: true,
       prefix: [
         '!',
         '！'

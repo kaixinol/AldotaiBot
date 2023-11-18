@@ -1,4 +1,5 @@
 import os
+import socket
 from asyncio import new_event_loop
 
 from arclet.alconna.graia import AlconnaBehaviour
@@ -22,8 +23,8 @@ logger.add(
     level="INFO",
     encoding="utf-8",
     filter=lambda rec: "graia" not in rec["name"]
-    and "launart" not in rec["name"]
-    and rec["name"] not in ["util.sqliteTool", "plugins.Logger"],
+                       and "launart" not in rec["name"]
+                       and rec["name"] not in ["util.sqliteTool", "plugins.Logger"],
 )
 
 logger.add(
@@ -67,5 +68,19 @@ app = Ariadne(
     ),
 )
 
+
+def _check_port(port: int):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(5)
+
+    try:
+        result = sock.connect_ex(("127.0.0.1", port))
+        return result != 0
+    finally:
+        sock.close()
+
+
+if not _check_port(setting['port'][0]) or not _check_port(setting['port'][1]):
+    raise RuntimeError("端口被占用")
 
 app.launch_blocking()
