@@ -52,7 +52,7 @@ async def chat(msg: str, usr_id: int,
             data_set[usr_id].remove(data_set[usr_id][1])
             data_set[usr_id].remove(data_set[usr_id][1])
             await send_message("哎呀 阿尔多泰要记住的上下文太多了 只能忘记最久远的一个问题了🥲")
-    if usr_id in usage_limit and usage_limit[usr_id] > 64 and usr_id != setting['admin']:
+    if usr_id in usage_limit and usage_limit[usr_id] > 64 and usr_id not in setting['admins']:
         return "您的每日使用次数已用尽（64次）"
     try:
         if usr_id not in data_set:
@@ -140,7 +140,7 @@ async def answer_by_at(app: Ariadne, friend: Group, event: MessageEvent):
 
 @listen(GroupMessage)
 async def debug(app: Ariadne, friend: Group, event: MessageEvent):
-    if event.sender.id == setting['admin'] and event.message_chain.display == "/debug":
+    if event.sender.id in setting['admins'] and event.message_chain.display == "/debug":
         await app.send_message(friend, dumps(data_set, ensure_ascii=False, indent=2))
 
 
